@@ -2061,6 +2061,8 @@ function focusSig(a){
   if(a.dataset.lift) return 'input[data-lift="'+a.dataset.lift+'"][data-part="'+a.dataset.part+'"]';
   if(a.dataset.gram != null && a.dataset.gram !== '') return 'input[data-gram="'+a.dataset.gram+'"]';
   if(a.dataset.count != null && a.dataset.count !== '') return 'input[data-count="'+a.dataset.count+'"]';
+  if(a.dataset.mi) return 'input[data-mi="'+a.dataset.mi+'"]';
+  if(a.dataset.share) return 'input[data-share="'+a.dataset.share+'"]';
   return null;
 }
 function setHTMLKeepFocus(el, html){
@@ -2927,9 +2929,9 @@ function renderMeals(){
       var f = foodById(it.id); if(!f) return '';
       var nm = foodName(f), k = it.g/100;
       var amount = f.each
-        ? '<input type="number" min="0" max="60" step="0.5" value="'+(Math.round(it.g/f.each*2)/2)+'" data-mi="'+m.key+':'+i+'" data-each="1" aria-label="'+esc(t('aGrams',nm))+'" />'+
+        ? '<input type="text" inputmode="decimal" value="'+(Math.round(it.g/f.each*2)/2)+'" data-mi="'+m.key+':'+i+'" data-each="1" aria-label="'+esc(t('aGrams',nm))+'" />'+
           '<em class="eachu">'+esc(eachUnit(f))+'</em>'
-        : '<input type="number" min="0" max="2000" step="5" value="'+r0(it.g)+'" data-mi="'+m.key+':'+i+'" aria-label="'+esc(t('aGrams',nm))+'" />'+
+        : '<input type="text" inputmode="numeric" value="'+r0(it.g)+'" data-mi="'+m.key+':'+i+'" aria-label="'+esc(t('aGrams',nm))+'" />'+
           '<em class="eachu">'+t('uG')+'</em>';
       var zero = it.g <= 0;
       return '<div class="mitem'+(it.lock?' locked':'')+(zero?' mitem--zero':'')+'">'+
@@ -2952,15 +2954,35 @@ function renderMeals(){
       '<div class="meal__hd">'+
         '<span class="meal__name">'+esc(t('meal_'+m.key))+'</span>'+
         (off ? '<span class="hint">'+esc(t('mealOffRest'))+'</span>'
-             : '<span class="meal__share"><input type="number" min="0" max="100" step="5" value="'+r0(m.share)+'" data-share="'+m.key+'" aria-label="'+esc(t('aShare'))+'" />%</span>'+
+             : '<span class="meal__share"><input type="text" inputmode="numeric" value="'+r0(m.share)+'" data-share="'+m.key+'" aria-label="'+esc(t('aShare'))+'" />%</span>'+
                '<span class="meal__tot">'+fmt(mt.kcal)+' <small>/ '+fmt(T.kcal*share)+' '+t('uKcal')+'</small></span>')+
       '</div>'+
       (off ? '' : (rows || '<p class="mealempty">'+esc(sel?t('mealPickHere'):t('mealTapToPick'))+'</p>'))+
       '</div>';
   }).join('');
-  $('#meals').innerHTML = html;
+  setHTMLKeepFocus($('#meals'), html);
 
-  /* day progress */
+  renderMealTotals();
+}
+
+/* Totals only — no row markup is touched, so a half-typed number like "2."
+   is never rewritten. <input type="number"> reports an empty value in that
+   state, so re-rendering mid-keystroke would eat the decimal point. */
+function renderMealTotals(){
+  var T = C.dayTarget;
+  var live = activeMeals();
+  var shareSum = live.reduce(function(a,m){ return a + Math.max(0,m.share); }, 0) || 1;
+
+  S.meals.forEach(function(m){
+    var card = $('.meal[data-meal="'+m.key+'"]');
+    if(!card) return;
+    var totEl = card.querySelector('.meal__tot');
+    if(totEl){
+      var share = Math.max(0,m.share)/shareSum;
+      totEl.innerHTML = fmt(mealTotals(m).kcal) + ' <small>/ ' + fmt(T.kcal*share) + ' ' + t('uKcal') + '</small>';
+    }
+  });
+
   var tt = dayTotals();
   var rows2 = [
     {n:t('uKcal'),    v:tt.kcal, tgt:T.kcal, col:'var(--accent)', u:''},
@@ -3035,6 +3057,10 @@ $('#meals').addEventListener('click', function(e){
   }
   var st = e.target.closest('[data-mstep]');
   if(st){
+    /* a real click moves focus to the button; a synthetic one does not, and
+       leaving focus in the field makes the re-render restore its old text */
+    var af = document.activeElement;
+    if(af && af.dataset && af.dataset.mi) af.blur();
     var c = st.dataset.mi2.split(':');
     var mm = mealByKey(c[0]), item = mm.items[+c[1]], ff = foodById(item.id);
     var step = (ff && ff.each) ? ff.each : 10;
@@ -3056,23 +3082,57 @@ $('#meals').addEventListener('click', function(e){
   }
 });
 
-/* Typing an amount pins that food — the solver then works around it. */
+/* Typing an amount pins that food — the solver then works around it.
+   While the keystrokes are still coming, only the totals are refreshed; the
+   day is re-solved once on change (blur or Enter), so the other rows do not
+   churn under the caret mid-number. */
+function applyMealAmount(el, resolve){
+  var a = el.dataset.mi.split(':');
+  var m = mealByKey(a[0]); if(!m) return;
+  var it = m.items[+a[1]]; if(!it) return;
+  var f = foodById(it.id);
+  var v = num(el.value, 0);
+  it.g = clamp((el.dataset.each && f) ? v*f.each : v, 0, 3000);
+  it.lock = true;
+  if(resolve){ resolveAndRender(); return; }
+  /* still typing: update this row's own line and the totals, nothing else */
+  var row = el.closest('.mitem');
+  if(row && f){
+    var k = it.g/100;
+    row.classList.add('locked');
+    row.classList.toggle('mitem--zero', it.g <= 0);
+    var em = row.querySelector('.mitem__n em');
+    if(em) em.textContent = it.g <= 0 ? t('mealNotNeeded')
+      : r0(f.kcal*k)+' '+t('uKcal')+' · '+t('abbrP')+r1(f.p*k)+' '+t('abbrC')+r1(f.c*k)+' '+t('abbrF')+r1(f.f*k);
+    var lb = row.querySelector('.lockbtn');
+    if(lb){ lb.setAttribute('aria-pressed','true'); lb.textContent = '●'; }
+  }
+  renderMealTotals();
+  save();
+}
+function applyShare(el, resolve){
+  var m = mealByKey(el.dataset.share); if(!m) return;
+  m.share = clamp(num(el.value, 0), 0, 100);
+  if(resolve){ resolveAndRender(); return; }
+  renderMealTotals();
+  save();
+}
 $('#meals').addEventListener('input', function(e){
   var amt = e.target.closest('[data-mi]');
-  if(amt){
-    var a = amt.dataset.mi.split(':');
-    var m = mealByKey(a[0]), it = m.items[+a[1]];
-    var f = foodById(it.id);
-    var v = num(amt.value, 0);
-    it.g = clamp(amt.dataset.each ? v*f.each : v, 0, 3000);
-    it.lock = true;
-    resolveAndRender(); return;
-  }
+  if(amt){ applyMealAmount(amt, false); return; }
   var sh = e.target.closest('[data-share]');
-  if(sh){
-    mealByKey(sh.dataset.share).share = clamp(num(sh.value, 0), 0, 100);
-    resolveAndRender();
-  }
+  if(sh) applyShare(sh, false);
+});
+$('#meals').addEventListener('change', function(e){
+  var amt = e.target.closest('[data-mi]');
+  if(amt){ applyMealAmount(amt, true); return; }
+  var sh = e.target.closest('[data-share]');
+  if(sh) applyShare(sh, true);
+});
+$('#meals').addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  var el = e.target.closest('[data-mi],[data-share]');
+  if(el){ e.preventDefault(); el.blur(); }
 });
 
 on('#clearMeals','click', function(){
