@@ -429,6 +429,27 @@ input[type="range"]::-moz-range-thumb{width:15px;height:19px;background:var(--ac
 .lockbtn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent-ink)}
 .lockbtn:hover{border-color:var(--accent)}
 .mealempty{padding:10px 2px 12px;color:var(--ink-3);font-size:12.5px}
+
+/* ── Training arrangement ───────────────────────────────────────────── */
+.liftgrp{display:block;font-style:normal;font-family:var(--f-disp);font-size:11px;
+  letter-spacing:var(--tr-tag);text-transform:uppercase;color:var(--ink-3)}
+tr.liftrisk td{background:rgba(208,59,59,.06)}
+tr.liftrisk .delta{color:var(--crit-ink)}
+.sessgrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(196px,1fr))}
+.sess{border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:2px;
+  background:var(--panel-2);padding:10px 12px 12px}
+.sess--easy{border-top-color:var(--rule-2)}
+.sess__hd{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.sess__day{font-family:var(--f-disp);font-size:11px;letter-spacing:var(--tr-tag);
+  text-transform:uppercase;color:var(--ink-3)}
+.sess__name{font-family:var(--f-disp);font-weight:700;font-size:14px;
+  letter-spacing:var(--tr-lab);text-transform:uppercase;margin-left:auto}
+.sess__lifts{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:5px}
+.sess__lifts li{display:flex;flex-direction:column;font-size:12.5px;line-height:1.3}
+.sess__lifts b{font-weight:600}
+.sess__lifts span{font-family:var(--f-disp);font-size:10.5px;letter-spacing:var(--tr-tag);
+  text-transform:uppercase;color:var(--ink-3)}
+.sess__body{font-size:11.5px;line-height:1.45;color:var(--ink-3)}
 .progs{display:flex;flex-direction:column;gap:11px;margin-top:16px;padding-top:16px;border-top:1px solid var(--rule-2)}
 .prog{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
 .prog__k{display:flex;align-items:center;gap:7px;min-width:76px;font-family:var(--f-disp);
@@ -807,6 +828,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
               <tbody id="liftBody"></tbody>
             </table>
           </div>
+          <p class="hint" style="margin-top:12px" data-i18n="hLiftsGroups"></p>
         </div>
       </div>
       <div class="panel">
@@ -819,6 +841,15 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
           <div class="stats" id="strStats"></div>
           <div class="flags" style="margin-top:14px" id="strFlags"></div>
         </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:var(--gap)">
+      <div class="panel__hd"><h3 data-i18n="pnArrange">How to train it</h3><span class="panel__tag" id="arrangeTag"></span></div>
+      <div class="panel__bd">
+        <p class="hint" style="margin-bottom:14px" data-i18n="hArrange"></p>
+        <div id="arrangeBox"></div>
+        <div class="stats" style="margin-top:16px" id="arrangeNote"></div>
       </div>
     </div>
   </section>
@@ -939,6 +970,42 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
   htmlLang:'en', locale:'en-US',
+
+  /* ── one measuring lift per movement pattern ── */
+  liftSquat:'Back squat', liftHinge:'Romanian deadlift', liftBench:'Bench press',
+  liftRow:'Barbell row', liftPull:'Pull-up', liftOhp:'Overhead press',
+  gLegs:'Quads & glutes', gHinge:'Hamstrings & lower back', gChest:'Chest & triceps',
+  gBack:'Mid back & lats', gLat:'Lats & biceps', gDelts:'Shoulders',
+  liftBeltNote: function(a,b,u){ return 'belt '+a+' \u2192 '+b+' '+u; },
+  hLiftsGroups:'One lift per movement pattern, so nothing goes unmeasured. Pull-up figures are total load — your bodyweight plus whatever is on the belt — which is why getting lighter raises what you can hang off it even when absolute strength is flat. Enter what you can hang; a negative number means assisted.',
+
+  icStrLoss:'LOSING STRENGTH', icStrDip:'SLIGHT DIP', icStrUp:'GOING UP',
+  icStrFlat:'NOT MOVING', icStrSlow:'BARELY MOVING', icHowToPush:'HOW TO PUSH IT',
+  fStrLossBad: function(a){ return 'This plan costs you about <b>'+a+'% of your strength</b> — more than a diet should. Below roughly 8% you are no longer dieting around your training, you are training around your diet. Slow the weight loss down, hold protein where the plan says, and keep the top sets heavy even as you cut the number of them.'; },
+  fStrDip: function(a){ return 'About <b>'+a+'% down</b> across the plan. That is a normal cost for a diet this size and it comes back within a few weeks of eating at maintenance. Protect it by keeping the heaviest sets heavy and cutting volume instead of intensity.'; },
+  fHolding:'Holding strength through a diet is the win condition. Anything above flat is a bonus.',
+  fStrUpOnDiet: function(a){ return 'Up about <b>'+a+'%</b> while losing fat — that is the best outcome a diet can have, and it is realistic at your training age. It depends on hitting the protein target and not letting the top sets get light.'; },
+  fStrUpOnGain: function(a){ return 'Up about <b>'+a+'%</b> over the plan. That is what eating above maintenance is for — the food is being turned into something. Keep adding weight to the bar while the reps hold.'; },
+  fStrFlat:'You are not dieting, so strength should be going up — and this plan says it will not. With zero or near-zero lifting days there is nothing driving it. Add sessions before adding food.',
+  fStrSlow: function(a){ return 'Only about <b>'+a+'% up</b> over the whole plan. Eating in a surplus does not build strength on its own; the training has to ask for it. Check the frequency and the cardio load above.'; },
+
+  pnArrange:'How to train it', hArrange:'A week built from the lifts above, at your training frequency. Each session opens with its measuring lifts while you are fresh — those are the numbers you are tracking, so they get the best of you — then accessories for the same pattern.',
+  splitFull:'full body', splitUL:'upper / lower', splitHybrid:'hybrid', splitPPL:'push / pull / legs', splitPPL7:'push / pull / legs + easy day',
+  dayN: function(n){ return 'Day '+n; },
+  ses_fullA:'Full body A', ses_fullB:'Full body B', ses_fullC:'Full body C',
+  ses_push:'Push', ses_pull:'Pull', ses_legs:'Legs',
+  ses_push2:'Push B', ses_pull2:'Pull B', ses_legs2:'Legs B',
+  ses_upA:'Upper A', ses_loA:'Lower A', ses_upB:'Upper B', ses_loB:'Lower B',
+  ses_easy:'Easy day',
+  sesAccessory:'Then 2–4 accessories for the same patterns — the measuring lifts come first, while you are fresh.',
+  sesEasyBody:'Walk, stretch, or light work for whatever is lagging. A seventh hard session buys you nothing your recovery can pay for.',
+  xWeeklySets:'Hard sets per muscle group', uSetsGroup:'per week',
+  xEachPattern:'Each pattern is trained', uPerWeek:'× per week',
+  aDiet:'Keep the top sets heavy and cut the number of them — intensity is what tells your body to keep the muscle, volume is what your recovery can no longer pay for. Expect to add reps rather than weight, and treat holding a number as a win.',
+  aKeep:'The scale is not moving, so the lifts are your only evidence anything is happening. Push for a rep or a small jump on each measuring lift every week or two, and take the volume to the top of the range.',
+  aBulk:'You have the food to support real volume, so use it — the top of the set range, and add weight to the bar whenever the reps are there. If the lifts are not climbing, the surplus is buying fat rather than muscle.',
+  fArrangeNoDays:'No lifting days means there is nothing to arrange. Set at least two above and a week will be built here.',
+
 
   /* ── target override, protein rule, meals ── */
   aDailyTarget:'Daily calorie target — type to override',
@@ -1087,7 +1154,6 @@ var EN = {
 
   hLifts:'Enter a set you can genuinely hit — weight and reps. Leave reps at 1 if you already know your one-rep max.',
   lLift:'Lift', lWeight:'Weight', lReps:'Reps', lNow:'1RM now', lAfter:'1RM after', lChange:'Change',
-  liftSquat:'Back squat', liftBench:'Bench press', liftDeadlift:'Deadlift', liftOhp:'Overhead press',
   aLiftWeight: function(n){ return n + ' weight'; }, aLiftReps: function(n){ return n + ' reps'; },
   strUnit:'overall strength change',
   xNeural:'Getting better at the lift (neural)', xHyper:'Extra muscle carrying the bar',
@@ -1176,7 +1242,6 @@ var EN = {
 
   fDetraining:'No lifting days means strength goes backwards — roughly 1.2% a week once you stop.',
   fDip:'A deficit this size costs strength. Keep the heavy sets heavy and cut volume rather than intensity, and most of this comes back within weeks of eating at maintenance again.',
-  fHolding:'Holding strength through a diet is the win condition. Anything above flat is a bonus.',
   fBeginnerGains:'Most of this is neural — your body learning the lift — and it front-loads hard. Do not extrapolate this rate past the first year.',
   fSlowLane:'Past four years of training, a few percent over a block is a genuinely good outcome. Judge it over the year, not the month.',
 
@@ -1215,7 +1280,6 @@ var EN = {
     '<p><b>Cheat meals.</b> Two honest answers, both shown. <em>Banked</em>: trim the other six days, never below the safe floor — the greater of 1,500&nbsp;kcal (1,200 for women) and 85% of your resting burn — and never more than 20% under target, and whatever that frees up buys cheat meals, capped at three a week. <em>Unbanked</em>: eat the cheat on top and the plan simply takes longer, by the cheat\'s calories divided by your daily deficit. On a bulk the arithmetic flips — the calories are already surplus, so a cheat costs body fat rather than time.</p>',
 
   n4Title:'Meals, portions and the food numbers',
-  nMealsTitle:'',
   n4Body:
     '<p><b>Food data</b> is per 100&nbsp;g of the edible portion, drawn from USDA reference values, raw unless the entry says cooked. Raw and cooked are not interchangeable — 100&nbsp;g of raw rice becomes roughly 250&nbsp;g cooked, so weigh at the state the entry names.</p>'+
     '<p>"Chicken tender" is the tenderloin strip off the breast; the separate beef-tendon entry is the connective-tissue cut, which is nearly all collagen. Calories come from the reference value rather than being recomputed from macros, so a high-fibre food will not sum to exactly 4/4/9 — the difference is fibre your body does not fully absorb.</p>'+
@@ -1229,6 +1293,42 @@ var EN = {
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   htmlLang:'zh-CN', locale:'zh-CN',
+
+  /* ── 每个动作模式一个测量动作 ── */
+  liftSquat:'深蹲', liftHinge:'罗马尼亚硬拉', liftBench:'卧推',
+  liftRow:'杠铃划船', liftPull:'引体向上', liftOhp:'站姿推举',
+  gLegs:'股四头肌与臀', gHinge:'腘绳肌与下背', gChest:'胸与肱三头',
+  gBack:'中背与背阔', gLat:'背阔与肱二头', gDelts:'肩',
+  liftBeltNote: function(a,b,u){ return '负重 '+a+' \u2192 '+b+' '+u; },
+  hLiftsGroups:'每个动作模式配一个测量动作，这样身体不会有哪一半没被记录。引体向上填的是总负荷——你的体重加上腰带上挂的重量——所以即使绝对力量没变，体重下降也会让你能挂更多。填你能挂的重量；负数表示需要助力。',
+
+  icStrLoss:'力量下滑', icStrDip:'小幅下降', icStrUp:'在涨',
+  icStrFlat:'没有增长', icStrSlow:'涨得很慢', icHowToPush:'该怎么练',
+  fStrLossBad: function(a){ return '这个方案大约会让你掉 <b>'+a+'% 的力量</b>——超过了减脂应该付出的代价。大致超过 8%，就不再是"围绕训练来减脂"，而变成"围绕减脂来训练"了。把减重速度放慢，蛋白质吃满计划的量，并且即使减少组数也要保持大重量组的重量。'; },
+  fStrDip: function(a){ return '整个周期大约<b>下降 '+a+'%</b>。对这个幅度的减脂来说属于正常代价，恢复到维持热量后几周内就会回来。保护它的办法是：最重的那几组重量不降，要砍就砍训练量而不是强度。'; },
+  fHolding:'减脂期间力量能守住，本身就是赢了。能有增长都算额外收获。',
+  fStrUpOnDiet: function(a){ return '一边掉脂肪一边<b>涨了约 '+a+'%</b>——这是减脂能有的最好结果，而且以你的训练年限是现实可行的。前提是蛋白质吃满，并且大重量组不能变轻。'; },
+  fStrUpOnGain: function(a){ return '整个周期<b>涨了约 '+a+'%</b>。这正是吃在维持热量之上的意义——食物被转化成了实实在在的东西。只要次数还在，就继续往杠铃上加重量。'; },
+  fStrFlat:'你现在不是在减脂，力量本来应该往上走——但这个方案显示它不会。力量训练天数是零或接近零时，没有任何东西在驱动它。先把训练加上去，再加食物。',
+  fStrSlow: function(a){ return '整个周期只涨了大约 <b>'+a+'%</b>。热量盈余本身并不会长力量，得靠训练去"要"。检查一下上面的训练频率和有氧量。'; },
+
+  pnArrange:'该怎么练', hArrange:'按你的训练频率，用上面这些动作排成的一周。每次训练都在体力最好的时候先做测量动作——你要追踪的就是这些数字，所以要把最好的状态给它们——之后再做同一模式的辅助动作。',
+  splitFull:'全身', splitUL:'上下肢分化', splitHybrid:'混合', splitPPL:'推 / 拉 / 腿', splitPPL7:'推 / 拉 / 腿 + 轻松日',
+  dayN: function(n){ return '第 '+n+' 天'; },
+  ses_fullA:'全身 A', ses_fullB:'全身 B', ses_fullC:'全身 C',
+  ses_push:'推', ses_pull:'拉', ses_legs:'腿',
+  ses_push2:'推 B', ses_pull2:'拉 B', ses_legs2:'腿 B',
+  ses_upA:'上肢 A', ses_loA:'下肢 A', ses_upB:'上肢 B', ses_loB:'下肢 B',
+  ses_easy:'轻松日',
+  sesAccessory:'之后针对同样的模式做 2–4 个辅助动作——测量动作永远排在最前面，趁体力最好的时候做。',
+  sesEasyBody:'走路、拉伸，或者练一下明显落后的部位。第七次高强度训练买不到任何你的恢复能力付得起的东西。',
+  xWeeklySets:'每个肌群每周有效组数', uSetsGroup:'组 / 周',
+  xEachPattern:'每个动作模式每周练', uPerWeek:'次',
+  aDiet:'大重量组的重量不要降，要减就减组数——强度是在告诉身体"这些肌肉还有用"，而训练量是恢复能力已经付不起的部分。这个阶段更可能是多做一两次而不是加重量，能守住数字就算赢。',
+  aKeep:'体重不动，所以训练重量是唯一能证明有变化的证据。每一到两周在每个测量动作上争取多一次或者小幅加重，训练量取区间的上限。',
+  aBulk:'你有足够的食物支撑真正的训练量，那就用起来——组数取上限，次数够了就往杠铃上加重量。如果重量一直不涨，那这些盈余买到的是脂肪而不是肌肉。',
+  fArrangeNoDays:'一天力量训练都没有，就没有什么可以安排的。在上面至少设置两天，这里就会给你排出一周。',
+
 
   /* ── 目标覆盖、蛋白质规则、分餐 ── */
   aDailyTarget:'每日热量目标——可直接输入覆盖',
@@ -1377,7 +1477,6 @@ var ZH = {
 
   hLifts:'填一个你真能完成的组——重量和次数。如果你已经知道自己的极限重量，次数填 1 即可。',
   lLift:'动作', lWeight:'重量', lReps:'次数', lNow:'当前 1RM', lAfter:'结束后 1RM', lChange:'变化',
-  liftSquat:'深蹲', liftBench:'卧推', liftDeadlift:'硬拉', liftOhp:'站姿推举',
   aLiftWeight: function(n){ return n + '重量'; }, aLiftReps: function(n){ return n + '次数'; },
   strUnit:'力量总体变化',
   xNeural:'动作变熟练（神经适应）', xHyper:'新长的肌肉带来的提升',
@@ -1466,7 +1565,6 @@ var ZH = {
 
   fDetraining:'完全不做力量训练，力量会往回走——停练之后大约每周掉 1.2%。',
   fDip:'这么大的缺口一定会付出力量的代价。大重量的组照做，要砍就砍训练量而不是强度；等回到维持热量，大部分几周内就会回来。',
-  fHolding:'减脂期间力量能守住，本身就是赢了。能有增长都算额外收获。',
   fBeginnerGains:'这里面大部分是神经适应——身体在学会怎么发力——而且集中在前期。别拿这个速度往第一年之后推算。',
   fSlowLane:'练过四年以上，一个周期能涨几个百分点已经是相当好的结果。用一年为单位去看，别用一个月。',
 
@@ -1612,12 +1710,49 @@ function servName(f){ return (L==='zh' && f.zsv) ? f.zsv : f.sv; }
 function eachUnit(f){ return (L==='zh' && f.zeu) ? f.zeu : (f.eu || ''); }
 function countOf(f, g){ return f.each ? Math.round(g/f.each*100)/100 : null; }
 
+/* One measuring lift per movement pattern, so no half of the body goes
+   untracked. `mult` is how fast that lift moves relative to the overall
+   strength change — lower-body patterns move fastest in both directions,
+   the overhead press slowest. `bw` marks a lift where your own bodyweight
+   is part of the load. */
 var LIFTS = [
-  {k:'squat',    key:'liftSquat',    mult:1.15, dw:100},
-  {k:'bench',    key:'liftBench',    mult:0.85, dw:70},
-  {k:'deadlift', key:'liftDeadlift', mult:1.20, dw:120},
-  {k:'ohp',      key:'liftOhp',      mult:0.75, dw:45}
+  {k:'squat', key:'liftSquat', group:'gLegs',  mult:1.15, dw:100},
+  {k:'hinge', key:'liftHinge', group:'gHinge', mult:1.20, dw:90},
+  {k:'bench', key:'liftBench', group:'gChest', mult:0.85, dw:70},
+  {k:'row',   key:'liftRow',   group:'gBack',  mult:0.95, dw:60},
+  {k:'pull',  key:'liftPull',  group:'gLat',   mult:0.90, dw:0, bw:true},
+  {k:'ohp',   key:'liftOhp',   group:'gDelts', mult:0.75, dw:45}
 ];
+
+/* Which sessions to run at each training frequency, and what each session
+   anchors on. Every pattern above appears at least once a week. */
+var SESSION = {
+  fullA:{lifts:['squat','bench','row'],  groups:['gLegs','gChest','gBack']},
+  fullB:{lifts:['hinge','ohp','pull'],   groups:['gHinge','gDelts','gLat']},
+  fullC:{lifts:['squat','bench','pull'], groups:['gLegs','gChest','gLat']},
+  push: {lifts:['bench','ohp'],          groups:['gChest','gDelts']},
+  pull: {lifts:['row','pull'],           groups:['gBack','gLat']},
+  legs: {lifts:['squat','hinge'],        groups:['gLegs','gHinge']},
+  push2:{lifts:['ohp','bench'],          groups:['gDelts','gChest']},
+  pull2:{lifts:['pull','row'],           groups:['gLat','gBack']},
+  legs2:{lifts:['hinge','squat'],        groups:['gHinge','gLegs']},
+  upA:  {lifts:['bench','row'],          groups:['gChest','gBack']},
+  loA:  {lifts:['squat'],                groups:['gLegs']},
+  upB:  {lifts:['ohp','pull'],           groups:['gDelts','gLat']},
+  loB:  {lifts:['hinge'],                groups:['gHinge']},
+  easy: {lifts:[],                       groups:[]}
+};
+var SPLITS = {
+  1:['fullA'],
+  2:['fullA','fullB'],
+  3:['fullA','fullB','fullC'],
+  4:['upA','loA','upB','loB'],
+  5:['push','pull','legs','upA','loA'],
+  6:['push','pull','legs','push2','pull2','legs2'],
+  7:['push','pull','legs','push2','pull2','legs2','easy']
+};
+var SPLIT_NAME = {1:'splitFull', 2:'splitFull', 3:'splitFull', 4:'splitUL',
+                  5:'splitHybrid', 6:'splitPPL', 7:'splitPPL7'};
 
 /* Lifting styles and cardio modes: gross METs, plus how much each cardio
    mode competes with lifting for recovery (the interference effect). */
@@ -1666,12 +1801,13 @@ function defaults(){
       {key:'m3', share:30, items:[]},
       {key:'pw', share:10, items:[{id:'banana', g:118, lock:true}]}
     ],
-    lifts:{squat:{w:100,r:1}, bench:{w:70,r:1}, deadlift:{w:120,r:1}, ohp:{w:45,r:1}},
+    lifts:{squat:{w:100,r:1}, hinge:{w:90,r:1}, bench:{w:70,r:1},
+           row:{w:60,r:1}, pull:{w:0,r:8}, ohp:{w:45,r:1}},
     custom:[]
   };
 }
 var S = defaults();
-var STORE = 'load-planner-v3';
+var STORE = 'load-planner-v4';
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
 function load(){
   try{
@@ -2047,6 +2183,7 @@ function render(){
   renderTrajectory();
   renderComposition();
   renderStrength();
+  renderArrangement();
   renderCheat();
   renderMeals();
   save();
@@ -2509,22 +2646,47 @@ function renderStrength(){
     '<div class="stat"><span class="stat__k">'+esc(t('xLeanChange'))+'</span><span class="stat__v">'+(C.dLBM>=0?'+':'−')+wShow(Math.abs(C.dLBM))+' <small>'+wUnit()+'</small></span></div>'+
     '<div class="stat"><span class="stat__k">'+esc(t('xOver'))+'</span><span class="stat__v">'+r1(C.weeks)+' <small>'+t('uWeeks')+'</small></span></div>';
 
+  /* What counts as an acceptable outcome depends entirely on the mode: a
+     diet is judged on how little it costs, a bulk on whether it delivers. */
   var sf = [];
-  if(C.gymDays === 0)      sf.push(flag('crit', t('icDetraining'), t('fDetraining')));
-  else if(p < -0.5)        sf.push(flag('warn', t('icDip'), t('fDip')));
-  else if(S.mode==='diet' && p < 3) sf.push(flag('good', t('icHolding'), t('fHolding')));
-  else if(p > 20)          sf.push(flag('info', t('icBeginner'), t('fBeginnerGains')));
+  if(C.gymDays === 0){
+    sf.push(flag('crit', t('icDetraining'), t('fDetraining')));
+  } else if(S.mode === 'diet'){
+    if(p < -8)       sf.push(flag('crit', t('icStrLoss'), t('fStrLossBad', r1(Math.abs(p)))));
+    else if(p < -3)  sf.push(flag('warn', t('icStrDip'), t('fStrDip', r1(Math.abs(p)))));
+    else if(p < 0.5) sf.push(flag('good', t('icHolding'), t('fHolding')));
+    else             sf.push(flag('good', t('icStrUp'), t('fStrUpOnDiet', r1(p))));
+  } else {
+    if(p <= 0)       sf.push(flag('crit', t('icStrFlat'), t('fStrFlat')));
+    else if(p < 2)   sf.push(flag('warn', t('icStrSlow'), t('fStrSlow', r1(p))));
+    else             sf.push(flag('good', t('icStrUp'), t('fStrUpOnGain', r1(p))));
+  }
+  if(p > 20)                        sf.push(flag('info', t('icBeginner'), t('fBeginnerGains')));
   if(S.exp === 'advanced' && p > 0) sf.push(flag('info', t('icSlowLane'), t('fSlowLane')));
   $('#strFlags').innerHTML = sf.join('');
 
   setHTMLKeepFocus($('#liftBody'), LIFTS.map(function(Lf){
     var st = S.lifts[Lf.k] || {w:Lf.dw, r:1};
     var w = num(st.w, Lf.dw), reps = clamp(Math.round(num(st.r,1)),1,20);
-    var oneRM = w*(1 + reps/30), after = oneRM*(1 + p/100*Lf.mult), d = after - oneRM;
+    /* On a pull-up your own bodyweight is most of the load, so the figures
+       are total system load. Getting lighter raises what you can hang off a
+       belt even when absolute strength is flat — which is why a dieter's
+       pull-ups often improve while their bench does not. */
+    var loadNow = Lf.bw ? (C.startKg + w) : w;
+    var oneRM = loadNow*(1 + reps/30);
+    var after = oneRM*(1 + p/100*Lf.mult);
+    var d = after - oneRM;
     var name = t(Lf.key);
-    return '<tr>'+
-      '<td class="td-name">'+esc(name)+'</td>'+
-      '<td><div class="gramwrap" style="justify-content:flex-end"><input type="number" min="0" max="600" step="2.5" '+
+    var beltNow = Lf.bw ? oneRM - C.startKg : null;
+    var beltEnd = Lf.bw ? after - C.targetKg : null;
+    var pctChange = oneRM > 0 ? d/oneRM*100 : 0;
+    var risky = (S.mode === 'diet' && pctChange < -5);
+    return '<tr'+(risky?' class="liftrisk"':'')+'>'+
+      '<td class="td-name">'+esc(name)+
+        '<em class="liftgrp">'+esc(t(Lf.group))+
+        (Lf.bw ? ' · '+esc(t('liftBeltNote', wShow(beltNow,0), wShow(beltEnd,0), wUnit())) : '')+
+        '</em></td>'+
+      '<td><div class="gramwrap" style="justify-content:flex-end"><input type="number" min="'+(Lf.bw?-100:0)+'" max="600" step="2.5" '+
         'data-lift="'+Lf.k+'" data-part="w" value="'+wShow(w)+'" aria-label="'+esc(t('aLiftWeight',name))+'" /></div></td>'+
       '<td><div class="gramwrap"><input type="number" min="1" max="20" step="1" style="width:44px" '+
         'data-lift="'+Lf.k+'" data-part="r" value="'+reps+'" aria-label="'+esc(t('aLiftReps',name))+'" /></div></td>'+
@@ -2716,7 +2878,9 @@ $('#liftBody').addEventListener('input', function(e){
   var el = e.target.closest('input[data-lift]'); if(!el) return;
   var k = el.dataset.lift;
   S.lifts[k] = S.lifts[k] || {w:100, r:1};
-  if(el.dataset.part === 'w') S.lifts[k].w = clamp(wIn(num(el.value,0)), 0, 600);
+  var Lf = null;
+  for(var li=0; li<LIFTS.length; li++) if(LIFTS[li].k === k) Lf = LIFTS[li];
+  if(el.dataset.part === 'w') S.lifts[k].w = clamp(wIn(num(el.value,0)), Lf && Lf.bw ? -100 : 0, 600);
   else                        S.lifts[k].r = clamp(Math.round(num(el.value,1)), 1, 20);
   render();
 });
@@ -3140,6 +3304,74 @@ on('#clearMeals','click', function(){
   render();
 });
 on('#resolveBtn','click', resolveAndRender);
+
+/* ══ training arrangement ══════════════════════════════════════════════
+   The lifts above only measure strength. This turns them into a week: which
+   sessions to run at your frequency, what each one anchors on, and how hard
+   to push given whether you are dieting, holding or gaining.              */
+
+function weeklySets(){
+  /* Hard sets per muscle group per week. A deficit cannot support as much
+     volume — the intensity is what protects the muscle, so volume is what
+     gives way — while a surplus can absorb more. */
+  var base = S.mode === 'diet' ? [10, 14] : (S.mode === 'keep' ? [12, 16] : [14, 20]);
+  var f = clamp(C.gymDays/4, 0.55, 1.25);
+  return [Math.round(base[0]*f), Math.round(base[1]*f)];
+}
+
+function renderArrangement(){
+  var d = C.gymDays;
+  var box = $('#arrangeBox');
+
+  if(d === 0){
+    $('#arrangeTag').textContent = '—';
+    box.innerHTML = flag('warn', t('icNoTraining'), t('fArrangeNoDays'));
+    $('#arrangeNote').textContent = '';
+    return;
+  }
+
+  var keys = SPLITS[d] || SPLITS[4];
+  var sets = weeklySets();
+  $('#arrangeTag').textContent = t(SPLIT_NAME[d] || 'splitUL');
+
+  /* how often each pattern comes round in this split */
+  var freq = {};
+  keys.forEach(function(k){
+    (SESSION[k].lifts || []).forEach(function(lk){ freq[lk] = (freq[lk]||0) + 1; });
+  });
+
+  var cards = keys.map(function(k, i){
+    var ses = SESSION[k];
+    if(!ses.lifts.length){
+      return '<div class="sess sess--easy"><div class="sess__hd">'+
+        '<span class="sess__day">'+t('dayN', i+1)+'</span>'+
+        '<span class="sess__name">'+esc(t('ses_'+k))+'</span></div>'+
+        '<p class="sess__body">'+esc(t('sesEasyBody'))+'</p></div>';
+    }
+    var anchors = ses.lifts.map(function(lk){
+      var Lf = null;
+      for(var j=0;j<LIFTS.length;j++) if(LIFTS[j].k === lk) Lf = LIFTS[j];
+      return Lf ? '<li><b>'+esc(t(Lf.key))+'</b> <span>'+esc(t(Lf.group))+'</span></li>' : '';
+    }).join('');
+    return '<div class="sess"><div class="sess__hd">'+
+      '<span class="sess__day">'+t('dayN', i+1)+'</span>'+
+      '<span class="sess__name">'+esc(t('ses_'+k))+'</span></div>'+
+      '<ul class="sess__lifts">'+anchors+'</ul>'+
+      '<p class="sess__body">'+esc(t('sesAccessory'))+'</p></div>';
+  }).join('');
+
+  box.innerHTML = '<div class="sessgrid">'+cards+'</div>';
+
+  var advice = S.mode === 'diet' ? t('aDiet') : (S.mode === 'keep' ? t('aKeep') : t('aBulk'));
+  $('#arrangeNote').innerHTML =
+    '<div class="stat"><span class="stat__k">'+esc(t('xWeeklySets'))+'</span>'+
+    '<span class="stat__v">'+sets[0]+'–'+sets[1]+' <small>'+esc(t('uSetsGroup'))+'</small></span></div>'+
+    '<div class="stat"><span class="stat__k">'+esc(t('xEachPattern'))+'</span>'+
+    '<span class="stat__v">'+(Math.min.apply(null, LIFTS.map(function(L){ return freq[L.k]||0; })) || 1)+
+    '–'+(Math.max.apply(null, LIFTS.map(function(L){ return freq[L.k]||0; })) || 1)+
+    ' <small>'+esc(t('uPerWeek'))+'</small></span></div>' +
+    '<div class="flags" style="margin-top:12px">'+flag('info', t('icHowToPush'), advice)+'</div>';
+}
 
 })();
 </script>
