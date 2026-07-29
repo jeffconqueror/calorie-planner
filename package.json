@@ -1,0 +1,11 @@
+{
+  "name": "load-calorie-planner",
+  "version": "1.0.0",
+  "description": "Bilingual (EN/中文) calorie, macro, body-composition and strength planner. Single self-contained HTML file.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx --yes serve . --listen 8080",
+    "start": "npx --yes serve . --listen 8080"
+  }
+}
