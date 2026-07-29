@@ -243,6 +243,14 @@ input[type="date"]{width:100%;border:1px solid var(--rule-2);border-radius:2px;b
   line-height:.92;letter-spacing:-.015em}
 .hero__unit{font-family:var(--f-disp);font-size:14px;letter-spacing:var(--tr-word);
   text-transform:uppercase;color:var(--ink-3)}
+.hero__in{appearance:none;-moz-appearance:textfield;border:0;background:transparent;color:inherit;
+  width:100%;max-width:5.2ch;padding:0;margin:0 0 0 -.02em;border-bottom:2px dashed var(--rule-2);
+  font-variant-numeric:tabular-nums;cursor:text}
+.hero__in::-webkit-outer-spin-button,.hero__in::-webkit-inner-spin-button{appearance:none;margin:0}
+.hero__in:hover{border-bottom-color:var(--accent)}
+.hero__in:focus{outline:none;border-bottom-style:solid;border-bottom-color:var(--accent)}
+.hero__src{font-size:12.5px;color:var(--ink-3);margin-top:8px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.hero__src b{font-weight:600;color:var(--ink-2)}
 .hero__delta{font-family:var(--f-disp);font-size:17px;letter-spacing:.02em;color:var(--ink-2);margin-top:6px}
 .hero__delta b{color:var(--ink)}
 .gauge{margin-top:18px}
@@ -324,6 +332,10 @@ tbody tr:last-child td{border-bottom:0}
 .delta--up{color:var(--good-ink)}
 .delta--dn{color:var(--crit-ink)}
 .delta--flat{color:var(--ink-3)}
+.ckrow{cursor:pointer}
+.ckrow:hover td{background:var(--accent-soft)}
+.ckrow:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.ckrow--on td{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
 
 /* ── Cheat ──────────────────────────────────────────────────────────── */
 .cheat{display:grid;gap:var(--pad);grid-template-columns:minmax(0,1fr)}
@@ -378,6 +390,45 @@ input[type="range"]::-moz-range-thumb{width:15px;height:19px;background:var(--ac
   cursor:pointer;width:26px;height:26px;color:var(--ink-3);font-size:15px;line-height:1}
 .xbtn:hover{border-color:var(--crit);color:var(--crit-ink)}
 .empty{padding:24px 4px;text-align:center;color:var(--ink-3);font-size:13.5px}
+
+/* ── Meals ──────────────────────────────────────────────────────────── */
+.daybar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.daybar .seg{flex:1}
+.daybar .seg button{flex:1}
+.meal{border:1px solid var(--rule);border-left-width:3px;border-left-color:var(--rule);
+  border-radius:2px;padding:10px 12px 4px;margin-bottom:8px;cursor:pointer;background:var(--panel)}
+.meal:hover{border-color:var(--rule-2);border-left-color:var(--rule-2)}
+.meal--on{border-color:var(--accent);border-left-color:var(--accent);background:var(--panel)}
+.meal--off{opacity:.55;cursor:default;background:var(--panel-2)}
+.meal--off:hover{border-color:var(--rule);border-left-color:var(--rule)}
+.meal__hd{display:flex;align-items:baseline;gap:8px;padding-bottom:7px;margin-bottom:4px;
+  border-bottom:1px solid var(--rule)}
+.meal__name{font-family:var(--f-disp);font-weight:700;font-size:13px;
+  letter-spacing:var(--tr-mid);text-transform:uppercase}
+.meal__share{margin-left:auto;font-family:var(--f-disp);font-size:12px;color:var(--ink-3);
+  display:flex;align-items:baseline;gap:1px}
+.meal__share input{appearance:none;-moz-appearance:textfield;width:34px;border:1px solid var(--rule-2);
+  border-radius:2px;background:var(--panel-2);color:var(--ink);font-family:var(--f-num);
+  font-size:12px;padding:2px 3px;text-align:right}
+.meal__share input::-webkit-outer-spin-button,
+.meal__share input::-webkit-inner-spin-button{appearance:none;margin:0}
+.meal__tot{font-family:var(--f-disp);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;
+  white-space:nowrap}
+.meal__tot small{font-family:var(--f-disp);font-weight:400;font-size:11.5px;color:var(--ink-3)}
+.mitem{display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center;
+  padding:6px 0;border-bottom:1px solid var(--rule)}
+.mitem:last-child{border-bottom:0}
+.mitem__n{font-size:12.5px;line-height:1.3;min-width:0}
+.mitem__n em{display:block;font-style:normal;font-family:var(--f-disp);font-size:11px;
+  letter-spacing:.03em;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.mitem.locked .gramwrap{border-color:var(--accent)}
+.mitem--zero .mitem__n{opacity:.5}
+.mitem--zero .mitem__n em{font-style:italic}
+.lockbtn{appearance:none;border:1px solid var(--rule-2);background:var(--panel-2);border-radius:2px;
+  cursor:pointer;width:24px;height:26px;color:var(--ink-3);font-size:10px;line-height:1;padding:0}
+.lockbtn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent-ink)}
+.lockbtn:hover{border-color:var(--accent)}
+.mealempty{padding:10px 2px 12px;color:var(--ink-3);font-size:12.5px}
 .progs{display:flex;flex-direction:column;gap:11px;margin-top:16px;padding-top:16px;border-top:1px solid var(--rule-2)}
 .prog{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
 .prog__k{display:flex;align-items:center;gap:7px;min-width:76px;font-family:var(--f-disp);
@@ -607,6 +658,12 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
                 <input type="date" id="endDate" />
                 <button type="button" class="linkbtn" id="fitDuration" data-i18n="bFitDuration" style="padding-left:0"></button>
               </div>
+              <div class="field">
+                <label for="proteinPerKg" data-i18n="fProteinPerKg">Protein</label>
+                <div class="inputwrap"><input type="number" id="proteinPerKg" min="0.8" max="4" step="0.1" /><span class="unit" data-i18n="uGkgBw">g/kg BW</span></div>
+                <span class="hint" data-i18n="hProteinPerKg"></span>
+              </div>
+              <div class="field"></div>
               <div class="field field--full">
                 <span class="lbl" id="lblCarbPlan" data-i18n="fCarbPlan">Carb strategy</span>
                 <div class="seg seg--wide" role="group" aria-labelledby="lblCarbPlan">
@@ -635,8 +692,10 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
           <div class="panel__bd">
             <div class="hero">
               <div class="hero__fig">
-                <span class="hero__num" id="heroKcal">—</span>
+                <input type="number" class="hero__num hero__in" id="heroKcal" min="600" max="8000" step="10"
+                       inputmode="numeric" data-i18n-aria="aDailyTarget" />
                 <span class="hero__unit" id="heroUnit"></span>
+                <span class="hero__src" id="heroSrc"></span>
                 <span class="hero__delta" id="heroDelta">—</span>
               </div>
               <div><div class="stats" id="energyStats"></div></div>
@@ -684,6 +743,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
               </table>
             </div>
             <p class="hint" style="margin-top:10px" data-i18n="hCheckDrift"></p>
+            <p class="hint" style="margin-top:6px" data-i18n="hCheckClick"></p>
           </div>
         </div>
       </div>
@@ -813,25 +873,41 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
           <div id="foodGrid"></div>
         </div>
       </div>
+
       <div class="panel">
-        <div class="panel__hd"><h3 data-i18n="pnPlate">Today's plate</h3>
-          <button type="button" class="linkbtn" id="clearPlate" data-i18n="bClear" style="margin-left:auto;font-size:12px"></button>
+        <div class="panel__hd"><h3 data-i18n="pnMeals">Today's meals</h3>
+          <button type="button" class="linkbtn" id="clearMeals" data-i18n="bClear" style="margin-left:auto;font-size:12px"></button>
         </div>
         <div class="panel__bd">
-          <div class="plate" id="plate"></div>
-          <div class="progs" id="plateProgs"></div>
+          <div class="daybar" id="blockRow">
+            <div class="seg" id="blockSeg" role="group" data-i18n-aria="aBlock"></div>
+          </div>
+          <div class="daybar" id="dayTypeRow">
+            <div class="seg" role="group" data-i18n-aria="aDayType">
+              <button type="button" id="dayTrain" data-i18n="dayTrain" aria-pressed="true"></button>
+              <button type="button" id="dayRest" data-i18n="dayRest" aria-pressed="false"></button>
+            </div>
+          </div>
+          <div class="stat" style="border-top:1px solid var(--rule)">
+            <span class="stat__k" id="mealDayTag"></span>
+            <span class="stat__v" id="mealDayTarget"></span>
+          </div>
+          <p class="hint" style="margin:10px 0 14px" data-i18n="hMeals"></p>
+          <div id="meals"></div>
+          <div class="flags" style="margin-top:14px" id="mealFlags"></div>
+          <div class="progs" id="mealProgs"></div>
           <details class="notes" style="margin-top:16px">
             <summary data-i18n="bPlateTable">Plate as a table</summary>
             <div class="nb">
               <div class="tablewrap">
                 <table>
                   <thead><tr>
+                    <th scope="col" data-i18n="tMeal">Meal</th>
                     <th scope="col" data-i18n="tFood">Food</th><th scope="col" data-i18n="uG">g</th>
                     <th scope="col" data-i18n="uKcal">kcal</th><th scope="col" data-i18n="abbrP">P</th>
                     <th scope="col" data-i18n="abbrC">C</th><th scope="col" data-i18n="abbrF">F</th>
-                    <th scope="col" data-i18n="tFibre">Fibre</th>
                   </tr></thead>
-                  <tbody id="plateTableBody"></tbody>
+                  <tbody id="mealTableBody"></tbody>
                 </table>
               </div>
             </div>
@@ -863,6 +939,38 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
   htmlLang:'en', locale:'en-US',
+
+  /* ── target override, protein rule, meals ── */
+  aDailyTarget:'Daily calorie target — type to override',
+  heroSrcPlan:'Plan average across the whole block.',
+  heroSrcCheck: function(w){ return 'Locked to the week '+w+' checkpoint.'; },
+  heroSrcCustom:'Set by hand.',
+  bBackToPlan:'Back to the plan',
+  hCheckClick:'Click any row to make that week\u2019s number your working target — the macros and meals below follow it.',
+  icOverride:'OVERRIDDEN', icCheckpoint:'CHECKPOINT',
+  fOverride: function(a,b){ return 'You are working to <b>'+a+' kcal</b> instead of the plan\u2019s '+b+'. The food targets below follow your number; the weight and strength projections still assume the plan, so if you hold this for the whole block the outcome moves with it.'; },
+  fCheckpoint: function(w,k){ return 'Working to the week '+w+' number, <b>'+k+' kcal</b>. That is the right figure for the fortnight around that checkpoint — re-pick as you move through the plan.'; },
+  fProteinPerKg:'Protein', uGkgBw:'g/kg BW',
+  hProteinPerKg:'Grams per kg of bodyweight, held constant every day and every block. Carbs and fat do the moving.',
+
+  pnMeals:"Today's meals", tMeal:'Meal',
+  meal_m1:'Meal 1', meal_m2:'Meal 2', meal_m3:'Meal 3', meal_pw:'Post-workout',
+  mealOffRest:'no workout today',
+  mealTapToPick:'Tap this card, then pick foods on the left.',
+  mealPickHere:'Picking here — tap foods on the left.',
+  dayTrain:'Training day', dayRest:'Rest day', daySame:"Today's target",
+  aDayType:'Day type', aShare:'Share of the day',
+  aBlock:'Which block',
+  hBlockToday:'\u00b7 marks the block today falls in.',
+  hMeals:'Pick the foods you want in each meal and the amounts are worked out for you, so the day lands on its targets. Type an amount to pin it — the ring fills in and everything else solves around it.',
+  mealNotNeeded:'not needed for this day — pin an amount if you want it anyway',
+  tipLock:'Pin this amount', tipUnlock:'Let this be solved',
+  icPick:'PICK SOME FOOD', icSolved:'SOLVED', icShort:'CANNOT REACH IT',
+  fPickFoods:'Choose a meal card, then tap foods on the left. Each meal wants a protein source and something to carry the carbs; the amounts are worked out from there.',
+  fSolved: function(k){ return 'These portions land the day on <b>'+k+' kcal</b> at your macro split. Pin anything you want fixed and the rest re-solves around it.'; },
+  fShort: function(k,w){ return 'The day comes out <b>'+k+' kcal '+w+'</b>. Usually that means a macro has nothing to come from — add a fat source to a low-carb day, or a starch to a training day — or a pinned amount is holding it there.'; },
+  wUnder:'short', wOver:'over',
+
 
   tagline:'Calorie & strength planner',
   unitMetric:'kg · cm', unitImperial:'lb · ft', reset:'Reset',
@@ -1099,16 +1207,20 @@ var EN = {
 
   n3Title:'Macros, carb strategy and cheat meals',
   n3Body:
-    '<p><b>Protein.</b> 2.6&nbsp;g per kg of <em>lean</em> mass when dieting, 2.2 when maintaining or bulking — higher while dieting because protein is what stops the deficit eating your muscle. Capped at 40% of calories.</p>'+
+    '<p><b>Protein</b> is a flat number of grams per kg of bodyweight — 2.0 by default, set it where you like — and it does not move: not between training and rest days, not between blocks, not when you override the daily target. It is the one macro doing structural work, so it is the one that stays still. It is only ever capped if it would swallow 45% of the day\u2019s calories.</p>'+
+    '<p><b>Fat and carbs both move, in opposite directions.</b> On a training day carbs go up and fat comes down to its floor of 0.6&nbsp;g/kg; on a rest day fat rises and carbs drop. Weekly totals of all three macros are preserved exactly, so the swing cannot change the rate the scale moves. Two guards apply: fat never goes under 0.6&nbsp;g/kg on any day, and a rest day never drops under 0.5&nbsp;g/kg of carbs — if the arithmetic would breach either, the swing is narrowed until it does not.</p>'+
     '<p><b>Fat.</b> 0.8 / 0.9 / 1.0&nbsp;g per kg of bodyweight for diet / keep / bulk, never below 0.6&nbsp;g/kg or 20% of calories — going lower costs you hormonally for nothing. <b>Carbs</b> take whatever is left; they are the fuel for the training that protects your muscle. <b>Fibre</b> targets 14&nbsp;g per 1,000&nbsp;kcal.</p>'+
     '<p><b>Steady, cycled, or phased.</b> Three ways to spend the same weekly total. <em>Steady</em> puts the same plate in front of you every day: simplest to follow, and the easiest to diagnose, because when the scale stalls there is only one number to move. <em>Cycled</em> holds protein and fat constant and moves carbs — rest days drop to 55% of your average carbs, and lifting days take everything that frees up, capped at 1.8× so the high day stays edible. Calories follow the carbs, so training days are bigger and rest days smaller, but the seven-day average is identical to the steady plan. Neither is magic: the weekly total is what moves the scale. Cycling wins on adherence and on training quality, because the food is where the work is.</p>'+
     '<p><em>Phased</em> is the default, and runs steady first, cycled last: flat for the first 40% of the plan, a half-amplitude transition through the middle 20%, then full cycling for the last 40%. The reasoning is that the two halves of a diet are not the same problem. Early on the weight comes off on its own and adherence is easy, so there is nothing to buy by complicating the plate. Late on, the deficit has been running for weeks, glycogen is low and training quality is the thing actually at risk — which is precisely what putting the carbs on lifting days protects. Each block is re-solved at the weight you will be carrying by then, so its calories are lower than the block before it; protein and fat hold across all three, and carbs absorb every bit of the movement. Cycling needs both lifting days and rest days, so a 7-day-a-week lifter gets the steady plan whichever option is selected.</p>'+
     '<p><b>Cheat meals.</b> Two honest answers, both shown. <em>Banked</em>: trim the other six days, never below the safe floor — the greater of 1,500&nbsp;kcal (1,200 for women) and 85% of your resting burn — and never more than 20% under target, and whatever that frees up buys cheat meals, capped at three a week. <em>Unbanked</em>: eat the cheat on top and the plan simply takes longer, by the cheat\'s calories divided by your daily deficit. On a bulk the arithmetic flips — the calories are already surplus, so a cheat costs body fat rather than time.</p>',
 
-  n4Title:'The food numbers',
+  n4Title:'Meals, portions and the food numbers',
+  nMealsTitle:'',
   n4Body:
     '<p><b>Food data</b> is per 100&nbsp;g of the edible portion, drawn from USDA reference values, raw unless the entry says cooked. Raw and cooked are not interchangeable — 100&nbsp;g of raw rice becomes roughly 250&nbsp;g cooked, so weigh at the state the entry names.</p>'+
     '<p>"Chicken tender" is the tenderloin strip off the breast; the separate beef-tendon entry is the connective-tissue cut, which is nearly all collagen. Calories come from the reference value rather than being recomputed from macros, so a high-fibre food will not sum to exactly 4/4/9 — the difference is fibre your body does not fully absorb.</p>'+
+    '<p><b>Working out the portions.</b> You pick what goes in each meal; the amounts are solved for you. Given the foods in a meal and the macros it has to hit, this is a least-squares fit with every amount held at or above zero — non-negative least squares, solved by multiplicative update, which is why "minus 40&nbsp;g of rice" is not a solution the maths can reach. Protein is weighted heaviest, then calories, then fat, then carbs. Each meal is solved against its share of the day, then a second pass nudges the whole day onto target so a meal that could not carry its share does not sink the total.</p>'+
+    '<p><b>What keeps the answers sane.</b> Each food is capped by what a person would actually eat in one sitting: protein sources may run to eight servings, starches six, fruit and vegetables and oils three. Portions come back in 5&nbsp;g steps, or half-pieces for anything counted by the piece. Type or nudge any amount and it is pinned — the ring fills in, that food is taken out of the solve, and everything else re-solves around it. A food the day has no room for is shown at zero and marked, rather than quietly dropped.</p>'+
     '<p><b>Anything missing</b> can be added with the button above the food list: name it, give it calories, protein, carbs and fat per 100&nbsp;g, and it is saved with the rest of your plan in this browser.</p>',
 
   footNote:'Every number here is an estimate from population averages, and individual burn varies by roughly ±10% around any formula. Treat the target as a starting point, not a verdict: weigh yourself under the same conditions a few times a week, average each week, and if two weeks pass without the trend moving the way this page predicts, adjust intake by 100–150&nbsp;kcal and re-run it with your new weight. This is general fitness information, not medical advice — talk to a doctor before starting a diet if you are pregnant, managing a health condition, or taking medication that interacts with eating patterns.'
@@ -1117,6 +1229,38 @@ var EN = {
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   htmlLang:'zh-CN', locale:'zh-CN',
+
+  /* ── 目标覆盖、蛋白质规则、分餐 ── */
+  aDailyTarget:'每日热量目标——可直接输入覆盖',
+  heroSrcPlan:'整个阶段的计划平均值。',
+  heroSrcCheck: function(w){ return '已锁定到第 '+w+' 周的检查点。'; },
+  heroSrcCustom:'手动设定。',
+  bBackToPlan:'回到计划值',
+  hCheckClick:'点击任意一行，即可把那一周的数字设为当前目标——下面的营养素和分餐都会跟着变。',
+  icOverride:'已覆盖', icCheckpoint:'检查点',
+  fOverride: function(a,b){ return '你现在按 <b>'+a+' 千卡</b>执行，而不是计划的 '+b+'。下面的饮食目标会跟随你的数字；体重和力量预测仍然按原计划计算，所以如果整个阶段都这么吃，结果也会随之改变。'; },
+  fCheckpoint: function(w,k){ return '当前按第 '+w+' 周的数字执行，<b>'+k+' 千卡</b>。这是那个检查点前后两周左右的正确数值——随着计划推进记得重新选。'; },
+  fProteinPerKg:'蛋白质', uGkgBw:'克/公斤体重',
+  hProteinPerKg:'按每公斤体重的克数计算，每天、每个阶段都保持不变。变化交给碳水和脂肪。',
+
+  pnMeals:'今天的分餐', tMeal:'餐次',
+  meal_m1:'第一餐', meal_m2:'第二餐', meal_m3:'第三餐', meal_pw:'练后加餐',
+  mealOffRest:'今天不训练',
+  mealTapToPick:'先点这张卡片，然后在左边选食物。',
+  mealPickHere:'正在往这里添加——在左边点食物。',
+  dayTrain:'训练日', dayRest:'休息日', daySame:'今天的目标',
+  aDayType:'日型', aShare:'占全天比例',
+  aBlock:'哪个阶段',
+  hBlockToday:'· 表示今天所处的阶段。',
+  hMeals:'在每一餐里选好想吃的食物，份量会自动算出来，让全天正好落在目标上。手动输入一个份量就会把它固定住——圆点变成实心，其余部分会围着它重新求解。',
+  mealNotNeeded:'这一天用不上——想吃的话手动固定一个份量',
+  tipLock:'固定这个份量', tipUnlock:'交给自动计算',
+  icPick:'先选食物', icSolved:'已算好', icShort:'达不到',
+  fPickFoods:'先点一张餐次卡片，再在左边点食物。每一餐最好有一个蛋白质来源，再加一样能承载碳水的主食；份量会据此算出来。',
+  fSolved: function(k){ return '这些份量能让全天正好落在 <b>'+k+' 千卡</b>，并符合你的营养素分配。想固定哪一项就把它钉住，其余部分会重新求解。'; },
+  fShort: function(k,w){ return '全天'+w+' <b>'+k+' 千卡</b>。通常是因为某个营养素没有来源——低碳日缺脂肪来源，或者训练日缺主食——也可能是某个固定份量把它卡住了。'; },
+  wUnder:'差', wOver:'超出',
+
 
   tagline:'热量与力量规划器',
   unitMetric:'公斤 · 厘米', unitImperial:'磅 · 英尺', reset:'重置',
@@ -1353,16 +1497,19 @@ var ZH = {
 
   n3Title:'营养素、碳水策略与欺骗餐',
   n3Body:
-    '<p><b>蛋白质。</b>减脂期按每公斤<em>瘦体重</em> 2.6 克，保持和增肌期 2.2 克——减脂期更高，是因为蛋白质就是那个防止缺口把肌肉吃掉的东西。上限为总热量的 40%。</p>'+
+    '<p><b>蛋白质</b>按每公斤体重固定克数计算——默认 2.0，可以自己调——并且全程不动：训练日和休息日一样，各个阶段一样，即使你手动改了每日热量目标也一样。它是唯一在做"结构性工作"的营养素，所以它是唯一保持不变的。只有当它会吃掉全天 45% 的热量时才会被限制。</p>'+
+    '<p><b>脂肪和碳水都在变，而且方向相反。</b>训练日碳水上去、脂肪降到 0.6 克/公斤的下限；休息日脂肪上来、碳水降下去。三大营养素的一周总量都被精确保留，所以这种摆动不会改变体重变化的速度。有两条保护线：任何一天脂肪都不低于 0.6 克/公斤，休息日碳水不低于 0.5 克/公斤——如果算出来会突破其中任何一条，摆动幅度就会被收窄，直到不再突破为止。</p>'+
     '<p><b>脂肪。</b>减脂 / 保持 / 增肌分别按每公斤体重 0.8 / 0.9 / 1.0 克，且永远不低于 0.6 克/公斤或总热量的 20%——再往下只会白白付出激素上的代价。<b>碳水</b>拿走剩下的全部；它是训练的燃料，而训练才是保住肌肉的东西。<b>膳食纤维</b>按每 1,000 千卡 14 克。</p>'+
     '<p><b>恒定、循环，还是分阶段。</b>同样的一周总量，三种花法。<em>恒定</em>是每天端上来一样的一盘：最好执行，也最好诊断，因为体重一停，只有一个数字需要动。<em>碳水循环</em>把蛋白质和脂肪按住不动，只让碳水上下走——休息日降到平均碳水的 55%，省下来的全部加到训练日，并且上限设为 1.8 倍，免得高碳日多到吃不下。热量跟着碳水走，所以训练日更大、休息日更小，但七天平均和恒定方案完全一样。两者都不神奇：真正决定体重的是一周总量。碳水循环赢在执行难度和训练质量上——因为食物被放到了有训练的那几天。</p>'+
     '<p><em>分阶段</em>是默认选项，先恒定、后循环：计划的前 40% 完全平稳，中间 20% 以一半幅度过渡，最后 40% 完全按循环执行。理由是减脂的前后两段根本不是同一个问题。前期体重自己就会掉，执行也不难，把餐盘复杂化换不来任何东西。到了后期，缺口已经持续了好几周，糖原偏低，真正处在风险中的是训练质量——而把碳水集中到训练日，保护的正是这一点。每个阶段都按你那时实际的体重重新计算，所以后一个阶段的热量一定低于前一个；蛋白质和脂肪三个阶段全程不变，所有变化都由碳水承担。碳水循环需要同时存在训练日和休息日，所以每周练满七天的人，无论选哪个都会拿到恒定方案。</p>'+
     '<p><b>欺骗餐。</b>两个诚实的答案，页面上都给出。<em>省出来</em>：从其余六天里各压一点，但永远不低于安全下限（1,500 千卡、女性 1,200 千卡，与静息消耗的 85% 二者取高），也不超过目标的 20%；省出来的额度换成欺骗餐，每周最多三次。<em>不补偿</em>：直接额外吃，什么也不会崩，只是计划变长，多出来的天数 = 欺骗餐热量 ÷ 每日缺口。增肌期算法反过来——这些热量本来就是盈余，所以欺骗餐花的是体脂而不是时间。</p>',
 
-  n4Title:'食物数据说明',
+  n4Title:'分餐、份量与食物数据',
   n4Body:
     '<p><b>食物数据</b>为每 100 克可食部分，取自 USDA 参考值，除非条目写明"熟"，否则都是生重。生重和熟重不能互换——100 克生米大约会变成 250 克米饭，所以请按条目写的状态来称。</p>'+
     '<p>"鸡里脊"指的是鸡胸内侧那条里脊肉；单独列出的牛蹄筋则是结缔组织部位，几乎全是胶原蛋白。热量直接采用参考值，而不是用宏量营养素反推，所以高纤维食物不会正好等于 4/4/9——差的那部分就是身体并不能完全吸收的纤维。</p>'+
+    '<p><b>份量是怎么算出来的。</b>你决定每一餐吃什么，份量由程序解出来。给定一餐里的食物和这一餐要达到的营养素，这是一个所有份量都不小于零的最小二乘拟合——非负最小二乘，用乘性迭代求解，所以"负 40 克米饭"这种答案在数学上根本到不了。权重上蛋白质最高，其次是热量，然后脂肪，最后碳水。每一餐先按它占全天的比例单独求解，再用第二遍把全天整体拉到目标上，这样某一餐扛不动自己那份时也不会拖垮全天。</p>'+
+    '<p><b>为什么结果不会离谱。</b>每种食物都按"一顿正常能吃多少"来设上限：蛋白质来源最多八份，主食六份，水果、蔬菜和油脂三份。份量以 5 克为步长给出，按个计数的食物则精确到半个。手动输入或用加减号调整任何一个份量，它就会被固定住——圆点变实心，这项退出求解，其余部分围着它重新计算。如果某样食物这一天根本放不下，它会显示为 0 并被标注出来，而不是悄悄消失。</p>'+
     '<p><b>列表里没有的东西</b>可以用食物列表上方的按钮添加：填名字，再填每 100 克的热量、蛋白质、碳水和脂肪，它会和你的方案一起保存在这个浏览器里。</p>',
 
   footNote:'这里所有数字都是基于人群平均值的估算，个体的实际消耗在任何公式上下都可能有大约 ±10% 的偏差。把目标当作起点而不是判决：每周在相同条件下称几次体重，取一周平均；如果连续两周趋势没有按这个页面预测的方向走，就把摄入调整 100–150 千卡，并用新的体重重新算一遍。本页面提供的是一般健身信息，不构成医疗建议——如果你处于孕期、有基础疾病，或正在服用与进食方式相互作用的药物，开始节食前请先咨询医生。'
@@ -1510,13 +1657,21 @@ function defaults(){
     cardioDays:2, cardioMin:30, cardioType:'jog',
     mode:'diet', startKg:78, targetKg:72, startPinned:false, carbPlan:'phased',
     startDate: iso(today), endDate: iso(addDays(today,84)),
-    cheatKcal:800,
+    cheatKcal:800, proteinPerKg:2.0,
+    kcalOverride:null, kcalSource:'plan',
+    dayType:'train', activeMeal:'m1', planBlock:null,
+    meals:[
+      {key:'m1', share:30, items:[]},
+      {key:'m2', share:30, items:[]},
+      {key:'m3', share:30, items:[]},
+      {key:'pw', share:10, items:[{id:'banana', g:118, lock:true}]}
+    ],
     lifts:{squat:{w:100,r:1}, bench:{w:70,r:1}, deadlift:{w:120,r:1}, ohp:{w:45,r:1}},
-    plate:[], custom:[]
+    custom:[]
   };
 }
 var S = defaults();
-var STORE = 'load-planner-v2';
+var STORE = 'load-planner-v3';
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
 function load(){
   try{
@@ -1528,8 +1683,9 @@ function load(){
       for(var k in o){ if(Object.prototype.hasOwnProperty.call(d,k)) d[k] = o[k]; }
       S = d;
     }
-    if(!Array.isArray(S.plate)) S.plate = [];
     if(!Array.isArray(S.custom)) S.custom = [];
+    if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
+    S.meals.forEach(function(m){ if(!Array.isArray(m.items)) m.items = []; });
   }catch(e){}
 }
 function allFoods(){ return FOODS.concat(S.custom); }
@@ -1662,17 +1818,27 @@ function compute(){
   var belowFloor = intake < minIntake;
 
   /* ── macros ── */
-  var protein = (S.mode==='diet' ? 2.6 : 2.2)*lbmStart;
-  protein = Math.min(protein, intake*0.40/4);
-  protein = Math.max(protein, 1.2*startKg);
+  /* The daily number can be overridden — typed, or taken from a checkpoint —
+     and everything below it follows that number rather than the average. */
+  var planIntake = intake;
+  if(S.kcalOverride != null && isFinite(S.kcalOverride) && S.kcalOverride > 0){
+    intake = clamp(S.kcalOverride, 600, 8000);
+  }
+  var overridden = Math.abs(intake - planIntake) > 1;
+
+  /* Protein is a flat g/kg of bodyweight and does not move, day to day or
+     block to block. Only capped if it would swallow the whole budget. */
+  var protein = clamp(S.proteinPerKg, 0.8, 4.0)*startKg;
+  protein = Math.min(protein, intake*0.45/4);
 
   var fatPerKg = S.mode==='diet' ? 0.8 : (S.mode==='keep' ? 0.9 : 1.0);
-  var fatG = Math.max(fatPerKg*startKg, Math.max(0.6*startKg, intake*0.20/9));
+  var fatFloorG = 0.6*startKg;
+  var fatG = Math.max(fatPerKg*startKg, Math.max(fatFloorG, intake*0.20/9));
   var carbG = (intake - protein*4 - fatG*9)/4;
   if(carbG < 0){
-    fatG = Math.max(0.6*startKg, (intake - protein*4)/9*0.55);
+    fatG = Math.max(fatFloorG, (intake - protein*4)/9*0.55);
     carbG = (intake - protein*4 - fatG*9)/4;
-    if(carbG < 0){ protein = Math.max(1.2*startKg,(intake - fatG*9)/4*0.8); carbG = (intake - protein*4 - fatG*9)/4; }
+    if(carbG < 0){ fatG = Math.max(0, (intake - protein*4)/9); carbG = 0; }
   }
   carbG = Math.max(carbG, 0);
   var fibreG = 14*intake/1000;
@@ -1686,27 +1852,50 @@ function compute(){
 
   /* Weekly carb total is preserved at every spread, because
      highF*gymDays + lowF*restDays == 7 holds for any blend of the two. */
-  function cycleSplit(carbVal, spread){
+  var carbFloorG = 0.5*startKg;   /* a low day is still not a no-carb day */
+
+  /* Day calories come from the carb spread; within a day, protein holds and
+     fat moves opposite to carbs — leaner on training days, higher on rest
+     days. Weekly totals of all three macros are preserved. */
+  function cycleSplit(intakeVal, carbVal, fatVal, spread){
     var lowF = 0.55;
     var highF = (7 - lowF*restDays)/gymDays;
     if(highF > 1.8){ highF = 1.8; lowF = (7 - highF*gymDays)/restDays; }
     var hF = 1 + spread*(highF - 1);
     var lF = 1 - spread*(1 - lowF);
-    var fixed = protein*4 + fatG*9;
     var flattened = false;
-    var kHigh = fixed + carbVal*hF*4, kLow = fixed + carbVal*lF*4;
+    var pK = protein*4;
+    var kHigh = pK + fatVal*9 + carbVal*hF*4;
+    var kLow  = pK + fatVal*9 + carbVal*lF*4;
     if(spread > 0 && carbVal > 0 && kLow < minIntake){
-      lF = clamp(Math.max(0,(minIntake - fixed)/4)/carbVal, 0, 1);
+      lF = clamp(Math.max(0,(minIntake - pK - fatVal*9)/4)/carbVal, 0, 1);
       hF = (7 - lF*restDays)/gymDays;
       flattened = true;
-      kHigh = fixed + carbVal*hF*4; kLow = fixed + carbVal*lF*4;
+      kHigh = pK + fatVal*9 + carbVal*hF*4;
+      kLow  = pK + fatVal*9 + carbVal*lF*4;
     }
+
+    /* fat swings the other way, then is pulled back if the low day's carbs
+       would fall under the floor */
+    var fTrain = fatVal, fRest = fatVal;
+    if(spread > 0 && gymDays > 0 && restDays > 0){
+      fTrain = Math.max(fatFloorG, fatVal*(1 - 0.25*spread));
+      fRest  = (7*fatVal - gymDays*fTrain)/restDays;
+      var fRestMax = Math.max(fatFloorG, (kLow - pK - carbFloorG*4)/9);
+      if(fRest > fRestMax){
+        fRest = fRestMax;
+        fTrain = clamp((7*fatVal - restDays*fRest)/gymDays, fatFloorG, fatVal*1.6);
+      }
+    }
+    var cTrain = Math.max(0, (kHigh - pK - fTrain*9)/4);
+    var cRest  = Math.max(0, (kLow  - pK - fRest*9)/4);
+
     return {highF:hF, lowF:lF, flattened:flattened, trainDays:gymDays, restDays:restDays,
-            kHigh:kHigh, kLow:kLow, cHigh:carbVal*hF, cLow:carbVal*lF};
+            kHigh:kHigh, kLow:kLow, cHigh:cTrain, cLow:cRest, fHigh:fTrain, fLow:fRest};
   }
 
   var cyc = null, phases = null;
-  if(S.carbPlan === 'cycle' && cycPossible) cyc = cycleSplit(carbG, 1);
+  if(S.carbPlan === 'cycle' && cycPossible) cyc = cycleSplit(intake, carbG, fatG, 1);
 
   if(S.carbPlan === 'phased' && cycPossible){
     phases = PHASE_PLAN.map(function(ph){
@@ -1716,7 +1905,7 @@ function compute(){
       var intakeP = tdeeAt(kg, lean).total*adaptAt(midFrac) + dailyDelta;
       /* protein and fat hold across every block; carbs absorb the drift */
       var carbP = Math.max(0, (intakeP - protein*4 - fatG*9)/4);
-      var sp = cycleSplit(carbP, ph.spread);
+      var sp = cycleSplit(intakeP, carbP, fatG, ph.spread);
       return {
         key:ph.key, spread:ph.spread,
         from:addDays(sd, Math.round(days*ph.from)),
@@ -1725,6 +1914,47 @@ function compute(){
       };
     });
   }
+
+  /* The block that today falls in, and from it the targets for the day type
+     currently selected — this is what the meal planner solves against. */
+  var todayFrac = clamp(dayDiff(sd, today)/Math.max(days,1), 0, 1);
+  var liveSplit = cyc, liveBlock = null, blockIdx = null, todayIdx = null;
+  if(phases){
+    for(var pi=0; pi<phases.length; pi++){
+      var ph2 = PHASE_PLAN[pi];
+      if(todayFrac >= ph2.from && (todayFrac < ph2.to || pi === phases.length-1)) todayIdx = pi;
+    }
+    if(todayIdx == null) todayIdx = 0;
+    /* you can plan any block, not only the one today happens to fall in */
+    blockIdx = (S.planBlock != null && phases[S.planBlock]) ? S.planBlock : todayIdx;
+    liveBlock = phases[blockIdx];
+    liveSplit = liveBlock.split;
+  }
+  var isTrain = S.dayType !== 'rest';
+  var dayTarget;
+  if(liveSplit){
+    dayTarget = {
+      kcal: isTrain ? liveSplit.kHigh : liveSplit.kLow,
+      p: protein,
+      c: isTrain ? liveSplit.cHigh : liveSplit.cLow,
+      f: isTrain ? liveSplit.fHigh : liveSplit.fLow
+    };
+  } else {
+    dayTarget = {kcal:intake, p:protein, c:carbG, f:fatG};
+  }
+  /* An overridden headline is the number you intend to eat that day, so it
+     becomes the day's calorie target outright; protein holds, fat keeps the
+     day type's value, and carbs take the difference. */
+  if(overridden){
+    dayTarget.kcal = intake;
+    dayTarget.c = (intake - protein*4 - dayTarget.f*9)/4;
+    if(dayTarget.c < 0){
+      dayTarget.f = Math.max(0, (intake - protein*4)/9);
+      dayTarget.c = 0;
+    }
+  }
+  dayTarget.fib = 14*dayTarget.kcal/1000;
+  var cycActive = !!liveSplit && (!liveBlock || liveBlock.spread > 0);
 
   /* A long diet can clear the floor on average yet break at the end. */
   var intakeEnd = tdeeAt(targetKg, lbmEnd).total*adaptAt(1) + dailyDelta;
@@ -1774,6 +2004,10 @@ function compute(){
     cardioPenalty:cardioPenalty, cycPossible:cycPossible, cyc:cyc, phases:phases,
     intakeEnd:intakeEnd, floorLate:floorLate,
     protein:protein, fatG:fatG, carbG:carbG, fibreG:fibreG, waterMl:waterMl,
+    planIntake:planIntake, overridden:overridden, dayTarget:dayTarget,
+    liveSplit:liveSplit, liveBlock:liveBlock, isTrain:isTrain, cycActive:cycActive,
+    blockIdx:blockIdx, todayIdx:todayIdx,
+    fatFloorG:fatFloorG,
     neural:neural, hyper:hyper, strPct:strPct,
     cheat:cheat, perDayRoom:perDayRoom, weeklyBank:weeklyBank, bankedCheats:bankedCheats,
     daysCost:daysCost, fatCostKg:fatCostKg, bulkFreeCheats:bulkFreeCheats,
@@ -1814,7 +2048,7 @@ function render(){
   renderComposition();
   renderStrength();
   renderCheat();
-  renderPlate();
+  renderMeals();
   save();
 }
 
@@ -1865,6 +2099,7 @@ function renderControls(){
   setVal('#heightIn', Math.round(totalIn%12));
   setVal('#weight',  wShow(S.weightKg));
   setVal('#bf', S.bf);
+  setVal('#proteinPerKg', S.proteinPerKg);
   setVal('#gymMin', S.gymMin);
   setVal('#cardioMin', S.cardioMin);
   setVal('#startW', wShow(S.startKg));
@@ -1908,8 +2143,16 @@ function renderControls(){
 }
 
 function renderHero(){
-  $('#heroKcal').textContent = fmt(Math.max(0,C.intake));
+  setVal('#heroKcal', r0(Math.max(0,C.intake)));
   $('#heroKcal').style.color = C.belowFloor ? 'var(--crit-ink)' : '';
+  var src = S.kcalSource === 'plan' ? t('heroSrcPlan')
+    : (S.kcalSource.indexOf('cp:') === 0 ? t('heroSrcCheck', S.kcalSource.slice(3)) : t('heroSrcCustom'));
+  $('#heroSrc').innerHTML = '<b>' + esc(src) + '</b>' +
+    (C.overridden ? ' <button type="button" class="linkbtn" id="heroReset" style="padding:0;font-size:12px">'+esc(t('bBackToPlan'))+'</button>' : '');
+  var hr = $('#heroReset');
+  if(hr) hr.addEventListener('click', function(){
+    S.kcalOverride = null; S.kcalSource = 'plan'; solveDay(); render();
+  });
   $('#heroUnit').textContent = C.belowFloor ? t('heroUnitLow') : t('heroUnit');
   $('#heroUnit').style.color = C.belowFloor ? 'var(--crit-ink)' : '';
 
@@ -1985,8 +2228,9 @@ function renderMacros(){
 
   /* One block, two shapes: day types when cycled, blocks when phased. */
   var cb = $('#cycleBlock'), G = t('uG');
-  function dayCell(k, c){
-    return '<td><b>'+fmt(k)+'</b><br><small style="color:var(--ink-3)">'+r0(c)+' '+G+' '+esc(t('mCarbs'))+'</small></td>';
+  function dayCell(k, c, f){
+    return '<td><b>'+fmt(k)+'</b><br><small style="color:var(--ink-3)">'+
+      esc(t('abbrC'))+r0(c)+' '+esc(t('abbrF'))+r0(f)+' '+G+'</small></td>';
   }
   if(C.phases){
     cb.hidden = false;
@@ -2003,8 +2247,8 @@ function renderMacros(){
           (flat ? '<br><small style="color:var(--ink-3)">'+esc(t('phFlat'))+'</small>' : '')+'</td>'+
           '<td>'+esc(shortDate(ph.from))+' – '+esc(shortDate(ph.to))+'</td>'+
           '<td>'+r1(ph.weeks)+'</td>'+
-          dayCell(ph.split.kHigh, ph.split.cHigh)+
-          dayCell(ph.split.kLow,  ph.split.cLow)+'</tr>';
+          dayCell(ph.split.kHigh, ph.split.cHigh, ph.split.fHigh)+
+          dayCell(ph.split.kLow,  ph.split.cLow,  ph.split.fLow)+'</tr>';
       }).join('')+'</tbody>';
   } else if(C.cyc){
     cb.hidden = false;
@@ -2015,11 +2259,11 @@ function renderMacros(){
       '<thead><tr><th scope="col">'+esc(t('cycDayType'))+'</th><th scope="col">'+esc(t('cycHowMany'))+'</th>'+
       '<th scope="col">'+esc(t('uKcal'))+'</th><th scope="col">'+esc(t('mCarbs'))+'</th>'+
       '<th scope="col">'+esc(t('mProtein'))+'</th><th scope="col">'+esc(t('mFat'))+'</th></tr></thead><tbody>'+
-      [{name:t('cycTrain'), n:C.cyc.trainDays, k:C.cyc.kHigh, c:C.cyc.cHigh},
-       {name:t('cycRest'),  n:C.cyc.restDays,  k:C.cyc.kLow,  c:C.cyc.cLow}].map(function(r){
+      [{name:t('cycTrain'), n:C.cyc.trainDays, k:C.cyc.kHigh, c:C.cyc.cHigh, f:C.cyc.fHigh},
+       {name:t('cycRest'),  n:C.cyc.restDays,  k:C.cyc.kLow,  c:C.cyc.cLow,  f:C.cyc.fLow}].map(function(r){
         return '<tr><td class="td-name">'+esc(r.name)+'</td><td>'+esc(t('cycDays', r.n))+'</td>'+
           '<td><b>'+fmt(r.k)+'</b></td><td>'+r0(r.c)+' '+G+'</td>'+
-          '<td>'+r0(C.protein)+' '+G+'</td><td>'+r0(C.fatG)+' '+G+'</td></tr>';
+          '<td>'+r0(C.protein)+' '+G+'</td><td>'+r0(r.f)+' '+G+'</td></tr>';
       }).join('')+'</tbody>';
   } else {
     cb.hidden = true;
@@ -2074,6 +2318,11 @@ function renderFlags(){
       out.push(flag('warn', t('icCycling'), t('fCycleFloor')));
     }
   }
+  if(C.overridden){
+    out.push(S.kcalSource.indexOf('cp:') === 0
+      ? flag('info', t('icCheckpoint'), t('fCheckpoint', S.kcalSource.slice(3), fmt(C.intake)))
+      : flag('warn', t('icOverride'), t('fOverride', fmt(C.intake), fmt(C.planIntake))));
+  }
   if(C.floorLate) out.push(flag('warn', t('icFloorLate'), t('fFloorLate', fmt(C.intakeEnd), fmt(C.minIntake))));
 
   if(C.gymDays === 0){
@@ -2103,8 +2352,12 @@ function renderCheckpoints(){
     var bfAt = clamp(fat/Math.max(kg,1)*100, 1, 70);
     var td   = C.tdeeAt(kg, lean).total * C.adaptAt(frac);
     var kcal = td + C.dailyDelta;
-    rows.push('<tr><td class="td-name">'+esc(shortDate(addDays(C.sd, Math.round(wkAt*7))))+'</td>'+
-      '<td>'+r1(wkAt)+'</td><td>'+wShow(kg)+'</td><td>'+bfAt.toFixed(1)+'%</td>'+
+    var lab = r1(wkAt);
+    var on = S.kcalSource === 'cp:'+lab;
+    rows.push('<tr class="ckrow'+(on?' ckrow--on':'')+'" data-cp="'+lab+'" data-kcal="'+r0(Math.max(0,kcal))+'" '+
+      'tabindex="0" role="button">'+
+      '<td class="td-name">'+esc(shortDate(addDays(C.sd, Math.round(wkAt*7))))+'</td>'+
+      '<td>'+lab+'</td><td>'+wShow(kg)+'</td><td>'+bfAt.toFixed(1)+'%</td>'+
       '<td><b>'+fmt(Math.max(0,kcal))+'</b></td></tr>');
   }
   $('#checkBody').innerHTML = rows.join('');
@@ -2321,7 +2574,7 @@ function renderCheat(){
 function renderFoodGrid(){
   var q = ($('#foodSearch').value || '').trim().toLowerCase();
   var inPlate = {};
-  S.plate.forEach(function(p){ inPlate[p.id] = true; });
+  S.meals.forEach(function(m){ m.items.forEach(function(it){ inPlate[it.id] = true; }); });
   var list = allFoods().filter(function(f){
     if(!q) return true;
     return foodName(f).toLowerCase().indexOf(q) >= 0 || f.n.toLowerCase().indexOf(q) >= 0;
@@ -2341,76 +2594,6 @@ function renderFoodGrid(){
     html += '</div></div>';
   });
   $('#foodGrid').innerHTML = html || '<p class="empty">'+esc(t('foodNoMatch'))+'</p>';
-}
-
-function plateTotals(){
-  var tot = {kcal:0, p:0, c:0, f:0, fib:0};
-  S.plate.forEach(function(item){
-    var f = foodById(item.id); if(!f) return;
-    var k = item.g/100;
-    tot.kcal += f.kcal*k; tot.p += f.p*k; tot.c += f.c*k; tot.f += f.f*k; tot.fib += (f.fib||0)*k;
-  });
-  return tot;
-}
-
-function renderPlate(){
-  renderFoodGrid();
-  if(!S.plate.length){
-    $('#plate').innerHTML = '<p class="empty">'+esc(t('plateEmpty'))+'</p>';
-  } else {
-    setHTMLKeepFocus($('#plate'), S.plate.map(function(item, i){
-      var f = foodById(item.id); if(!f) return '';
-      var k = item.g/100, nm = foodName(f);
-      /* Counted foods enter as pieces; grams stay visible on the sub-line
-         so the number behind the count is never hidden. */
-      var stepper = f.each
-        ? '<input type="number" min="0" max="60" step="0.5" value="'+countOf(f,item.g)+'" data-count="'+i+'" aria-label="'+esc(t('aCount',nm))+'" />'+
-          '<em class="eachu">'+esc(eachUnit(f))+'</em>'
-        : '<input type="number" min="0" max="3000" step="5" value="'+r0(item.g)+'" data-gram="'+i+'" aria-label="'+esc(t('aGrams',nm))+'" />';
-      return '<div class="plate__row">'+
-        '<span class="plate__n">'+esc(nm)+
-          '<em>'+(f.each ? r0(item.g)+' '+t('uG')+' · ' : '')+
-            r0(f.kcal*k)+' '+t('uKcal')+' · '+t('abbrP')+r1(f.p*k)+' '+t('abbrC')+r1(f.c*k)+' '+t('abbrF')+r1(f.f*k)+'</em></span>'+
-        '<span class="gramwrap">'+
-          '<button type="button" data-step="-" data-i="'+i+'" aria-label="'+esc(t('aLess',nm))+'">−</button>'+
-          stepper+
-          '<button type="button" data-step="+" data-i="'+i+'" aria-label="'+esc(t('aMore',nm))+'">+</button>'+
-        '</span>'+
-        '<button type="button" class="xbtn" data-del="'+i+'" aria-label="'+esc(t('aRemove',nm))+'">×</button>'+
-        '</div>';
-    }).join(''));
-  }
-
-  var tt = plateTotals();
-  var rows = [
-    {n:t('uKcal'),   v:tt.kcal, tgt:C.intake,  col:'var(--accent)', u:''},
-    {n:t('mProtein'),v:tt.p,    tgt:C.protein, col:'var(--pro)',    u:' '+t('uG')},
-    {n:t('mCarbs'),  v:tt.c,    tgt:C.carbG,   col:'var(--car)',    u:' '+t('uG')},
-    {n:t('mFat'),    v:tt.f,    tgt:C.fatG,    col:'var(--fat)',    u:' '+t('uG')},
-    {n:t('mFibre'),  v:tt.fib,  tgt:C.fibreG,  col:'var(--ink-3)',  u:' '+t('uG')}
-  ];
-  $('#plateProgs').innerHTML = rows.map(function(r){
-    var pct = clamp(r.v/Math.max(r.tgt,1)*100, 0, 100);
-    var over = r.v > r.tgt*1.02;
-    return '<div class="prog">'+
-      '<span class="prog__k"><i class="swatch" style="background:'+r.col+'"></i>'+esc(r.n)+'</span>'+
-      '<span class="prog__bar"><i style="width:'+pct+'%;background:'+(over?'var(--crit)':r.col)+'"></i></span>'+
-      '<span class="prog__v'+(over?' over':'')+'">'+r0(r.v)+' <small>/ '+r0(r.tgt)+r.u+' · '+
-        esc(over ? t('progOver', r0(r.v-r.tgt)) : t('progLeft', r0(Math.max(0,r.tgt-r.v))))+'</small></span>'+
-      '</div>';
-  }).join('');
-
-  $('#plateTableBody').innerHTML = S.plate.length ? S.plate.map(function(item){
-    var f = foodById(item.id); if(!f) return '';
-    var k = item.g/100;
-    return '<tr><td class="td-name">'+esc(foodName(f))+
-      (f.each ? ' <span style="color:var(--ink-3)">× '+countOf(f,item.g)+'</span>' : '')+
-      '</td><td>'+r0(item.g)+'</td><td>'+r0(f.kcal*k)+
-      '</td><td>'+r1(f.p*k)+'</td><td>'+r1(f.c*k)+'</td><td>'+r1(f.f*k)+'</td><td>'+r1((f.fib||0)*k)+'</td></tr>';
-  }).join('') + '<tr><td class="td-name"><b>'+esc(t('tTotal'))+'</b></td><td>'+
-      r0(S.plate.reduce(function(s,i){return s+i.g;},0))+'</td><td><b>'+r0(tt.kcal)+'</b></td><td>'+r1(tt.p)+
-      '</td><td>'+r1(tt.c)+'</td><td>'+r1(tt.f)+'</td><td>'+r1(tt.fib)+'</td></tr>'
-    : '<tr><td colspan="7" style="text-align:center;color:var(--ink-3)">'+esc(t('tEmpty'))+'</td></tr>';
 }
 
 /* ══ wiring ════════════════════════════════════════════════════════════ */
@@ -2506,6 +2689,26 @@ on('#fitDuration','click', function(){
   render();
 });
 on('#cheatKcal','input', function(e){ S.cheatKcal = num(e.target.value, 800); render(); });
+bindNum('#proteinPerKg', function(v){ S.proteinPerKg = clamp(v, 0.8, 4); solveDay(); });
+
+/* the hero number is the working target — typing it overrides the plan */
+on('#heroKcal','input', function(e){
+  var v = num(e.target.value, 0);
+  if(v >= 600 && v <= 8000){ S.kcalOverride = v; S.kcalSource = 'custom'; solveDay(); render(); }
+});
+function pickCheckpoint(tr){
+  S.kcalOverride = +tr.dataset.kcal;
+  S.kcalSource = 'cp:'+tr.dataset.cp;
+  solveDay(); render();
+}
+$('#checkBody').addEventListener('click', function(e){
+  var tr = e.target.closest('tr[data-cp]'); if(tr) pickCheckpoint(tr);
+});
+$('#checkBody').addEventListener('keydown', function(e){
+  if(e.key !== 'Enter' && e.key !== ' ') return;
+  var tr = e.target.closest('tr[data-cp]');
+  if(tr){ e.preventDefault(); pickCheckpoint(tr); }
+});
 
 $('#liftBody').addEventListener('input', function(e){
   var el = e.target.closest('input[data-lift]'); if(!el) return;
@@ -2517,37 +2720,6 @@ $('#liftBody').addEventListener('input', function(e){
 });
 
 on('#foodSearch','input', renderFoodGrid);
-$('#foodGrid').addEventListener('click', function(e){
-  var b = e.target.closest('.chip'); if(!b) return;
-  var f = foodById(b.dataset.food); if(!f) return;
-  var ex = null;
-  for(var i=0;i<S.plate.length;i++) if(S.plate[i].id===f.id) ex = S.plate[i];
-  if(ex) ex.g += f.serv; else S.plate.push({id:f.id, g:f.serv});
-  render();
-});
-$('#plate').addEventListener('click', function(e){
-  var del = e.target.closest('[data-del]');
-  if(del){ S.plate.splice(+del.dataset.del, 1); render(); return; }
-  var st = e.target.closest('[data-step]');
-  if(st){
-    var i = +st.dataset.i;
-    var fd = foodById(S.plate[i].id);
-    var stepG = (fd && fd.each) ? fd.each : 10;
-    S.plate[i].g = clamp(S.plate[i].g + (st.dataset.step === '+' ? stepG : -stepG), 0, 3000);
-    render();
-  }
-});
-$('#plate').addEventListener('input', function(e){
-  var g = e.target.closest('[data-gram]');
-  if(g){ S.plate[+g.dataset.gram].g = clamp(num(g.value,0), 0, 3000); render(); return; }
-  var cnt = e.target.closest('[data-count]');
-  if(cnt){
-    var i = +cnt.dataset.count, fd = foodById(S.plate[i].id);
-    if(fd && fd.each) S.plate[i].g = clamp(num(cnt.value,0)*fd.each, 0, 3000);
-    render();
-  }
-});
-on('#clearPlate','click', function(){ S.plate = []; render(); });
 
 on('#addCustom','click', function(){
   var n = prompt(t('pName')); if(!n) return;
@@ -2577,7 +2749,337 @@ window.addEventListener('resize', function(){ if(C) renderTrajectory(); });
 /* ══ go ════════════════════════════════════════════════════════════════ */
 load();
 L = (S.lang === 'zh') ? 'zh' : 'en';
+C = compute();
+solveDay();
 render();
+
+/* ══ meal solver ═══════════════════════════════════════════════════════
+   Given the foods you picked and the macros a meal has to hit, work out how
+   much of each. This is non-negative least squares, solved by multiplicative
+   update: because every macro, target and amount is non-negative, the update
+   can never produce a negative portion, so "minus 40 g of rice" is not a
+   solution the maths can reach.                                            */
+
+var MEAL_KEYS = ['m1','m2','m3','pw'];
+
+/* How much of one food is a sane maximum for a meal of this size. The right
+   axis is protein density, not calories: a lean protein has to be allowed to
+   dominate a small rest-day meal, or the protein target becomes unreachable,
+   while vegetables and oils stay near a normal serving so the solver cannot
+   answer "eat 900 g of cucumber" to a carb shortfall. */
+function foodCap(f, mealKcal){
+  var mult = f.p >= 10 ? 8            /* protein sources — big portions are normal */
+           : f.kcal > 400 ? 3         /* oils, nuts, powders — small by nature */
+           : f.cat === 'fruit' ? 3    /* nobody eats six bananas in one sitting */
+           : f.kcal < 60  ? 3         /* watery veg */
+           : 6;                       /* starches and the rest */
+  return clamp(Math.min(mult*f.serv, 120*mealKcal/Math.max(f.kcal,1)), 5, 1000);
+}
+
+/* protein, carbs, fat, calories. Calories are targeted directly as well as
+   through the macros, because a food's label calories are not exactly
+   4/4/9 — fibre is the gap — so hitting the macros alone leaves the total
+   a few percent light on a vegetable-heavy day. */
+var OBJ_W = [3, 1, 1.5, 2];
+function macroRow(f){ return [f.p/100, f.c/100, f.f/100, f.kcal/100]; }
+
+function solveAmounts(rows, target, caps, init, iters){
+  var n = rows.length;
+  if(!n) return [];
+  var d = target.length, x = init.slice(), i, j, it;
+  for(i=0;i<n;i++) if(!(x[i] > 0)) x[i] = 1;
+  /* Normalise by the target so grams of fat are not swamped by grams of
+     carbs, then weight protein highest — it is the target that matters. */
+  var W = [], acc = [];
+  for(j=0;j<d;j++) W[j] = OBJ_W[j]/Math.pow(Math.max(target[j],1),2);
+  for(it=0; it<(iters||300); it++){
+    for(j=0;j<d;j++) acc[j] = 0;
+    for(i=0;i<n;i++) for(j=0;j<d;j++) acc[j] += rows[i][j]*x[i];
+    for(i=0;i<n;i++){
+      var num = 0, den = 1e-12;
+      for(j=0;j<d;j++){ num += W[j]*rows[i][j]*target[j]; den += W[j]*rows[i][j]*acc[j]; }
+      x[i] = clamp(x[i]*num/den, 0, caps[i]);
+    }
+  }
+  return x;
+}
+
+/* Portions people can actually weigh out: 5 g steps, or half-pieces for
+   anything counted by the piece. */
+function roundPortion(f, g){
+  if(f.each) return Math.max(0, Math.round(g/f.each*2)/2)*f.each;
+  return Math.max(0, Math.round(g/5)*5);
+}
+
+function activeMeals(){
+  return S.meals.filter(function(m){
+    return !(m.key === 'pw' && (!C.isTrain || C.gymDays === 0));  /* no workout, no post-workout meal */
+  });
+}
+
+/* Solve every meal against its share, then a short global pass so the day as
+   a whole lands on target even when one meal could not carry its share. */
+function solveDay(){
+  C = compute();          /* state has moved since the last render — re-read it */
+  var live = activeMeals();
+  var shareSum = live.reduce(function(a,m){ return a + Math.max(0, m.share); }, 0) || 1;
+  var T = C.dayTarget;
+
+  var locked = {p:0, c:0, f:0, kcal:0};
+  live.forEach(function(m){
+    m.items.forEach(function(it){
+      var f = foodById(it.id); if(!f || !it.lock) return;
+      var k = it.g/100;
+      locked.p += f.p*k; locked.c += f.c*k; locked.f += f.f*k; locked.kcal += f.kcal*k;
+    });
+  });
+
+  var free = [];   /* every unlocked (meal, food) pair is one variable */
+  live.forEach(function(m){
+    var share = Math.max(0, m.share)/shareSum;
+    var mealKcal = T.kcal*share;
+    m.items.forEach(function(it, idx){
+      var f = foodById(it.id); if(!f || it.lock) return;
+      free.push({m:m, it:it, f:f, idx:idx, share:share, cap:foodCap(f, Math.max(mealKcal,150))});
+    });
+  });
+  if(!free.length) return;
+
+  /* pass 1 — per meal, against that meal's share of what is left */
+  live.forEach(function(m){
+    var mine = free.filter(function(v){ return v.m === m; });
+    if(!mine.length) return;
+    var share = Math.max(0, m.share)/shareSum;
+    var tgt = [Math.max(0,(T.p-locked.p))*share,
+               Math.max(0,(T.c-locked.c))*share,
+               Math.max(0,(T.f-locked.f))*share,
+               Math.max(0,(T.kcal-locked.kcal))*share];
+    var x = solveAmounts(mine.map(function(v){ return macroRow(v.f); }),
+                         tgt, mine.map(function(v){ return v.cap; }),
+                         mine.map(function(v){ return v.it.g > 0 ? v.it.g : v.f.serv; }), 1200);
+    mine.forEach(function(v,i){ v.g = x[i]; });
+  });
+
+  /* pass 2 — nudge the whole day onto target, starting from pass 1 */
+  var x2 = solveAmounts(free.map(function(v){ return macroRow(v.f); }),
+                        [Math.max(0,T.p-locked.p), Math.max(0,T.c-locked.c),
+                         Math.max(0,T.f-locked.f), Math.max(0,T.kcal-locked.kcal)],
+                        free.map(function(v){ return v.cap; }),
+                        free.map(function(v){ return v.g; }), 600);
+
+  free.forEach(function(v,i){ v.it.g = roundPortion(v.f, x2[i]); });
+}
+
+function mealTotals(m){
+  var t = {kcal:0, p:0, c:0, f:0, fib:0};
+  m.items.forEach(function(it){
+    var f = foodById(it.id); if(!f) return;
+    var k = it.g/100;
+    t.kcal += f.kcal*k; t.p += f.p*k; t.c += f.c*k; t.f += f.f*k; t.fib += (f.fib||0)*k;
+  });
+  return t;
+}
+function dayTotals(){
+  var t = {kcal:0, p:0, c:0, f:0, fib:0};
+  activeMeals().forEach(function(m){
+    var mt = mealTotals(m);
+    t.kcal+=mt.kcal; t.p+=mt.p; t.c+=mt.c; t.f+=mt.f; t.fib+=mt.fib;
+  });
+  return t;
+}
+
+/* ══ meal planner render ═══════════════════════════════════════════════ */
+function renderMeals(){
+  renderFoodGrid();
+
+  $('#dayTrain').setAttribute('aria-pressed', String(C.isTrain));
+  $('#dayRest').setAttribute('aria-pressed', String(!C.isTrain));
+  $('#dayTypeRow').hidden = !C.cycActive;
+
+  /* which block you are planning for — today's by default, but any of them */
+  var br = $('#blockRow');
+  if(C.phases){
+    br.hidden = false;
+    $('#blockSeg').innerHTML = C.phases.map(function(ph, i){
+      return '<button type="button" data-block="'+i+'" aria-pressed="'+(i===C.blockIdx)+'">'+
+        esc(t(ph.key)) + (i===C.todayIdx ? ' ·' : '') + '</button>';
+    }).join('');
+  } else {
+    br.hidden = true;
+  }
+
+  var T = C.dayTarget;
+  $('#mealDayTag').textContent = C.cycActive
+    ? (C.isTrain ? t('dayTrain') : t('dayRest'))
+    : t('daySame');
+  $('#mealDayTarget').innerHTML = fmt(T.kcal) + ' <small>' + t('uKcal') + ' · ' +
+    t('abbrP') + r0(T.p) + ' ' + t('abbrC') + r0(T.c) + ' ' + t('abbrF') + r0(T.f) + '</small>';
+
+  var live = activeMeals();
+  var shareSum = live.reduce(function(a,m){ return a + Math.max(0,m.share); }, 0) || 1;
+
+  var html = S.meals.map(function(m){
+    var off = (m.key === 'pw' && (!C.isTrain || C.gymDays === 0));
+    var mt = mealTotals(m);
+    var share = Math.max(0,m.share)/shareSum;
+    var sel = (S.activeMeal === m.key && !off);
+    var rows = m.items.map(function(it, i){
+      var f = foodById(it.id); if(!f) return '';
+      var nm = foodName(f), k = it.g/100;
+      var amount = f.each
+        ? '<input type="number" min="0" max="60" step="0.5" value="'+(Math.round(it.g/f.each*2)/2)+'" data-mi="'+m.key+':'+i+'" data-each="1" aria-label="'+esc(t('aGrams',nm))+'" />'+
+          '<em class="eachu">'+esc(eachUnit(f))+'</em>'
+        : '<input type="number" min="0" max="2000" step="5" value="'+r0(it.g)+'" data-mi="'+m.key+':'+i+'" aria-label="'+esc(t('aGrams',nm))+'" />'+
+          '<em class="eachu">'+t('uG')+'</em>';
+      var zero = it.g <= 0;
+      return '<div class="mitem'+(it.lock?' locked':'')+(zero?' mitem--zero':'')+'">'+
+        '<span class="mitem__n">'+esc(nm)+
+          '<em>'+(zero ? esc(t('mealNotNeeded'))
+            : r0(f.kcal*k)+' '+t('uKcal')+' · '+t('abbrP')+r1(f.p*k)+' '+t('abbrC')+r1(f.c*k)+' '+t('abbrF')+r1(f.f*k))+'</em></span>'+
+        '<span class="gramwrap">'+
+          '<button type="button" data-mstep="-" data-mi2="'+m.key+':'+i+'" aria-label="'+esc(t('aLess',nm))+'">−</button>'+
+          amount+
+          '<button type="button" data-mstep="+" data-mi2="'+m.key+':'+i+'" aria-label="'+esc(t('aMore',nm))+'">+</button>'+
+        '</span>'+
+        '<button type="button" class="lockbtn" data-lock="'+m.key+':'+i+'" '+
+          'title="'+esc(it.lock?t('tipUnlock'):t('tipLock'))+'" aria-pressed="'+(it.lock?'true':'false')+'">'+
+          (it.lock ? '●' : '○')+'</button>'+
+        '<button type="button" class="xbtn" data-mdel="'+m.key+':'+i+'" aria-label="'+esc(t('aRemove',nm))+'">×</button>'+
+        '</div>';
+    }).join('');
+
+    return '<div class="meal'+(sel?' meal--on':'')+(off?' meal--off':'')+'" data-meal="'+m.key+'">'+
+      '<div class="meal__hd">'+
+        '<span class="meal__name">'+esc(t('meal_'+m.key))+'</span>'+
+        (off ? '<span class="hint">'+esc(t('mealOffRest'))+'</span>'
+             : '<span class="meal__share"><input type="number" min="0" max="100" step="5" value="'+r0(m.share)+'" data-share="'+m.key+'" aria-label="'+esc(t('aShare'))+'" />%</span>'+
+               '<span class="meal__tot">'+fmt(mt.kcal)+' <small>/ '+fmt(T.kcal*share)+' '+t('uKcal')+'</small></span>')+
+      '</div>'+
+      (off ? '' : (rows || '<p class="mealempty">'+esc(sel?t('mealPickHere'):t('mealTapToPick'))+'</p>'))+
+      '</div>';
+  }).join('');
+  $('#meals').innerHTML = html;
+
+  /* day progress */
+  var tt = dayTotals();
+  var rows2 = [
+    {n:t('uKcal'),    v:tt.kcal, tgt:T.kcal, col:'var(--accent)', u:''},
+    {n:t('mProtein'), v:tt.p,    tgt:T.p,    col:'var(--pro)',    u:' '+t('uG')},
+    {n:t('mCarbs'),   v:tt.c,    tgt:T.c,    col:'var(--car)',    u:' '+t('uG')},
+    {n:t('mFat'),     v:tt.f,    tgt:T.f,    col:'var(--fat)',    u:' '+t('uG')},
+    {n:t('mFibre'),   v:tt.fib,  tgt:T.fib,  col:'var(--ink-3)',  u:' '+t('uG')}
+  ];
+  $('#mealProgs').innerHTML = rows2.map(function(r){
+    var pct = clamp(r.v/Math.max(r.tgt,1)*100, 0, 100);
+    var over = r.v > r.tgt*1.02;
+    return '<div class="prog">'+
+      '<span class="prog__k"><i class="swatch" style="background:'+r.col+'"></i>'+esc(r.n)+'</span>'+
+      '<span class="prog__bar"><i style="width:'+pct+'%;background:'+(over?'var(--crit)':r.col)+'"></i></span>'+
+      '<span class="prog__v'+(over?' over':'')+'">'+r0(r.v)+' <small>/ '+r0(r.tgt)+r.u+' · '+
+        esc(over ? t('progOver', r0(r.v-r.tgt)) : t('progLeft', r0(Math.max(0,r.tgt-r.v))))+'</small></span>'+
+      '</div>';
+  }).join('');
+
+  var anyFood = live.some(function(m){ return m.items.length > 0; });
+  var offBy = Math.abs(tt.kcal - T.kcal);
+  $('#mealFlags').innerHTML = !anyFood
+    ? flag('info', t('icPick'), t('fPickFoods'))
+    : (offBy <= Math.max(60, T.kcal*0.03)
+        ? flag('good', t('icSolved'), t('fSolved', fmt(T.kcal)))
+        : flag('warn', t('icShort'), t('fShort', fmt(Math.round(offBy)), tt.kcal < T.kcal ? t('wUnder') : t('wOver'))));
+
+  $('#mealTableBody').innerHTML = live.map(function(m){
+    return m.items.map(function(it){
+      var f = foodById(it.id); if(!f) return '';
+      var k = it.g/100;
+      return '<tr><td class="td-name">'+esc(t('meal_'+m.key))+'</td>'+
+        '<td class="td-name">'+esc(foodName(f))+(f.each?' <span style="color:var(--ink-3)">× '+countOf(f,it.g)+'</span>':'')+'</td>'+
+        '<td>'+r0(it.g)+'</td><td>'+r0(f.kcal*k)+'</td><td>'+r1(f.p*k)+'</td><td>'+r1(f.c*k)+'</td>'+
+        '<td>'+r1(f.f*k)+'</td></tr>';
+    }).join('');
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--ink-3)">'+esc(t('tEmpty'))+'</td></tr>';
+}
+
+/* ══ meal wiring ═══════════════════════════════════════════════════════ */
+function mealByKey(k){
+  for(var i=0;i<S.meals.length;i++) if(S.meals[i].key===k) return S.meals[i];
+  return null;
+}
+function resolveAndRender(){ solveDay(); render(); }
+
+$('#blockSeg').addEventListener('click', function(e){
+  var b = e.target.closest('[data-block]'); if(!b) return;
+  S.planBlock = +b.dataset.block; resolveAndRender();
+});
+on('#dayTrain','click', function(){ S.dayType='train'; resolveAndRender(); });
+on('#dayRest','click',  function(){ S.dayType='rest';  resolveAndRender(); });
+
+$('#foodGrid').addEventListener('click', function(e){
+  var b = e.target.closest('.chip'); if(!b) return;
+  var f = foodById(b.dataset.food); if(!f) return;
+  var m = mealByKey(S.activeMeal) || S.meals[0];
+  if(m.key === 'pw' && !C.isTrain){ m = S.meals[0]; S.activeMeal = m.key; }
+  var found = null;
+  for(var i=0;i<m.items.length;i++) if(m.items[i].id === f.id) found = m.items[i];
+  if(found){ if(found.lock) found.g += f.serv; }
+  else m.items.push({id:f.id, g:f.serv, lock:false});
+  resolveAndRender();
+});
+
+$('#meals').addEventListener('click', function(e){
+  var del = e.target.closest('[data-mdel]');
+  if(del){
+    var a = del.dataset.mdel.split(':');
+    mealByKey(a[0]).items.splice(+a[1], 1);
+    resolveAndRender(); return;
+  }
+  var st = e.target.closest('[data-mstep]');
+  if(st){
+    var c = st.dataset.mi2.split(':');
+    var mm = mealByKey(c[0]), item = mm.items[+c[1]], ff = foodById(item.id);
+    var step = (ff && ff.each) ? ff.each : 10;
+    item.g = clamp(item.g + (st.dataset.mstep === '+' ? step : -step), 0, 3000);
+    item.lock = true;                 /* nudging it by hand pins it, same as typing */
+    resolveAndRender(); return;
+  }
+  var lk = e.target.closest('[data-lock]');
+  if(lk){
+    var b = lk.dataset.lock.split(':');
+    var it = mealByKey(b[0]).items[+b[1]];
+    it.lock = !it.lock;
+    resolveAndRender(); return;
+  }
+  var card = e.target.closest('[data-meal]');
+  if(card && !card.classList.contains('meal--off')){
+    S.activeMeal = card.dataset.meal;
+    renderMeals();
+  }
+});
+
+/* Typing an amount pins that food — the solver then works around it. */
+$('#meals').addEventListener('input', function(e){
+  var amt = e.target.closest('[data-mi]');
+  if(amt){
+    var a = amt.dataset.mi.split(':');
+    var m = mealByKey(a[0]), it = m.items[+a[1]];
+    var f = foodById(it.id);
+    var v = num(amt.value, 0);
+    it.g = clamp(amt.dataset.each ? v*f.each : v, 0, 3000);
+    it.lock = true;
+    resolveAndRender(); return;
+  }
+  var sh = e.target.closest('[data-share]');
+  if(sh){
+    mealByKey(sh.dataset.share).share = clamp(num(sh.value, 0), 0, 100);
+    resolveAndRender();
+  }
+});
+
+on('#clearMeals','click', function(){
+  S.meals.forEach(function(m){ m.items = []; });
+  render();
+});
+on('#resolveBtn','click', resolveAndRender);
 
 })();
 </script>

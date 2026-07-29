@@ -11,6 +11,16 @@ flat for the first 40% of the plan and fully cycled for the last 40%, with a gra
 transition between. Every block is re-solved at the weight you will actually be
 carrying by then, so the calorie targets step down as the plan runs.
 
+The daily calorie number is editable: type over it, or click any checkpoint row to
+adopt that week's figure. Protein is a flat g/kg of bodyweight and never moves;
+carbs and fat swing in opposite directions between training and rest days, with the
+weekly total of every macro preserved exactly.
+
+**The meal planner solves portions for you.** Pick what goes into each of three meals
+plus an optional post-workout meal, and the grams — or piece counts — are worked out
+so the day lands on its targets. Type or nudge any amount to pin it and everything
+else re-solves around it.
+
 **The whole app is one self-contained `index.html`.** No build step, no dependencies,
 no network requests at runtime — the display font and the favicon are inlined as data
 URIs, and the CSS and JS are inline. You can email the file to someone and it works.
@@ -151,6 +161,11 @@ Chinese strings (`ZH`), the food database and model, and the render/wiring layer
   how eggs, bananas, apples, bread slices and whey scoops behave. Grams stay the
   storage unit either way, so nothing downstream changes. Users can also add
   their own foods in-app.
+- **Meal solver**: `solveAmounts` is non-negative least squares by multiplicative
+  update, over four objectives (protein, carbs, fat, calories) with the weights in
+  `OBJ_W`. `foodCap` decides how much of one food is a sane maximum for a meal —
+  keyed off protein density, not calories, because a lean protein has to be allowed
+  to dominate a small rest-day meal. `roundPortion` snaps to 5 g or half-pieces.
 - **Carb strategy**: `PHASE_PLAN` defines the phased blocks as
   `{from, to, spread}` fractions of the plan — the default is 40% flat, 20% at
   half cycling amplitude, 40% fully cycled. `spread` blends between no cycling
@@ -190,6 +205,12 @@ data URI 内联，CSS 和 JS 也都内联。你的输入保存在本机浏览器
 自行托管。请确保 HTML 以 `text/html; charset=utf-8` 提供。
 
 **语言切换**：页面右上角的 `EN / 中文` 按钮，选择会随其他设置一起保存。
+
+**每日目标可改**：直接在大数字上输入，或点击检查点表格中的任意一行采用那一周的数值。
+蛋白质按每公斤体重固定克数、全程不变；碳水和脂肪在训练日与休息日之间反向摆动，三大营养素的一周总量精确保留。
+
+**分餐会自动算份量**：在三餐加一个可选的练后加餐里选好食物，程序会算出每样吃多少克（或几个），
+让全天正好落在目标上。手动输入或用加减号调整任一份量即可固定它，其余部分会围着它重新求解。
 
 **碳水策略**：默认使用「分阶段」——前 40% 恒定，中间 20% 过渡，最后 40% 完全碳水循环；
 每个阶段都按你那时的实际体重重新计算热量。也可以切换为全程恒定或全程循环。
