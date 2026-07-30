@@ -466,6 +466,15 @@ tr.liftrisk .delta{color:var(--crit-ink)}
   text-transform:uppercase;color:var(--accent-ink)}
 .weigh__pad{width:26px}
 .weigh .gramwrap input{width:64px;text-align:right;padding-right:4px}
+.addbox{border:1px solid var(--accent);border-radius:2px;background:var(--panel-2);
+  padding:12px 14px 14px;margin-bottom:16px}
+.afhits{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.afhit{appearance:none;cursor:pointer;text-align:left;border:1px solid var(--rule-2);
+  border-radius:2px;background:var(--panel);padding:6px 9px;display:flex;flex-direction:column;gap:1px}
+.afhit:hover{border-color:var(--accent);background:var(--accent-soft)}
+.afhit__n{font-size:12.5px;line-height:1.3}
+.afhit__m{font-family:var(--f-disp);font-size:11.5px;letter-spacing:.03em;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
 textarea.backup{width:100%;height:120px;font-family:var(--f-num);font-size:11.5px;
   border:1px solid var(--rule-2);border-radius:2px;background:var(--panel-2);
   color:var(--ink);padding:8px;resize:vertical}
@@ -971,6 +980,57 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
             </div>
             <button type="button" class="linkbtn" id="addCustom" data-i18n="bAddCustom"></button>
           </div>
+
+          <div id="addBox" class="addbox" hidden>
+            <div class="subhd"><span data-i18n="afTitle">Add a food</span></div>
+            <div class="fields">
+              <div class="field field--full">
+                <label for="afName" data-i18n="afName">Name</label>
+                <div class="inputwrap"><input type="text" id="afName" maxlength="48" data-i18n-ph="afNamePh" /></div>
+              </div>
+              <div class="field field--full">
+                <button type="button" class="linkbtn" id="afLookup" data-i18n="afLookup" style="padding-left:0"></button>
+                <span class="hint" id="afLookupHint"></span>
+                <div id="afResults" class="afhits"></div>
+              </div>
+              <div class="field">
+                <label for="afKcal" data-i18n="afKcal">kcal</label>
+                <div class="inputwrap"><input type="text" inputmode="decimal" id="afKcal" /><span class="unit">/100 g</span></div>
+              </div>
+              <div class="field">
+                <label for="afP" data-i18n="mProtein">Protein</label>
+                <div class="inputwrap"><input type="text" inputmode="decimal" id="afP" /><span class="unit">g</span></div>
+              </div>
+              <div class="field">
+                <label for="afC" data-i18n="mCarbs">Carbs</label>
+                <div class="inputwrap"><input type="text" inputmode="decimal" id="afC" /><span class="unit">g</span></div>
+              </div>
+              <div class="field">
+                <label for="afF" data-i18n="mFat">Fat</label>
+                <div class="inputwrap"><input type="text" inputmode="decimal" id="afF" /><span class="unit">g</span></div>
+              </div>
+              <div class="field">
+                <label for="afFib" data-i18n="mFibre">Fibre</label>
+                <div class="inputwrap"><input type="text" inputmode="decimal" id="afFib" /><span class="unit">g</span></div>
+              </div>
+              <div class="field">
+                <label for="afServ" data-i18n="afServ">Usual portion</label>
+                <div class="inputwrap"><input type="text" inputmode="numeric" id="afServ" value="100" /><span class="unit">g</span></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:center;margin-top:12px">
+              <button type="button" class="bigbtn" id="afSave" data-i18n="afSave" style="width:auto;padding:9px 18px"></button>
+              <button type="button" class="linkbtn" id="afCancel" data-i18n="afCancel"></button>
+            </div>
+            <details class="notes" style="margin-top:14px">
+              <summary data-i18n="afKeyTitle">Online lookup</summary>
+              <div class="nb">
+                <p data-i18n-html="afKeyBody"></p>
+                <div class="inputwrap"><input type="text" id="afKey" data-i18n-ph="afKeyPh" spellcheck="false" /></div>
+              </div>
+            </details>
+          </div>
+
           <div id="foodGrid"></div>
         </div>
       </div>
@@ -1041,6 +1101,27 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
   htmlLang:'en', locale:'en-US',
+
+  /* ── adding a food ── */
+  afTitle:'Add a food', afName:'Name', afNamePh:'e.g. pork shoulder',
+  afKcal:'Calories', afServ:'Usual portion',
+  afSave:'Add it', afCancel:'Cancel',
+  afLookup:'Look up the numbers',
+  afSearching:'Searching\u2026',
+  afPick:'Pick the closest match — the numbers below fill in from it.',
+  afFilled:'Filled in. Check it looks right, adjust the portion, then add it.',
+  afNeedName:'Give it a name first.',
+  afNeedNumbers:'Calories, protein, carbs and fat all need a number.',
+  afErr_nokey:'Lookup needs a free key — see "Online lookup" below. Or just type the four numbers off the packet.',
+  afErr_badkey:'That key was rejected. Check it under "Online lookup" below.',
+  afErr_blocked:'Could not reach the food database. That is expected on the Claude preview link, which blocks all outbound requests — the numbers off a packet work just as well. On your own site, check you are online.',
+  afErr_timeout:'The lookup took too long. Try again, or type the numbers in.',
+  afErr_none:'Nothing found under that name. Try a plainer one — "pork shoulder" rather than a brand.',
+  afErr_http:'The food database returned an error. Try again shortly.',
+  afKeyTitle:'Online lookup',
+  afKeyBody:'Everything on this page works offline; the lookup is the one exception, and it is off until you paste a key. It queries <b>USDA FoodData Central</b> — free, no cost, sign up at <code>fdc.nal.usda.gov/api-key-signup</code> and paste the key below. Only the food name you type is sent, and only when you press the button. It will not work on the Claude preview link, which blocks all outbound requests by design.',
+  afKeyPh:'USDA API key — optional',
+
 
   /* ── the record ── */
   fName:'Name', phName:'Optional — so this plan is yours',
@@ -1400,6 +1481,27 @@ var EN = {
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   htmlLang:'zh-CN', locale:'zh-CN',
+
+  /* ── 添加食物 ── */
+  afTitle:'添加食物', afName:'名称', afNamePh:'例如：猪梅花肉',
+  afKcal:'热量', afServ:'常吃份量',
+  afSave:'添加', afCancel:'取消',
+  afLookup:'自动查询营养数据',
+  afSearching:'正在查询…',
+  afPick:'选一个最接近的——下面的数字会自动填好。',
+  afFilled:'已填好。确认一下没问题，调整份量后添加即可。',
+  afNeedName:'请先填名称。',
+  afNeedNumbers:'热量、蛋白质、碳水和脂肪都需要填数字。',
+  afErr_nokey:'自动查询需要一个免费密钥——见下方"在线查询"。当然也可以直接照包装上的数字手动填。',
+  afErr_badkey:'密钥被拒绝了。请在下方"在线查询"里检查一下。',
+  afErr_blocked:'无法连接到食物数据库。在 Claude 预览链接里这是正常的——它会拦截所有对外请求；照包装上的数字手动填一样好用。如果是在你自己的网站上，请检查网络连接。',
+  afErr_timeout:'查询超时了。可以重试，或者直接手动填。',
+  afErr_none:'这个名字没查到。换个更朴素的说法试试——比如"猪梅花肉"而不是某个品牌名。',
+  afErr_http:'食物数据库返回了错误，请稍后再试。',
+  afKeyTitle:'在线查询',
+  afKeyBody:'本页面的所有功能都可以离线使用；自动查询是唯一的例外，而且在你粘贴密钥之前它是关闭的。它查询的是 <b>USDA FoodData Central</b>——完全免费，在 <code>fdc.nal.usda.gov/api-key-signup</code> 注册后把密钥粘贴到下面。只有你输入的食物名称会被发送出去，而且只在你点击按钮时发送。在 Claude 预览链接里它无法工作，因为那里默认拦截所有对外请求。',
+  afKeyPh:'USDA API 密钥——可不填',
+
 
   /* ── 记录 ── */
   fName:'名字', phName:'可不填——填了这份计划就是你的',
@@ -1841,7 +1943,70 @@ var FOODS = [
   {id:'mixnut',  cat:'fat', n:'Mixed nuts, roasted', z:'混合坚果（烤）',  kcal:607, p:17.3, c:21.1, f:54.0, fib:6.7,  serv:28, sv:'a small handful', zsv:'一小把'},
   {id:'pb',      cat:'fat', n:'Peanut butter',       z:'花生酱',          kcal:588, p:25.1, c:20.0, f:50.4, fib:6.0,  serv:32, sv:'2 tbsp', zsv:'2 汤匙'},
   {id:'avo',     cat:'fat', n:'Avocado',             z:'牛油果',          kcal:160, p:2.0,  c:8.5,  f:14.7, fib:6.7,  serv:100, sv:'1/2 avocado', zsv:'半个'},
-  {id:'oil',     cat:'fat', n:'Olive oil',           z:'橄榄油',          kcal:884, p:0,    c:0,    f:100,  fib:0,    serv:14,  sv:'1 tbsp', zsv:'1 汤匙'}
+  {id:'oil',     cat:'fat', n:'Olive oil',           z:'橄榄油',          kcal:884, p:0,    c:0,    f:100,  fib:0,    serv:14,  sv:'1 tbsp', zsv:'1 汤匙'},
+
+  {id:'noodle',  cat:'grain', n:'Wheat noodles, cooked',  z:'面条（煮熟）',    kcal:138, p:4.5,  c:25.0, f:2.1,  fib:1.2, serv:200, sv:'1 bowl', zsv:'1 碗'},
+  {id:'ricenod', cat:'grain', n:'Rice noodles, cooked',   z:'米粉（煮熟）',    kcal:109, p:0.9,  c:24.9, f:0.2,  fib:1.0, serv:200, sv:'1 bowl', zsv:'1 碗'},
+  {id:'pasta',   cat:'grain', n:'Pasta, cooked',          z:'意面（煮熟）',    kcal:131, p:5.0,  c:25.0, f:1.1,  fib:1.8, serv:180, sv:'1 bowl', zsv:'1 碗'},
+  {id:'ramen',   cat:'grain', n:'Instant noodles, dry',   z:'方便面（干）',    kcal:436, p:9.4,  c:60.3, f:17.2, fib:2.4, serv:85,  sv:'1 pack', zsv:'1 包'},
+  {id:'mantou',  cat:'grain', n:'Steamed bun (mantou)',   z:'馒头',            kcal:223, p:7.0,  c:47.0, f:1.1,  fib:1.3, serv:100, sv:'1 bun', zsv:'1 个', each:100, eu:'bun', zeu:'个'},
+  {id:'bread_w', cat:'grain', n:'White bread',            z:'白面包',          kcal:265, p:9.0,  c:49.0, f:3.2,  fib:2.7, serv:28,  sv:'1 slice', zsv:'1 片', each:28, eu:'slice', zeu:'片'},
+  {id:'congee',  cat:'grain', n:'Rice congee',            z:'白粥',            kcal:30,  p:0.6,  c:6.6,  f:0.1,  fib:0.1, serv:300, sv:'1 bowl', zsv:'1 碗'},
+  {id:'corn',    cat:'grain', n:'Sweet corn',             z:'甜玉米',          kcal:86,  p:3.3,  c:19.0, f:1.4,  fib:2.0, serv:150, sv:'1 cob', zsv:'1 根'},
+  {id:'quinoa',  cat:'grain', n:'Quinoa, cooked',         z:'藜麦（煮熟）',    kcal:120, p:4.4,  c:21.3, f:1.9,  fib:2.8, serv:185, sv:'1 cup', zsv:'1 碗'},
+  {id:'pumpkin', cat:'grain', n:'Pumpkin',                z:'南瓜',            kcal:26,  p:1.0,  c:6.5,  f:0.1,  fib:0.5, serv:200, sv:'a wedge', zsv:'一块'},
+
+  {id:'pork_l',  cat:'protein', n:'Pork loin, raw',        z:'猪里脊（生）',    kcal:143, p:21.0, c:0,   f:5.9,  fib:0, serv:150, sv:'1 fillet', zsv:'1 块'},
+  {id:'pork_b',  cat:'protein', n:'Pork belly, raw',       z:'五花肉（生）',    kcal:518, p:9.3,  c:0,   f:53.0, fib:0, serv:100, sv:'a portion', zsv:'一份'},
+  {id:'lamb',    cat:'protein', n:'Lamb leg, lean, raw',   z:'羊腿肉（生，瘦）', kcal:128, p:20.6, c:0,   f:4.5,  fib:0, serv:150, sv:'1 portion', zsv:'1 份'},
+  {id:'duck',    cat:'protein', n:'Duck, meat only, raw',  z:'鸭肉（生，去皮）', kcal:132, p:18.3, c:0,   f:5.9,  fib:0, serv:150, sv:'1 portion', zsv:'1 份'},
+  {id:'chwing',  cat:'protein', n:'Chicken wing, raw',     z:'鸡翅（生，带皮）', kcal:222, p:18.3, c:0,   f:15.9, fib:0, serv:100, sv:'3 wings', zsv:'3 只'},
+  {id:'brisket', cat:'protein', n:'Beef brisket, lean, raw',z:'牛腩（生，瘦）', kcal:155, p:20.0, c:0,   f:7.8,  fib:0, serv:150, sv:'1 portion', zsv:'1 份'},
+  {id:'tofu_s',  cat:'protein', n:'Silken tofu',           z:'嫩豆腐',          kcal:55,  p:4.8,  c:2.0, f:2.7,  fib:0.2, serv:150, sv:'a block', zsv:'一块'},
+  {id:'tofu_d',  cat:'protein', n:'Dried tofu',            z:'豆干',            kcal:192, p:16.2, c:6.0, f:11.5, fib:0.8, serv:100, sv:'a portion', zsv:'一份'},
+  {id:'soymilk', cat:'protein', n:'Soy milk, unsweetened', z:'无糖豆浆',        kcal:33,  p:2.9,  c:1.2, f:1.6,  fib:0.4, serv:250, sv:'1 cup', zsv:'1 杯'},
+  {id:'edamame', cat:'protein', n:'Edamame, cooked',       z:'毛豆（煮熟）',    kcal:121, p:11.9, c:8.9, f:5.2,  fib:5.2, serv:100, sv:'a handful', zsv:'一把'},
+  {id:'squid',   cat:'protein', n:'Squid, raw',            z:'鱿鱼（生）',      kcal:92,  p:15.6, c:3.1, f:1.4,  fib:0, serv:150, sv:'1 portion', zsv:'1 份'},
+  {id:'crab',    cat:'protein', n:'Crab meat',             z:'蟹肉',            kcal:83,  p:18.1, c:0,   f:0.7,  fib:0, serv:100, sv:'1 portion', zsv:'1 份'},
+  {id:'scallop', cat:'protein', n:'Scallops, raw',         z:'扇贝（生）',      kcal:69,  p:12.1, c:3.2, f:0.5,  fib:0, serv:100, sv:'~5 scallops', zsv:'约 5 只'},
+  {id:'sardine', cat:'protein', n:'Sardines, canned',      z:'沙丁鱼罐头',      kcal:208, p:24.6, c:0,   f:11.5, fib:0, serv:92,  sv:'1 tin', zsv:'1 罐'},
+  {id:'mackerel',cat:'protein', n:'Mackerel, raw',         z:'鲭鱼（生）',      kcal:205, p:18.6, c:0,   f:13.9, fib:0, serv:150, sv:'1 fillet', zsv:'1 块'},
+
+  {id:'milkw',   cat:'dairy', n:'Whole milk',            z:'全脂牛奶',        kcal:61,  p:3.2,  c:4.8, f:3.3,  fib:0, serv:244, sv:'1 cup', zsv:'1 杯'},
+  {id:'yogw',    cat:'dairy', n:'Whole yoghurt, plain',  z:'全脂原味酸奶',    kcal:61,  p:3.5,  c:4.7, f:3.3,  fib:0, serv:170, sv:'1 pot', zsv:'1 盒'},
+  {id:'greekw',  cat:'dairy', n:'Greek yoghurt, whole',  z:'全脂希腊酸奶',    kcal:97,  p:9.0,  c:3.6, f:5.0,  fib:0, serv:170, sv:'1 pot', zsv:'1 盒'},
+  {id:'cheddar', cat:'dairy', n:'Cheddar cheese',        z:'切达奶酪',        kcal:403, p:25.0, c:1.3, f:33.1, fib:0, serv:28,  sv:'1 slice', zsv:'1 片'},
+  {id:'mozz',    cat:'dairy', n:'Mozzarella, part-skim', z:'马苏里拉奶酪',    kcal:254, p:24.3, c:2.8, f:15.9, fib:0, serv:28,  sv:'1 slice', zsv:'1 片'},
+  {id:'butter',  cat:'dairy', n:'Butter',                z:'黄油',            kcal:717, p:0.9,  c:0.1, f:81.1, fib:0, serv:14,  sv:'1 tbsp', zsv:'1 汤匙'},
+
+  {id:'cabbage', cat:'veg', n:'Cabbage',        z:'卷心菜',   kcal:25, p:1.3, c:5.8, f:0.1, fib:2.5, serv:150, sv:'a portion', zsv:'一份'},
+  {id:'bokchoy', cat:'veg', n:'Bok choy',       z:'小白菜',   kcal:13, p:1.5, c:2.2, f:0.2, fib:1.0, serv:150, sv:'a portion', zsv:'一份'},
+  {id:'carrot',  cat:'veg', n:'Carrot',         z:'胡萝卜',   kcal:41, p:0.9, c:9.6, f:0.2, fib:2.8, serv:120, sv:'1 medium', zsv:'1 根'},
+  {id:'onion',   cat:'veg', n:'Onion',          z:'洋葱',     kcal:40, p:1.1, c:9.3, f:0.1, fib:1.7, serv:110, sv:'1 medium', zsv:'1 个'},
+  {id:'mushroom',cat:'veg', n:'Mushrooms',      z:'蘑菇',     kcal:22, p:3.1, c:3.3, f:0.3, fib:1.0, serv:100, sv:'a handful', zsv:'一把'},
+  {id:'pepper',  cat:'veg', n:'Bell pepper',    z:'彩椒',     kcal:31, p:1.0, c:6.0, f:0.3, fib:2.1, serv:120, sv:'1 medium', zsv:'1 个'},
+  {id:'eggplant',cat:'veg', n:'Aubergine',      z:'茄子',     kcal:25, p:1.0, c:5.9, f:0.2, fib:3.0, serv:200, sv:'1 medium', zsv:'1 个'},
+  {id:'gbean',   cat:'veg', n:'Green beans',    z:'四季豆',   kcal:31, p:1.8, c:7.0, f:0.2, fib:2.7, serv:150, sv:'a portion', zsv:'一份'},
+  {id:'lettuce', cat:'veg', n:'Lettuce',        z:'生菜',     kcal:15, p:1.4, c:2.9, f:0.2, fib:1.3, serv:100, sv:'a bowl', zsv:'一碗'},
+  {id:'asp',     cat:'veg', n:'Asparagus',      z:'芦笋',     kcal:20, p:2.2, c:3.9, f:0.1, fib:2.1, serv:130, sv:'a portion', zsv:'一份'},
+  {id:'zucc',    cat:'veg', n:'Courgette',      z:'西葫芦',   kcal:17, p:1.2, c:3.1, f:0.3, fib:1.0, serv:200, sv:'1 medium', zsv:'1 个'},
+  {id:'nori',    cat:'veg', n:'Seaweed (nori)', z:'海苔',     kcal:35, p:5.8, c:5.1, f:0.3, fib:0.3, serv:10,  sv:'a few sheets', zsv:'几片'},
+
+  {id:'orange',  cat:'fruit', n:'Orange',     z:'橙子', kcal:47, p:0.9, c:11.8, f:0.1, fib:2.4, serv:131, sv:'1 medium', zsv:'1 个', each:131, eu:'orange', zeu:'个'},
+  {id:'pear',    cat:'fruit', n:'Pear',       z:'梨',   kcal:57, p:0.4, c:15.2, f:0.1, fib:3.1, serv:178, sv:'1 medium', zsv:'1 个', each:178, eu:'pear', zeu:'个'},
+  {id:'kiwi',    cat:'fruit', n:'Kiwi',       z:'猕猴桃', kcal:61, p:1.1, c:14.7, f:0.5, fib:3.0, serv:76, sv:'1 fruit', zsv:'1 个', each:76, eu:'kiwi', zeu:'个'},
+  {id:'straw',   cat:'fruit', n:'Strawberries',z:'草莓', kcal:32, p:0.7, c:7.7,  f:0.3, fib:2.0, serv:150, sv:'a bowl', zsv:'一碗'},
+  {id:'grape',   cat:'fruit', n:'Grapes',     z:'葡萄', kcal:69, p:0.7, c:18.1, f:0.2, fib:0.9, serv:150, sv:'a bunch', zsv:'一串'},
+  {id:'melon',   cat:'fruit', n:'Watermelon', z:'西瓜', kcal:30, p:0.6, c:7.6,  f:0.2, fib:0.4, serv:280, sv:'a wedge', zsv:'一块'},
+  {id:'mango',   cat:'fruit', n:'Mango',      z:'芒果', kcal:60, p:0.8, c:15.0, f:0.4, fib:1.6, serv:200, sv:'1 fruit', zsv:'1 个'},
+
+  {id:'cashew',  cat:'fat', n:'Cashews',        z:'腰果',     kcal:553, p:18.2, c:30.2, f:43.9, fib:3.3,  serv:28, sv:'a small handful', zsv:'一小把'},
+  {id:'pistach', cat:'fat', n:'Pistachios',     z:'开心果',   kcal:560, p:20.2, c:27.2, f:45.3, fib:10.6, serv:28, sv:'a small handful', zsv:'一小把'},
+  {id:'sesoil',  cat:'fat', n:'Sesame oil',     z:'香油',     kcal:884, p:0,    c:0,    f:100,  fib:0,    serv:14, sv:'1 tbsp', zsv:'1 汤匙'},
+  {id:'cocoil',  cat:'fat', n:'Coconut oil',    z:'椰子油',   kcal:862, p:0,    c:0,    f:100,  fib:0,    serv:14, sv:'1 tbsp', zsv:'1 汤匙'},
+  {id:'chia',    cat:'fat', n:'Chia seeds',     z:'奇亚籽',   kcal:486, p:16.5, c:42.1, f:30.7, fib:34.4, serv:25, sv:'2 tbsp', zsv:'2 汤匙'},
+  {id:'flax',    cat:'fat', n:'Flaxseed',       z:'亚麻籽',   kcal:534, p:18.3, c:28.9, f:42.2, fib:27.3, serv:20, sv:'2 tbsp', zsv:'2 汤匙'},
+  {id:'choc',    cat:'fat', n:'Dark chocolate 70%', z:'黑巧克力 70%', kcal:598, p:7.8, c:45.9, f:42.6, fib:10.9, serv:25, sv:'a few squares', zsv:'几块'}
 ];
 var CATS = ['grain','protein','dairy','veg','fruit','fat','custom'];
 var CAT_KEY = {grain:'catGrain', protein:'catProtein', dairy:'catDairy',
@@ -1938,7 +2103,7 @@ function defaults(){
     mode:'diet', startKg:78, targetKg:72, startPinned:false, carbPlan:'phased',
     startDate: iso(today), endDate: iso(addDays(today,84)),
     cheatKcal:800, proteinPerKg:2.0,
-    name:'', log:{started:null, entries:{}},
+    name:'', usdaKey:'', log:{started:null, entries:{}},
     kcalOverride:null, kcalSource:'plan',
     dayType:'train', activeMeal:'m1', planBlock:null,
     meals:[
@@ -3124,22 +3289,6 @@ $('#liftBody').addEventListener('input', function(e){
 
 on('#foodSearch','input', renderFoodGrid);
 
-on('#addCustom','click', function(){
-  var n = prompt(t('pName')); if(!n) return;
-  var kcal = num(prompt(t('pKcal')), NaN);
-  var p = num(prompt(t('pProtein')), NaN);
-  var c = num(prompt(t('pCarbs')), NaN);
-  var f = num(prompt(t('pFat')), NaN);
-  if(!isFinite(kcal) || !isFinite(p) || !isFinite(c) || !isFinite(f)){ alert(t('pBadNumber')); return; }
-  var fib = num(prompt(t('pFibre')), 0);
-  var nm = n.slice(0,48);
-  S.custom.push({
-    id:'c'+S.custom.length+'_'+n.replace(/\W+/g,'').slice(0,8), cat:'custom',
-    n:nm, z:nm, kcal:Math.max(0,kcal), p:Math.max(0,p), c:Math.max(0,c),
-    f:Math.max(0,f), fib:Math.max(0,fib||0), serv:100, sv:'100 g', zsv:'100 克'
-  });
-  render();
-});
 on('#resetAll','click', function(){
   if(!confirm(t('pConfirmReset'))) return;
   var keepLang = S.lang;
@@ -3766,6 +3915,133 @@ function renderRecordName(){
   var n = (S.name || '').trim();
   $('#recWho').textContent = n ? t('recWhose', n) : t('recYours');
 }
+
+/* ══ adding a food ═════════════════════════════════════════════════════
+   Type the name and fill four numbers, or have them looked up. The lookup
+   is off unless a key is supplied, and it is the only thing in this app
+   that touches the network — so it fails politely and stays optional.   */
+
+var USDA = 'https://api.nal.usda.gov/fdc/v1/foods/search';
+
+/* USDA numbers the nutrients; these five are the ones we want, per 100 g. */
+var NUT = {'208':'kcal', '203':'p', '205':'c', '204':'f', '291':'fib'};
+
+function mapUsda(f){
+  var out = {name:(f.description||'').trim(), kcal:0, p:0, c:0, f:0, fib:0};
+  (f.foodNutrients||[]).forEach(function(n){
+    var k = NUT[String(n.nutrientNumber != null ? n.nutrientNumber : n.number)];
+    if(k && isFinite(n.value)) out[k] = n.value;
+  });
+  return out;
+}
+
+function lookupFood(query, cb){
+  var key = (S.usdaKey || '').trim();
+  if(!key) return cb({err:'nokey'});
+  if(typeof fetch !== 'function') return cb({err:'blocked'});
+  var url = USDA + '?api_key=' + encodeURIComponent(key) +
+            '&query=' + encodeURIComponent(query) +
+            '&pageSize=8&dataType=' + encodeURIComponent('Foundation,SR Legacy');
+  var settled = false;
+  var timer = setTimeout(function(){
+    if(settled) return; settled = true; cb({err:'timeout'});
+  }, 12000);
+  fetch(url).then(function(r){
+    if(r.status === 403 || r.status === 401) throw {kind:'badkey'};
+    if(!r.ok) throw {kind:'http'};
+    return r.json();
+  }).then(function(j){
+    if(settled) return; settled = true; clearTimeout(timer);
+    var items = (j && j.foods ? j.foods : []).map(mapUsda)
+                 .filter(function(x){ return x.kcal > 0 || x.p > 0 || x.c > 0 || x.f > 0; });
+    cb(items.length ? {items:items} : {err:'none'});
+  })['catch'](function(e){
+    if(settled) return; settled = true; clearTimeout(timer);
+    cb({err: (e && e.kind === 'badkey') ? 'badkey' : 'blocked'});
+  });
+}
+
+function afSetHint(msgKey){
+  $('#afLookupHint').textContent = msgKey ? t(msgKey) : '';
+}
+function afFill(v){
+  $('#afName').value  = v.name || $('#afName').value;
+  $('#afKcal').value  = Math.round(v.kcal*10)/10;
+  $('#afP').value     = Math.round(v.p*10)/10;
+  $('#afC').value     = Math.round(v.c*10)/10;
+  $('#afF').value     = Math.round(v.f*10)/10;
+  $('#afFib').value   = Math.round((v.fib||0)*10)/10;
+}
+function afOpen(prefill){
+  $('#addBox').hidden = false;
+  $('#afResults').innerHTML = '';
+  afSetHint(null);
+  if(prefill != null) $('#afName').value = prefill;
+  ['#afKcal','#afP','#afC','#afF','#afFib'].forEach(function(s){ if(!$(s).value) $(s).value = ''; });
+  if(!$('#afServ').value) $('#afServ').value = 100;
+  $('#afKey').value = S.usdaKey || '';
+  $('#afName').focus();
+}
+function afClose(){
+  $('#addBox').hidden = true;
+  ['#afName','#afKcal','#afP','#afC','#afF','#afFib'].forEach(function(s){ $(s).value = ''; });
+  $('#afResults').innerHTML = '';
+}
+
+on('#addCustom','click', function(){
+  if($('#addBox').hidden) afOpen(($('#foodSearch').value || '').trim());
+  else afClose();
+});
+on('#afCancel','click', afClose);
+
+on('#afKey','input', function(e){ S.usdaKey = e.target.value.trim(); save(); });
+
+on('#afLookup','click', function(){
+  var q = ($('#afName').value || '').trim();
+  if(!q){ afSetHint('afNeedName'); return; }
+  $('#afResults').innerHTML = '';
+  afSetHint('afSearching');
+  lookupFood(q, function(res){
+    if(res.err){ afSetHint('afErr_' + res.err); return; }
+    afSetHint('afPick');
+    $('#afResults').innerHTML = res.items.map(function(v, i){
+      return '<button type="button" class="afhit" data-hit="'+i+'">'+
+        '<span class="afhit__n">'+esc(v.name)+'</span>'+
+        '<span class="afhit__m">'+Math.round(v.kcal)+' '+t('uKcal')+' · '+
+          t('abbrP')+r1(v.p)+' '+t('abbrC')+r1(v.c)+' '+t('abbrF')+r1(v.f)+'</span></button>';
+    }).join('');
+    $('#afResults').__hits = res.items;
+  });
+});
+$('#afResults').addEventListener('click', function(e){
+  var b = e.target.closest('[data-hit]'); if(!b) return;
+  var hits = $('#afResults').__hits || [];
+  var v = hits[+b.dataset.hit]; if(!v) return;
+  afFill(v);
+  $('#afResults').innerHTML = '';
+  afSetHint('afFilled');
+});
+
+on('#afSave','click', function(){
+  var name = ($('#afName').value || '').trim();
+  var kcal = num($('#afKcal').value, NaN), pp = num($('#afP').value, NaN);
+  var cc = num($('#afC').value, NaN), ff = num($('#afF').value, NaN);
+  if(!name){ afSetHint('afNeedName'); return; }
+  if(!isFinite(kcal) || !isFinite(pp) || !isFinite(cc) || !isFinite(ff)){
+    afSetHint('afNeedNumbers'); return;
+  }
+  var serv = clamp(num($('#afServ').value, 100), 1, 2000);
+  S.custom.push({
+    id: 'c' + S.custom.length + '_' + name.replace(/\W+/g,'').slice(0,10),
+    cat: 'custom', n: name.slice(0,48), z: name.slice(0,48),
+    kcal: Math.max(0,kcal), p: Math.max(0,pp), c: Math.max(0,cc), f: Math.max(0,ff),
+    fib: Math.max(0, num($('#afFib').value, 0)),
+    serv: serv, sv: serv + ' g', zsv: serv + ' 克'
+  });
+  afClose();
+  $('#foodSearch').value = '';
+  render();
+});
 
 })();
 </script>

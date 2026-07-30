@@ -24,6 +24,10 @@ Everything is stored on your own device; if the browser blocks storage the page
 says so rather than losing your record quietly, and a backup box exports the whole
 thing as text.
 
+**99 foods are built in**, Western and Chinese, in both languages. For anything else
+there is an add-food form; paste a free USDA key into it and it will look the numbers
+up for you, otherwise type the four numbers off the packet.
+
 **The meal planner solves portions for you.** Pick what goes into each of three meals
 plus an optional post-workout meal, and the grams — or piece counts — are worked out
 so the day lands on its targets. Type or nudge any amount to pin it and everything
@@ -124,8 +128,8 @@ CloudFront, nginx, Apache, Caddy, a USB stick. Make sure HTML is served as
 
 ## Security headers
 
-The app makes zero outbound requests, so the shipped Content-Security-Policy locks it
-down to exactly what it needs:
+The app makes no outbound requests at all unless you switch on the optional food
+lookup, so the shipped Content-Security-Policy locks it down to exactly what it needs:
 
 ```
 default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline';
@@ -135,7 +139,14 @@ form-action 'none'; frame-ancestors 'none'
 
 `'unsafe-inline'` is required because the CSS and JS are inline — that is the price of
 the single-file design. Since `default-src` is `'none'`, no script can call out
-anywhere even if one were injected.
+anywhere except the single host named in `connect-src`, even if one were injected.
+
+`connect-src https://api.nal.usda.gov` exists only for the optional food lookup, which
+is inert until you paste a free USDA FoodData Central key into the add-food form. If
+you would rather the page could never talk to anything, delete that directive from
+`netlify.toml` / `vercel.json` / `nginx.conf` — everything else keeps working, and the
+lookup simply reports that it could not connect. The lookup cannot work at all on a
+Claude artifact link, which blocks every external host by design.
 
 ---
 
