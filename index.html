@@ -450,6 +450,25 @@ tr.liftrisk .delta{color:var(--crit-ink)}
 .sess__lifts span{font-family:var(--f-disp);font-size:10.5px;letter-spacing:var(--tr-tag);
   text-transform:uppercase;color:var(--ink-3)}
 .sess__body{font-size:11.5px;line-height:1.45;color:var(--ink-3)}
+
+/* ── The record ─────────────────────────────────────────────────────── */
+.bigbtn{appearance:none;cursor:pointer;width:100%;border:1px solid var(--accent-fill);
+  background:var(--accent-fill);color:var(--on-accent);border-radius:2px;padding:11px 14px;
+  font-family:var(--f-disp);font-weight:700;font-size:15px;letter-spacing:var(--tr-mid);
+  text-transform:uppercase}
+.bigbtn:hover{filter:brightness(1.08)}
+.weigh{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;
+  padding:5px 0;border-bottom:1px solid var(--rule)}
+.weigh:last-child{border-bottom:0}
+.weigh--today{background:var(--accent-soft);margin:0 -6px;padding:6px;border-radius:2px}
+.weigh__d{font-size:12.5px;color:var(--ink-2)}
+.weigh__d b{font-family:var(--f-disp);font-size:11px;letter-spacing:var(--tr-tag);
+  text-transform:uppercase;color:var(--accent-ink)}
+.weigh__pad{width:26px}
+.weigh .gramwrap input{width:64px;text-align:right;padding-right:4px}
+textarea.backup{width:100%;height:120px;font-family:var(--f-num);font-size:11.5px;
+  border:1px solid var(--rule-2);border-radius:2px;background:var(--panel-2);
+  color:var(--ink);padding:8px;resize:vertical}
 .progs{display:flex;flex-direction:column;gap:11px;margin-top:16px;padding-top:16px;border-top:1px solid var(--rule-2)}
 .prog{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
 .prog__k{display:flex;align-items:center;gap:7px;min-width:76px;font-family:var(--f-disp);
@@ -514,6 +533,10 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
           <div class="panel__hd"><h3 data-i18n="pnBody">Body</h3><span class="panel__tag" id="tagBody"></span></div>
           <div class="panel__bd">
             <div class="fields">
+              <div class="field field--full">
+                <label for="profileName" data-i18n="fName">Name</label>
+                <div class="inputwrap"><input type="text" id="profileName" maxlength="40" data-i18n-ph="phName" /></div>
+              </div>
               <div class="field field--full">
                 <span class="lbl" id="lblSex" data-i18n="fSex">Sex</span>
                 <div class="seg seg--wide" role="group" aria-labelledby="lblSex">
@@ -803,6 +826,53 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     </div>
   </section>
 
+  <!-- ═══ RECORD ═══ -->
+  <section class="section">
+    <div class="section__hd">
+      <h2 data-i18n="secRecord">Your record</h2>
+      <span class="section__rule"></span>
+      <span class="section__spec" id="recWho"></span>
+    </div>
+    <div class="chartgrid">
+      <div class="panel">
+        <div class="panel__hd"><h3 data-i18n="pnWeighIn">Weigh-in</h3><span class="panel__tag" id="recTag"></span></div>
+        <div class="panel__bd">
+          <div id="startRow" style="margin-bottom:10px"></div>
+          <p class="hint" id="startHelp" style="margin-bottom:14px"></p>
+          <div id="weighBox"></div>
+          <div id="storeState" style="margin-top:14px"></div>
+          <button type="button" class="linkbtn" id="backupToggle" data-i18n="bBackup" style="margin-top:6px"></button>
+          <div id="backupBox" hidden>
+            <p class="hint" style="margin:6px 0 8px" data-i18n="hBackup"></p>
+            <textarea id="backupText" class="backup" spellcheck="false" data-i18n-aria="bBackup"></textarea>
+            <div style="display:flex;gap:10px;margin-top:6px">
+              <button type="button" class="linkbtn" id="backupCopy" data-i18n="bCopy"></button>
+              <button type="button" class="linkbtn" id="backupLoad" data-i18n="bRestore"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel__hd"><h3 data-i18n="pnWeekLog">Week by week</h3><span class="panel__tag" data-i18n="pnWeekLogTag"></span></div>
+        <div class="panel__bd">
+          <div class="tablewrap">
+            <table>
+              <thead><tr>
+                <th scope="col" data-i18n="cWeek">Week</th>
+                <th scope="col" data-i18n="lLogged">Logged</th>
+                <th scope="col" data-i18n="lYours">Your average</th>
+                <th scope="col" data-i18n="lPlan">Plan</th>
+                <th scope="col" data-i18n="lDiff">Difference</th>
+              </tr></thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+          <div class="flags" style="margin-top:14px" id="logFlags"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══ STRENGTH ═══ -->
   <section class="section">
     <div class="section__hd">
@@ -959,6 +1029,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     <details class="notes"><summary data-i18n="n2Title"></summary><div class="nb" data-i18n-html="n2Body"></div></details>
     <details class="notes"><summary data-i18n="n3Title"></summary><div class="nb" data-i18n-html="n3Body"></div></details>
     <details class="notes"><summary data-i18n="n4Title"></summary><div class="nb" data-i18n-html="n4Body"></div></details>
+    <details class="notes"><summary data-i18n="nRecTitle"></summary><div class="nb" data-i18n-html="nRecBody"></div></details>
     <p class="pagefoot" data-i18n-html="footNote"></p>
   </section>
 </main>
@@ -970,6 +1041,36 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
   htmlLang:'en', locale:'en-US',
+
+  /* ── the record ── */
+  fName:'Name', phName:'Optional — so this plan is yours',
+  secRecord:'Your record', recYours:'your weigh-ins', recWhose: function(n){ return n + "\u2019s weigh-ins"; },
+  pnWeighIn:'Weigh-in', pnWeekLog:'Week by week', pnWeekLogTag:'measured vs planned',
+  recNotStarted:'not started', recDayOf: function(a,b){ return 'day '+a+' of '+b; },
+  bStartPlan:'Start today', bStopPlan:'Stop recording',
+  hNotStarted:'Starting sets today as day one and moves the plan dates to match. From then on you log a weight each morning and the page holds it — the whole point of the record is that it survives a refresh.',
+  hStarted:'Weigh in first thing, after the toilet, before food. Missing a day is fine — the weekly average carries it. Fill in any of the last ten days below.',
+  wToday:'today', wWeekN: function(n){ return 'Week '+n; },
+  aWeighOn: function(d){ return 'Weight on '+d; }, aClearWeigh:'Clear this weigh-in',
+  lLogged:'Logged', lYours:'Your average', lPlan:'Plan', lDiff:'Difference',
+  logEmpty:'Nothing logged yet.',
+  trajActual:'The dark line is what you actually weighed.',
+  icLogging:'RECORD', icOnTrack:'ON TRACK', icOffTrack:'OFF PACE', icTwoWeeks:'GIVE IT TIME',
+  icNoStore:'NOT SAVING',
+  fLogNone:'Once you log a few mornings, the weekly averages appear here and go onto the chart next to the plan. Two weeks is the earliest anything can be read from them.',
+  fLogOneWeek:'One week in. A single week cannot separate a real trend from water, so nothing is being judged yet — keep logging.',
+  fOnTrack: function(a,b){ return 'You are averaging <b>'+a+' a week</b> against a planned '+b+'. Close enough — leave the calories alone. Chasing week-to-week noise is how people end up eating less than the plan for no extra fat loss.'; },
+  fOffTrack: function(a,b,k,verb){ return 'You are averaging <b>'+a+' a week</b> against a planned '+b+'. To close that, '+verb+' about <b>'+k+' kcal a day</b> — or accept the pace and let the end date move. Do one or the other, not both.'; },
+  fTwoWeeks:'This is based on two weekly averages, which is the minimum that means anything. If next week agrees, act on it; if it does not, wait.',
+  wCut:'cut', wAdd:'add',
+  storeOk: function(n){ return 'Saved on this device — ' + n + ' weigh-in' + (n===1?'':'s') + ' recorded. Settings and record both survive a refresh.'; },
+  storeIdle:'Saved on this device. Your settings survive a refresh; Reset clears them.',
+  fNoStore:'This browser is not letting the page store anything — usually a private window, or an embedded frame. Your settings will vanish on refresh. Use the backup below to keep a copy, or open the page in a normal tab.',
+  bBackup:'Backup / restore', bCopy:'Copy', bCopied:'Copied', bRestore:'Restore from text',
+  hBackup:'Everything — settings, meals and every weigh-in — as text. Copy it somewhere safe, or paste a previous copy back in and press Restore.',
+  pConfirmStop:'Stop recording? Your weigh-ins are kept — only the running plan stops.',
+  pBadBackup:'That does not look like a backup from this page — nothing was changed.',
+
 
   /* ── one measuring lift per movement pattern ── */
   liftSquat:'Back squat', liftHinge:'Romanian deadlift', liftBench:'Bench press',
@@ -1287,12 +1388,48 @@ var EN = {
     '<p><b>What keeps the answers sane.</b> Each food is capped by what a person would actually eat in one sitting: protein sources may run to eight servings, starches six, fruit and vegetables and oils three. Portions come back in 5&nbsp;g steps, or half-pieces for anything counted by the piece. Type or nudge any amount and it is pinned — the ring fills in, that food is taken out of the solve, and everything else re-solves around it. A food the day has no room for is shown at zero and marked, rather than quietly dropped.</p>'+
     '<p><b>Anything missing</b> can be added with the button above the food list: name it, give it calories, protein, carbs and fat per 100&nbsp;g, and it is saved with the rest of your plan in this browser.</p>',
 
+  nRecTitle:'The record, and what it is for',
+  nRecBody:
+    '<p><b>Everything above this section is a projection.</b> The record is the only part of the page that knows anything. Press start, weigh in each morning under the same conditions, and the page keeps the numbers on this device — settings, meals and weigh-ins all survive a refresh, and Reset is the only thing that clears them.</p>'+
+    '<p><b>Why weekly averages.</b> A single morning moves several kilos on water, gut contents and salt alone, which is more than a week of real fat loss. Averaging the week cancels most of that. Days you miss are simply left out of the average, so a forgotten morning costs accuracy rather than breaking the week.</p>'+
+    '<p><b>What it does with them.</b> Two weekly averages give a measured rate, which is held against the planned rate. If they disagree by enough to matter, the page works out the calorie change that would close the gap — a kilo is about 7,700&nbsp;kcal, so a week is about 1,100&nbsp;kcal a day — and says to do that <em>or</em> move the end date, not both. Below that threshold it deliberately tells you to leave the calories alone: chasing week-to-week noise is how people end up eating less than the plan for no extra fat loss.</p>'+
+    '<p><b>Two weeks is the minimum.</b> One week cannot separate a trend from water, so nothing is judged until there are two, and the page says so rather than guessing. If storage is blocked — a private window, or an embedded frame — the page tells you instead of losing your record silently, and the backup box gives you the whole thing as text to keep.</p>',
   footNote:'Every number here is an estimate from population averages, and individual burn varies by roughly ±10% around any formula. Treat the target as a starting point, not a verdict: weigh yourself under the same conditions a few times a week, average each week, and if two weeks pass without the trend moving the way this page predicts, adjust intake by 100–150&nbsp;kcal and re-run it with your new weight. This is general fitness information, not medical advice — talk to a doctor before starting a diet if you are pregnant, managing a health condition, or taking medication that interacts with eating patterns.'
 };
 
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   htmlLang:'zh-CN', locale:'zh-CN',
+
+  /* ── 记录 ── */
+  fName:'名字', phName:'可不填——填了这份计划就是你的',
+  secRecord:'你的记录', recYours:'你的体重记录', recWhose: function(n){ return n + ' 的体重记录'; },
+  pnWeighIn:'称重', pnWeekLog:'逐周对照', pnWeekLogTag:'实测 vs 计划',
+  recNotStarted:'尚未开始', recDayOf: function(a,b){ return '第 '+a+' 天 / 共 '+b+' 天'; },
+  bStartPlan:'今天开始', bStopPlan:'停止记录',
+  hNotStarted:'点击开始，今天就是第一天，计划日期也会随之调整。之后每天早上记一次体重，页面会替你保存下来——记录的意义就在于刷新之后它还在。',
+  hStarted:'早上起床、上完厕所、吃东西之前称。漏记一天没关系，周平均会兜住。下面可以补填最近十天里的任意一天。',
+  wToday:'今天', wWeekN: function(n){ return '第 '+n+' 周'; },
+  aWeighOn: function(d){ return d+' 的体重'; }, aClearWeigh:'清除这次记录',
+  lLogged:'已记录', lYours:'你的周均', lPlan:'计划值', lDiff:'差值',
+  logEmpty:'还没有任何记录。',
+  trajActual:'深色的那条线是你实际称出来的体重。',
+  icLogging:'记录', icOnTrack:'进度正常', icOffTrack:'偏离节奏', icTwoWeeks:'再等等',
+  icNoStore:'无法保存',
+  fLogNone:'记录几天早晨之后，周平均就会出现在这里，并叠加到上面的曲线图上和计划做对比。至少要两周才能读出任何有意义的东西。',
+  fLogOneWeek:'才第一周。单独一周分不清真实趋势和水分波动，所以现在还不做任何判断——继续记就好。',
+  fOnTrack: function(a,b){ return '你现在<b>每周平均 '+a+'</b>，计划是 '+b+'。够接近了，热量不用动。追着每周的波动来回调整，最后往往是吃得比计划更少，却没多掉一点脂肪。'; },
+  fOffTrack: function(a,b,k,verb){ return '你现在<b>每周平均 '+a+'</b>，计划是 '+b+'。要补上这个差距，可以每天'+verb+'大约 <b>'+k+' 千卡</b>——或者接受这个速度，把结束日期往后挪。二选一，别两个一起做。'; },
+  fTwoWeeks:'这是基于两个周平均得出的，已经是有意义的最低数量。如果下周还是这样，就照着调；如果不是，就再等等。',
+  wCut:'少吃', wAdd:'多吃',
+  storeOk: function(n){ return '已保存在这台设备上——共记录了 ' + n + ' 次体重。设置和记录刷新后都还在。'; },
+  storeIdle:'已保存在这台设备上。刷新后设置仍然保留；点"重置"会清空。',
+  fNoStore:'这个浏览器不允许页面保存任何内容——通常是无痕窗口，或者嵌套在框架里。刷新之后设置会消失。可以用下面的备份功能保留一份，或者在普通标签页里打开本页面。',
+  bBackup:'备份 / 恢复', bCopy:'复制', bCopied:'已复制', bRestore:'从文本恢复',
+  hBackup:'把所有内容——设置、分餐和每一次称重——导出成文本。复制到安全的地方保存，或者把之前的备份粘贴回来再点"恢复"。',
+  pConfirmStop:'停止记录？已有的体重数据会保留，只是不再继续跑这个计划。',
+  pBadBackup:'这看起来不像是本页面导出的备份——没有做任何改动。',
+
 
   /* ── 每个动作模式一个测量动作 ── */
   liftSquat:'深蹲', liftHinge:'罗马尼亚硬拉', liftBench:'卧推',
@@ -1610,6 +1747,12 @@ var ZH = {
     '<p><b>为什么结果不会离谱。</b>每种食物都按"一顿正常能吃多少"来设上限：蛋白质来源最多八份，主食六份，水果、蔬菜和油脂三份。份量以 5 克为步长给出，按个计数的食物则精确到半个。手动输入或用加减号调整任何一个份量，它就会被固定住——圆点变实心，这项退出求解，其余部分围着它重新计算。如果某样食物这一天根本放不下，它会显示为 0 并被标注出来，而不是悄悄消失。</p>'+
     '<p><b>列表里没有的东西</b>可以用食物列表上方的按钮添加：填名字，再填每 100 克的热量、蛋白质、碳水和脂肪，它会和你的方案一起保存在这个浏览器里。</p>',
 
+  nRecTitle:'记录，以及它的意义',
+  nRecBody:
+    '<p><b>这一节以上的所有内容都是预测。</b>只有"记录"这一部分掌握着真实信息。点击开始，每天早上在相同条件下称重，页面会把数据保存在这台设备上——设置、分餐和每一次称重刷新后都还在，只有"重置"会清空它们。</p>'+
+    '<p><b>为什么用周平均。</b>单独某一天的体重，光是水分、肠道内容物和盐分就能差好几公斤，比一周真实掉的脂肪还多。取一周平均可以抵消掉其中大部分。漏记的日子直接不计入平均，所以忘记一天只是让精度差一点，不会毁掉这一周。</p>'+
+    '<p><b>它拿这些数据做什么。</b>两个周平均就能算出实测速度，再和计划速度对照。如果两者的差距大到有意义，页面会算出能补上这个差距的热量调整量——1 公斤约 7,700 千卡，所以一周约合每天 1,100 千卡——并且明确告诉你：调热量<em>或者</em>推迟结束日期，二选一，不要两个一起做。差距在阈值以内时，它会明确让你别动热量：追着每周的波动来回调整，最后往往是吃得比计划更少，却没多掉一点脂肪。</p>'+
+    '<p><b>至少要两周。</b>一周分不清趋势和水分，所以在拿到两个周平均之前不做任何判断，页面会直说而不是瞎猜。如果浏览器禁止保存——无痕窗口，或者嵌在框架里——页面会明确告诉你，而不是悄悄把记录弄丢；下面的备份框可以把全部内容导出成文本自己保管。</p>',
   footNote:'这里所有数字都是基于人群平均值的估算，个体的实际消耗在任何公式上下都可能有大约 ±10% 的偏差。把目标当作起点而不是判决：每周在相同条件下称几次体重，取一周平均；如果连续两周趋势没有按这个页面预测的方向走，就把摄入调整 100–150 千卡，并用新的体重重新算一遍。本页面提供的是一般健身信息，不构成医疗建议——如果你处于孕期、有基础疾病，或正在服用与进食方式相互作用的药物，开始节食前请先咨询医生。'
 };
 
@@ -1781,7 +1924,9 @@ var PHASE_PLAN = [
 ];
 
 /* ══ state ═════════════════════════════════════════════════════════════ */
-var today = new Date();
+/* midnight local: a time-of-day component makes dayDiff round up, so the
+   first day of a plan reads as day 2 any afternoon. */
+var today = (function(){ var d = new Date(); d.setHours(0,0,0,0); return d; })();
 function defaults(){
   return {
     lang: (navigator.language||'en').toLowerCase().indexOf('zh')===0 ? 'zh' : 'en',
@@ -1793,6 +1938,7 @@ function defaults(){
     mode:'diet', startKg:78, targetKg:72, startPinned:false, carbPlan:'phased',
     startDate: iso(today), endDate: iso(addDays(today,84)),
     cheatKcal:800, proteinPerKg:2.0,
+    name:'', log:{started:null, entries:{}},
     kcalOverride:null, kcalSource:'plan',
     dayType:'train', activeMeal:'m1', planBlock:null,
     meals:[
@@ -1808,7 +1954,28 @@ function defaults(){
 }
 var S = defaults();
 var STORE = 'load-planner-v4';
-function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
+/* A sandboxed iframe throws on localStorage, and a silent catch there means
+   settings quietly evaporate on refresh. Track whether it really persisted
+   so the page can say so instead of pretending. */
+var STORAGE_OK = null, LAST_SAVED = null;
+function save(){
+  try{
+    localStorage.setItem(STORE, JSON.stringify(S));
+    STORAGE_OK = true; LAST_SAVED = new Date();
+  }catch(e){ STORAGE_OK = false; }
+}
+function exportState(){ return JSON.stringify(S, null, 2); }
+function importState(text){
+  var o = JSON.parse(text);
+  if(!o || typeof o !== 'object') throw new Error('not an object');
+  var d = defaults();
+  for(var k in o) if(Object.prototype.hasOwnProperty.call(d, k)) d[k] = o[k];
+  S = d;
+  if(!S.log || typeof S.log !== 'object') S.log = {started:null, entries:{}};
+  if(!S.log.entries) S.log.entries = {};
+  if(!Array.isArray(S.custom)) S.custom = [];
+  if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
+}
 function load(){
   try{
     var raw = localStorage.getItem(STORE);
@@ -1820,6 +1987,8 @@ function load(){
       S = d;
     }
     if(!Array.isArray(S.custom)) S.custom = [];
+    if(!S.log || typeof S.log !== 'object') S.log = {started:null, entries:{}};
+    if(!S.log.entries || typeof S.log.entries !== 'object') S.log.entries = {};
     if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
     S.meals.forEach(function(m){ if(!Array.isArray(m.items)) m.items = []; });
   }catch(e){}
@@ -2092,6 +2261,46 @@ function compute(){
   dayTarget.fib = 14*dayTarget.kcal/1000;
   var cycActive = !!liveSplit && (!liveBlock || liveBlock.spread > 0);
 
+  /* Weekly averages from whatever has actually been weighed. A single
+     morning is mostly water; the week is the signal. */
+  var logWeeks = [], logCount = 0, todayKey = iso(today);
+  var nWeeks = Math.ceil(weeks);
+  for(var lw = 0; lw < nWeeks; lw++){
+    var vals = [];
+    for(var ld = 0; ld < 7; ld++){
+      var kk = iso(addDays(sd, lw*7 + ld));
+      var v = S.log.entries[kk];
+      if(v != null && isFinite(v)){ vals.push(v); logCount++; }
+    }
+    if(!vals.length) continue;
+    var sum = 0;
+    for(var vi = 0; vi < vals.length; vi++) sum += vals[vi];
+    var midFrac = clamp((lw*7 + 3.5)/days, 0, 1);
+    logWeeks.push({
+      w: lw, n: vals.length, avg: sum/vals.length,
+      from: addDays(sd, lw*7), to: addDays(sd, lw*7 + 6),
+      plan: startKg + dW*midFrac
+    });
+  }
+
+  /* Measured rate versus planned rate, and what it would take to close the
+     gap. 1 kg of weight is ~7,700 kcal, so a week is ~1,100 kcal/day. */
+  var trend = null;
+  if(logWeeks.length >= 2){
+    var a = logWeeks[logWeeks.length-2], b = logWeeks[logWeeks.length-1];
+    var span = Math.max(b.w - a.w, 1);
+    var actualRate = (b.avg - a.avg)/span;
+    var plannedRate = dW/weeks;
+    var adjust = clamp(-(actualRate - plannedRate)*7700/7, -400, 400);
+    trend = {
+      actualRate: actualRate, plannedRate: plannedRate,
+      diff: b.avg - b.plan, adjust: adjust,
+      offPace: Math.abs(actualRate - plannedRate) > Math.max(0.12, Math.abs(plannedRate)*0.4)
+    };
+  }
+  var started = !!(S.log && S.log.started);
+  var dayIndex = started ? clamp(dayDiff(sd, today) + 1, 1, days) : 0;
+
   /* A long diet can clear the floor on average yet break at the end. */
   var intakeEnd = tdeeAt(targetKg, lbmEnd).total*adaptAt(1) + dailyDelta;
   var floorLate = !belowFloor && intakeEnd < minIntake;
@@ -2143,6 +2352,8 @@ function compute(){
     planIntake:planIntake, overridden:overridden, dayTarget:dayTarget,
     liveSplit:liveSplit, liveBlock:liveBlock, isTrain:isTrain, cycActive:cycActive,
     blockIdx:blockIdx, todayIdx:todayIdx,
+    logWeeks:logWeeks, logCount:logCount, trend:trend, started:started,
+    dayIndex:dayIndex, todayKey:todayKey,
     fatFloorG:fatFloorG,
     neural:neural, hyper:hyper, strPct:strPct,
     cheat:cheat, perDayRoom:perDayRoom, weeklyBank:weeklyBank, bankedCheats:bankedCheats,
@@ -2182,6 +2393,8 @@ function render(){
   renderCheckpoints();
   renderTrajectory();
   renderComposition();
+  renderRecord();
+  renderRecordName();
   renderStrength();
   renderArrangement();
   renderCheat();
@@ -2200,6 +2413,7 @@ function focusSig(a){
   if(a.dataset.count != null && a.dataset.count !== '') return 'input[data-count="'+a.dataset.count+'"]';
   if(a.dataset.mi) return 'input[data-mi="'+a.dataset.mi+'"]';
   if(a.dataset.share) return 'input[data-share="'+a.dataset.share+'"]';
+  if(a.dataset.weigh) return 'input[data-weigh="'+a.dataset.weigh+'"]';
   return null;
 }
 function setHTMLKeepFocus(el, html){
@@ -2239,6 +2453,7 @@ function renderControls(){
   setVal('#weight',  wShow(S.weightKg));
   setVal('#bf', S.bf);
   setVal('#proteinPerKg', S.proteinPerKg);
+  setVal('#profileName', S.name || '');
   setVal('#gymMin', S.gymMin);
   setVal('#cardioMin', S.cardioMin);
   setVal('#startW', wShow(S.startKg));
@@ -2523,7 +2738,13 @@ function renderTrajectory(){
   var corrA = dStart + sign*recFast*dStart*wk;
   var corrB = dStart + sign*recSlow*dStart*wk;
 
-  var lo = Math.min(dStart,dTarget,corrA,corrB), hi = Math.max(dStart,dTarget,corrA,corrB);
+  /* measured weekly averages, so plan and reality sit on one axis */
+  var actual = C.logWeeks.map(function(lw){
+    return {x:(lw.w*7 + 3.5)/7, y:wOut(lw.avg), n:lw.n, w:lw.w};
+  });
+  var av = actual.map(function(a){ return a.y; });
+  var lo = Math.min.apply(null, [dStart,dTarget,corrA,corrB].concat(av));
+  var hi = Math.max.apply(null, [dStart,dTarget,corrA,corrB].concat(av));
   var padv = Math.max((hi-lo)*0.25, imperial() ? 2.5 : 1.2);
   lo -= padv; hi += padv;
   var step = niceStep(hi-lo, 4);
@@ -2567,6 +2788,21 @@ function renderTrajectory(){
     s += '<text x="'+(m.l+5)+'" y="'+(m.t+13)+'" style="font-size:10.5px;fill:var(--ink-3);font-family:var(--f-disp);letter-spacing:.04em">'+
          esc(t(C.phases[0].key))+'</text>';
   }
+  if(actual.length){
+    var pts = actual.map(function(a){ return x(clamp(a.x,0,wk))+','+y(a.y); }).join(' ');
+    if(actual.length > 1){
+      s += '<polyline points="'+pts+'" style="fill:none;stroke:var(--ink);stroke-width:2;'+
+           'stroke-linejoin:round;stroke-linecap:round"/>';
+    }
+    actual.forEach(function(a){
+      s += '<circle cx="'+x(clamp(a.x,0,wk))+'" cy="'+y(a.y)+'" r="4" '+
+           'style="fill:var(--ink);stroke:var(--panel-2);stroke-width:2"/>';
+    });
+    var last = actual[actual.length-1];
+    s += '<text x="'+(x(clamp(last.x,0,wk)))+'" y="'+(y(last.y)-11)+'" text-anchor="middle" '+
+         'style="font-size:12px;font-weight:700;fill:var(--ink);font-family:var(--f-disp);'+
+         'font-variant-numeric:tabular-nums">'+last.y.toFixed(1)+'</text>';
+  }
   s += '<rect id="trajHit" x="'+m.l+'" y="'+m.t+'" width="'+pw+'" height="'+ph+'" style="fill:transparent;cursor:crosshair"/>';
   s += '<line id="trajCross" x1="0" y1="'+m.t+'" x2="0" y2="'+(m.t+ph)+'" style="stroke:var(--ink-3);stroke-width:1" opacity="0"/>';
   s += '<circle id="trajDot" r="4.5" style="fill:var(--accent);stroke:var(--panel-2);stroke-width:2" opacity="0"/>';
@@ -2576,7 +2812,8 @@ function renderTrajectory(){
 
   var band = S.mode==='bulk' ? t('bandBulk') : (S.mode==='keep' ? t('bandKeep') : t('bandDiet'));
   var end  = (S.mode==='keep' || Math.abs(C.dW)<0.05) ? t('endsSame') : t('endsAt', wShow(C.targetKg), wUnit());
-  $('#trajNote').textContent = t('trajNote', band, end);
+  $('#trajNote').innerHTML = esc(t('trajNote', band, end)) +
+    (actual.length ? ' <b style="color:var(--ink-2)">' + esc(t('trajActual')) + '</b>' : '');
 
   var hit = $('#trajHit'), cross = $('#trajCross'), dot = $('#trajDot'),
       tip = $('#trajTip'), box = $('#trajBox');
@@ -3371,6 +3608,163 @@ function renderArrangement(){
     '–'+(Math.max.apply(null, LIFTS.map(function(L){ return freq[L.k]||0; })) || 1)+
     ' <small>'+esc(t('uPerWeek'))+'</small></span></div>' +
     '<div class="flags" style="margin-top:12px">'+flag('info', t('icHowToPush'), advice)+'</div>';
+}
+
+/* ══ the record ════════════════════════════════════════════════════════
+   Everything above is a projection. This is what actually happened: one
+   weigh-in a day, averaged by week, held against the plan.               */
+
+function renderRecord(){
+  var started = C.started;
+
+  /* ── storage state, stated rather than assumed ── */
+  var st = $('#storeState');
+  if(STORAGE_OK === false){
+    st.innerHTML = flag('warn', t('icNoStore'), t('fNoStore'));
+  } else if(C.logCount > 0 || started){
+    st.innerHTML = '<p class="hint">' + esc(t('storeOk', C.logCount)) + '</p>';
+  } else {
+    st.innerHTML = '<p class="hint">' + esc(t('storeIdle')) + '</p>';
+  }
+
+  /* ── start / stop ── */
+  $('#recTag').textContent = started ? t('recDayOf', C.dayIndex, C.days) : t('recNotStarted');
+  $('#startRow').innerHTML = started
+    ? '<button type="button" class="linkbtn" id="stopPlan">'+esc(t('bStopPlan'))+'</button>'
+    : '<button type="button" class="bigbtn" id="startPlan">'+esc(t('bStartPlan'))+'</button>';
+  $('#startHelp').textContent = started ? t('hStarted') : t('hNotStarted');
+
+  var sp = $('#startPlan');
+  if(sp) sp.addEventListener('click', function(){
+    /* starting means starting now, so the plan's week 0 is today */
+    var dur = C.days;
+    S.startDate = iso(today);
+    S.endDate = iso(addDays(today, dur));
+    S.log.started = iso(today);
+    render();
+  });
+  var st2 = $('#stopPlan');
+  if(st2) st2.addEventListener('click', function(){
+    if(!confirm(t('pConfirmStop'))) return;
+    S.log.started = null;
+    render();
+  });
+
+  /* ── the last ten days, so a missed morning can be filled in ── */
+  var box = $('#weighBox');
+  var rows = [];
+  for(var i = 0; started && i < 10; i++){
+    var d = addDays(today, -i);
+    if(dayDiff(C.sd, d) < 0 || dayDiff(d, C.ed) < 0) continue;
+    var key = iso(d);
+    var v = S.log.entries[key];
+    var isToday = (key === C.todayKey);
+    rows.push('<div class="weigh'+(isToday?' weigh--today':'')+'">'+
+      '<span class="weigh__d">'+esc(shortDate(d))+(isToday?' <b>'+esc(t('wToday'))+'</b>':'')+'</span>'+
+      '<span class="gramwrap">'+
+        '<input type="text" inputmode="decimal" data-weigh="'+key+'" value="'+(v!=null?wShow(v):'')+'" '+
+        'placeholder="—" aria-label="'+esc(t('aWeighOn', shortDate(d)))+'" />'+
+        '<em class="eachu">'+wUnit()+'</em>'+
+      '</span>'+
+      (v!=null ? '<button type="button" class="xbtn" data-unweigh="'+key+'" aria-label="'+esc(t('aClearWeigh'))+'">×</button>'
+               : '<span class="weigh__pad"></span>')+
+      '</div>');
+  }
+  setHTMLKeepFocus(box, rows.join(''));
+
+  /* ── week by week against the plan ── */
+  var tb = $('#logBody');
+  if(!C.logWeeks.length){
+    tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-3)">'+esc(t('logEmpty'))+'</td></tr>';
+  } else {
+    tb.innerHTML = C.logWeeks.map(function(lw){
+      var diff = lw.avg - lw.plan;
+      /* "ahead" means the right side of plan, whichever way the plan goes */
+      var ahead = C.dW < 0 ? diff < -0.05 : (C.dW > 0 ? diff > 0.05 : Math.abs(diff) < 0.3);
+      var behind = C.dW < 0 ? diff > 0.05 : (C.dW > 0 ? diff < -0.05 : false);
+      var cls = ahead ? 'delta--up' : (behind ? 'delta--dn' : 'delta--flat');
+      return '<tr><td class="td-name">'+esc(t('wWeekN', lw.w))+
+        '<em class="liftgrp">'+esc(shortDate(lw.from))+' – '+esc(shortDate(lw.to))+'</em></td>'+
+        '<td>'+lw.n+'/7</td>'+
+        '<td><b>'+wShow(lw.avg)+'</b></td>'+
+        '<td>'+wShow(lw.plan)+'</td>'+
+        '<td><span class="delta '+cls+'">'+(diff>0?'+':(diff<0?'−':''))+wShow(Math.abs(diff))+'</span></td></tr>';
+    }).join('');
+  }
+
+  /* ── is it working? ── */
+  var tf = [];
+  if(!C.logWeeks.length){
+    tf.push(flag('info', t('icLogging'), t('fLogNone')));
+  } else if(!C.trend){
+    tf.push(flag('info', t('icLogging'), t('fLogOneWeek')));
+  } else {
+    var tr = C.trend;
+    var rateTxt = wShow(Math.abs(tr.actualRate),2) + ' ' + wUnit();
+    var planTxt = wShow(Math.abs(tr.plannedRate),2) + ' ' + wUnit();
+    if(!tr.offPace){
+      tf.push(flag('good', t('icOnTrack'), t('fOnTrack', rateTxt, planTxt)));
+    } else {
+      var slower = Math.abs(tr.actualRate) < Math.abs(tr.plannedRate) || (C.dW < 0 && tr.actualRate > 0);
+      tf.push(flag('warn', t('icOffTrack'),
+        t('fOffTrack', rateTxt, planTxt, fmt(Math.abs(tr.adjust)),
+          tr.adjust < 0 ? t('wCut') : t('wAdd'))));
+      if(C.logWeeks.length < 3) tf.push(flag('info', t('icTwoWeeks'), t('fTwoWeeks')));
+    }
+  }
+  $('#logFlags').innerHTML = tf.join('');
+}
+
+/* ══ wiring ════════════════════════════════════════════════════════════ */
+$('#weighBox').addEventListener('change', function(e){
+  var el = e.target.closest('[data-weigh]');
+  if(!el) return;
+  var raw = el.value.trim();
+  if(raw === ''){ delete S.log.entries[el.dataset.weigh]; }
+  else {
+    var v = wIn(num(raw, NaN));
+    if(!isFinite(v) || v < 20 || v > 400) return;
+    S.log.entries[el.dataset.weigh] = v;
+    /* today's weigh-in is also today's weight */
+    if(el.dataset.weigh === C.todayKey) S.weightKg = v;
+  }
+  render();
+});
+$('#weighBox').addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && e.target.closest('[data-weigh]')){ e.preventDefault(); e.target.blur(); }
+});
+$('#weighBox').addEventListener('click', function(e){
+  var x = e.target.closest('[data-unweigh]');
+  if(!x) return;
+  delete S.log.entries[x.dataset.unweigh];
+  render();
+});
+
+on('#backupToggle','click', function(){
+  var d = $('#backupBox');
+  d.hidden = !d.hidden;
+  if(!d.hidden) $('#backupText').value = exportState();
+});
+on('#backupCopy','click', function(){
+  var ta = $('#backupText');
+  ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  $('#backupCopy').textContent = t('bCopied');
+});
+on('#backupLoad','click', function(){
+  var txt = $('#backupText').value.trim();
+  if(!txt) return;
+  try{
+    importState(txt);
+    L = (S.lang === 'zh') ? 'zh' : 'en';
+    $('#backupBox').hidden = true;
+    C = compute(); solveDay(); render();
+  }catch(err){ alert(t('pBadBackup')); }
+});
+on('#profileName','input', function(e){ S.name = e.target.value.slice(0,40); save(); renderRecordName(); });
+function renderRecordName(){
+  var n = (S.name || '').trim();
+  $('#recWho').textContent = n ? t('recWhose', n) : t('recYours');
 }
 
 })();

@@ -16,6 +16,14 @@ adopt that week's figure. Protein is a flat g/kg of bodyweight and never moves;
 carbs and fat swing in opposite directions between training and rest days, with the
 weekly total of every macro preserved exactly.
 
+**It keeps a record.** Press start and it logs a weigh-in a day for the length of
+the plan, averages each week, draws those averages against the planned line, and
+compares your measured rate to the planned one — telling you what calorie change
+would close the gap, or to leave it alone when the difference is just noise.
+Everything is stored on your own device; if the browser blocks storage the page
+says so rather than losing your record quietly, and a backup box exports the whole
+thing as text.
+
 **The meal planner solves portions for you.** Pick what goes into each of three meals
 plus an optional post-workout meal, and the grams — or piece counts — are worked out
 so the day lands on its targets. Type or nudge any amount to pin it and everything
@@ -161,6 +169,12 @@ Chinese strings (`ZH`), the food database and model, and the render/wiring layer
   how eggs, bananas, apples, bread slices and whey scoops behave. Grams stay the
   storage unit either way, so nothing downstream changes. Users can also add
   their own foods in-app.
+- **The record**: `S.log.entries` is a flat `{ 'YYYY-MM-DD': kg }` map; `compute()`
+  turns it into `logWeeks` (weekly averages against the planned weight at each
+  week's midpoint) and `trend` (measured vs planned rate, plus the calorie
+  adjustment that would close the gap). `STORAGE_OK` records whether
+  `localStorage` actually worked, so a sandboxed frame is reported rather than
+  silently dropping everything.
 - **Meal solver**: `solveAmounts` is non-negative least squares by multiplicative
   update, over four objectives (protein, carbs, fat, calories) with the weights in
   `OBJ_W`. `foodCap` decides how much of one food is a sane maximum for a meal —
@@ -211,6 +225,11 @@ data URI 内联，CSS 和 JS 也都内联。你的输入保存在本机浏览器
 
 **分餐会自动算份量**：在三餐加一个可选的练后加餐里选好食物，程序会算出每样吃多少克（或几个），
 让全天正好落在目标上。手动输入或用加减号调整任一份量即可固定它，其余部分会围着它重新求解。
+
+**记录功能**：点「今天开始」后，页面会按计划天数每天记录一次体重，自动算出周平均，
+把它画在计划曲线旁边，并把实测速度和计划速度做对照——差距大就告诉你每天该调整多少热量，
+差距在噪音范围内就明确让你别动。所有数据保存在你自己的设备上；如果浏览器禁止保存，
+页面会直说，而不是悄悄丢掉你的记录，下面的备份框可以把全部内容导出成文本。
 
 **碳水策略**：默认使用「分阶段」——前 40% 恒定，中间 20% 过渡，最后 40% 完全碳水循环；
 每个阶段都按你那时的实际体重重新计算热量。也可以切换为全程恒定或全程循环。
