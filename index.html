@@ -1918,6 +1918,7 @@ var FOODS = [
   {id:'salmon',  cat:'protein', n:'Salmon, raw',             z:'三文鱼（生）',        kcal:208, p:20.4, c:0,   f:13.4, fib:0, serv:170, sv:'1 fillet', zsv:'1 块'},
   {id:'cod',     cat:'protein', n:'Cod, raw',                z:'鳕鱼（生）',          kcal:82,  p:17.8, c:0,   f:0.7,  fib:0, serv:150, sv:'1 fillet', zsv:'1 块'},
   {id:'tilapia', cat:'protein', n:'Tilapia, raw',            z:'罗非鱼（生）',        kcal:96,  p:20.1, c:0,   f:1.7,  fib:0, serv:150, sv:'1 fillet', zsv:'1 块'},
+  {id:'basa',    cat:'protein', n:'Basa, raw',               z:'巴沙鱼（生）',        kcal:90,  p:15.0, c:0,   f:3.0,  fib:0, serv:150, sv:'1 fillet', zsv:'1 块'},
   {id:'tuna',    cat:'protein', n:'Tuna, canned in water',   z:'金枪鱼罐头（水浸）',  kcal:116, p:25.5, c:0,   f:0.8,  fib:0, serv:142, sv:'1 can, drained', zsv:'1 罐，沥干'},
   {id:'egg',     cat:'protein', n:'Whole egg',               z:'鸡蛋（全蛋）',        kcal:143, p:12.6, c:0.7, f:9.5,  fib:0, serv:50,  sv:'1 large', zsv:'1 个大蛋', each:50, eu:'egg', zeu:'个'},
   {id:'eggw',    cat:'protein', n:'Egg white',               z:'蛋清',                kcal:52,  p:10.9, c:0.7, f:0.2,  fib:0, serv:33,  sv:'1 large', zsv:'1 个大蛋', each:33, eu:'white', zeu:'个'},
@@ -3325,7 +3326,10 @@ function foodCap(f, mealKcal){
            : f.cat === 'fruit' ? 3    /* nobody eats six bananas in one sitting */
            : f.kcal < 60  ? 3         /* watery veg */
            : 6;                       /* starches and the rest */
-  return clamp(Math.min(mult*f.serv, 120*mealKcal/Math.max(f.kcal,1)), 5, 1000);
+  /* 500 g is the outer edge of one sitting for anything. Past that the
+     honest answer is that these foods cannot reach the target, which the
+     flag under the meals will say, rather than a portion nobody eats. */
+  return clamp(Math.min(mult*f.serv, 120*mealKcal/Math.max(f.kcal,1)), 5, 500);
 }
 
 /* protein, carbs, fat, calories. Calories are targeted directly as well as

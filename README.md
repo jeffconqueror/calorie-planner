@@ -24,7 +24,7 @@ Everything is stored on your own device; if the browser blocks storage the page
 says so rather than losing your record quietly, and a backup box exports the whole
 thing as text.
 
-**99 foods are built in**, Western and Chinese, in both languages. For anything else
+**100 foods are built in**, Western and Chinese, in both languages. For anything else
 there is an add-food form; paste a free USDA key into it and it will look the numbers
 up for you, otherwise type the four numbers off the packet.
 
