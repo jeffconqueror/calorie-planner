@@ -7,4 +7,6 @@ node --check /tmp/load-app.js && echo "app script parses"
 node --check sw.js && echo "service worker parses"
 python3 -c "import json;json.load(open('manifest.webmanifest'));json.load(open('vercel.json'));print('manifest + vercel.json valid')"
 node check-i18n.js
+node tests/storage.test.js
+node tests/sw.test.js
 echo "all checks passed"

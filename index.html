@@ -873,9 +873,12 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
           <div id="backupBox" hidden>
             <p class="hint" style="margin:6px 0 8px" data-i18n="hBackup"></p>
             <textarea id="backupText" class="backup" spellcheck="false" data-i18n-aria="bBackup"></textarea>
-            <div style="display:flex;gap:10px;margin-top:6px">
+            <div style="display:flex;gap:14px;margin-top:6px;flex-wrap:wrap">
+              <button type="button" class="linkbtn" id="backupSave" data-i18n="bSaveFile"></button>
+              <button type="button" class="linkbtn" id="backupOpen" data-i18n="bOpenFile"></button>
               <button type="button" class="linkbtn" id="backupCopy" data-i18n="bCopy"></button>
               <button type="button" class="linkbtn" id="backupLoad" data-i18n="bRestore"></button>
+              <input type="file" id="backupFile" accept="application/json,.json" hidden />
             </div>
           </div>
         </div>
@@ -1059,6 +1062,12 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
           <button type="button" class="linkbtn" id="clearMeals" data-i18n="bClear" style="margin-left:auto;font-size:12px"></button>
         </div>
         <div class="panel__bd">
+          <div class="daybar">
+            <div class="seg seg--wide" role="group" data-i18n-aria="aMealMode">
+              <button type="button" id="modeDay" data-i18n="mmDay" aria-pressed="false"></button>
+              <button type="button" id="modeMeals" data-i18n="mmMeals" aria-pressed="true"></button>
+            </div>
+          </div>
           <div class="daybar" id="blockRow">
             <div class="seg" id="blockSeg" role="group" data-i18n-aria="aBlock"></div>
           </div>
@@ -1120,6 +1129,21 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
   htmlLang:'en', locale:'en-US',
+
+  /* ── durability and the whole-day list ── */
+  aMealMode:'How to lay the day out',
+  mmDay:'Whole day', mmMeals:'By meal',
+  mealWholeDay:'Everything today',
+  storeIn: function(where,n){ return 'Saved in ' + where + ' on this device — ' + n + ' weigh-in' + (n===1?'':'s') + ' recorded.'; },
+  storeLocal:'browser storage', storeIdb:'a local database', storeAnd:' and ',
+  storePersisted:'The browser has promised not to clear it.',
+  storeNotPersisted:'The browser has not promised to keep it, so keep a file copy below.',
+  storeExported: function(d){ return d === 0 ? 'Exported to a file today.' : 'Exported to a file ' + d + ' day' + (d===1?'':'s') + ' ago.'; },
+  icBackUp:'KEEP A COPY',
+  fNeverExported:'Your record only exists on this device. Deleting the app deletes it with them. Press <b>Save to a file</b> below once — it lands in Files or Downloads, and that copy outlives the phone.',
+  fStaleExport: function(d){ return 'Last file copy was <b>' + d + ' days</b> ago. Press <b>Save to a file</b> again — it takes a second and it is the only copy that survives deleting the app.'; },
+  bSaveFile:'Save to a file', bOpenFile:'Open a file',
+
 
   /* ── installing to a home screen ── */
   installTip:'Put this on your home screen: tap <b>Share</b>, then <b>Add to Home Screen</b>. It gets an icon, opens without the browser bars, and keeps working with no signal.',
@@ -1505,6 +1529,21 @@ var EN = {
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   htmlLang:'zh-CN', locale:'zh-CN',
+
+  /* ── 数据保全与整日清单 ── */
+  aMealMode:'一天怎么安排',
+  mmDay:'整天一起', mmMeals:'按餐次分',
+  mealWholeDay:'今天要吃的',
+  storeIn: function(where,n){ return '已保存在这台设备的' + where + '中——共记录了 ' + n + ' 次体重。'; },
+  storeLocal:'浏览器存储', storeIdb:'本地数据库', storeAnd:'和',
+  storePersisted:'浏览器已承诺不会清除它。',
+  storeNotPersisted:'浏览器没有承诺一定保留，所以请用下面的功能存一份文件备份。',
+  storeExported: function(d){ return d === 0 ? '今天已导出过文件备份。' : d + ' 天前导出过文件备份。'; },
+  icBackUp:'留个备份',
+  fNeverExported:'你的记录只存在这台设备上。删掉这个应用，它们就一起没了。点一下下面的<b>保存为文件</b>——文件会存进"文件"或"下载"里，那份副本比手机活得久。',
+  fStaleExport: function(d){ return '上次导出文件备份是 <b>' + d + ' 天</b>前了。再点一次<b>保存为文件</b>吧——只要一秒，而且这是唯一能在删除应用后仍能保留的副本。'; },
+  bSaveFile:'保存为文件', bOpenFile:'打开文件',
+
 
   /* ── 添加到主屏幕 ── */
   installTip:'把它放到主屏幕：点<b>分享</b>，然后选<b>添加到主屏幕</b>。会有独立图标，打开时没有浏览器边栏，没网也能用。',
@@ -2135,7 +2174,7 @@ function defaults(){
     cheatKcal:800, proteinPerKg:2.0,
     name:'', usdaKey:'', log:{started:null, entries:{}},
     kcalOverride:null, kcalSource:'plan',
-    dayType:'train', activeMeal:'m1', planBlock:null,
+    dayType:'train', activeMeal:'m1', planBlock:null, mealMode:'day', lastExport:null,
     meals:[
       {key:'m1', share:30, items:[]},
       {key:'m2', share:30, items:[]},
@@ -2153,11 +2192,75 @@ var STORE = 'load-planner-v4';
    settings quietly evaporate on refresh. Track whether it really persisted
    so the page can say so instead of pretending. */
 var STORAGE_OK = null, LAST_SAVED = null;
-function save(){
+var IDB_OK = null, PERSISTED = null, QUOTA = null;
+
+/* ── Two independent stores ────────────────────────────────────────────
+   localStorage is the fast path but it is the first thing a browser drops
+   under pressure, and "clear history" takes it. IndexedDB survives more,
+   and is what persistent-storage permission actually protects. Writing to
+   both means one being cleared is a recoverable event, not a lost record. */
+var IDB = null;
+function idbOpen(cb){
+  if(IDB) return cb(IDB);
+  if(!window.indexedDB){ IDB_OK = false; return cb(null); }
+  var req;
+  try{ req = indexedDB.open('load-planner', 1); }
+  catch(e){ IDB_OK = false; return cb(null); }
+  req.onupgradeneeded = function(){
+    var db = req.result;
+    if(!db.objectStoreNames.contains('state')) db.createObjectStore('state');
+  };
+  req.onsuccess = function(){ IDB = req.result; IDB_OK = true; cb(IDB); };
+  req.onerror = function(){ IDB_OK = false; cb(null); };
+}
+function idbPut(value){
+  idbOpen(function(db){
+    if(!db) return;
+    try{
+      var tx = db.transaction('state', 'readwrite');
+      tx.objectStore('state').put(value, 'S');
+      tx.onerror = function(){ IDB_OK = false; };
+    }catch(e){ IDB_OK = false; }
+  });
+}
+function idbGet(cb){
+  idbOpen(function(db){
+    if(!db) return cb(null);
+    try{
+      var rq = db.transaction('state', 'readonly').objectStore('state').get('S');
+      rq.onsuccess = function(){ cb(rq.result || null); };
+      rq.onerror = function(){ cb(null); };
+    }catch(e){ cb(null); }
+  });
+}
+
+/* Ask the browser not to evict us. On a home-screen iOS app and on Chrome
+   with the site installed this is normally granted; elsewhere it may be
+   refused, which the record panel then says out loud. */
+function requestPersistence(){
+  if(!navigator.storage || !navigator.storage.persist) return;
   try{
-    localStorage.setItem(STORE, JSON.stringify(S));
+    navigator.storage.persisted().then(function(already){
+      if(already){ PERSISTED = true; return; }
+      return navigator.storage.persist().then(function(ok){ PERSISTED = !!ok; });
+    })['catch'](function(){ PERSISTED = null; });
+    if(navigator.storage.estimate){
+      navigator.storage.estimate().then(function(e){ QUOTA = e; })['catch'](function(){});
+    }
+  }catch(e){ PERSISTED = null; }
+}
+
+var saveTimer = null;
+function save(){
+  var payload;
+  try{ payload = JSON.stringify(S); }catch(e){ return; }
+  try{
+    localStorage.setItem(STORE, payload);
     STORAGE_OK = true; LAST_SAVED = new Date();
   }catch(e){ STORAGE_OK = false; }
+  /* IndexedDB writes are async and this runs on every render, so coalesce */
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){ idbPut(payload); }, 400);
 }
 function exportState(){ return JSON.stringify(S, null, 2); }
 function importState(text){
@@ -2171,22 +2274,58 @@ function importState(text){
   if(!Array.isArray(S.custom)) S.custom = [];
   if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
 }
+/* Normalise whatever came out of storage into a usable state object. */
+function adoptState(o){
+  if(!o || typeof o !== 'object') return false;
+  var d = defaults();
+  for(var k in o){ if(Object.prototype.hasOwnProperty.call(d,k)) d[k] = o[k]; }
+  S = d;
+  if(!Array.isArray(S.custom)) S.custom = [];
+  if(!S.log || typeof S.log !== 'object') S.log = {started:null, entries:{}};
+  if(!S.log.entries || typeof S.log.entries !== 'object') S.log.entries = {};
+  if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
+  S.meals.forEach(function(m){ if(!Array.isArray(m.items)) m.items = []; });
+  return true;
+}
+/* How much is actually in a saved state, so the fuller of two copies wins. */
+function stateWeight(o){
+  if(!o || typeof o !== 'object') return -1;
+  var n = 0;
+  try{
+    if(o.log && o.log.entries) n += Object.keys(o.log.entries).length * 10;
+    if(Array.isArray(o.custom)) n += o.custom.length * 5;
+    if(Array.isArray(o.meals)) o.meals.forEach(function(m){
+      if(m && Array.isArray(m.items)) n += m.items.length;
+    });
+    if(o.name) n += 1;
+  }catch(e){}
+  return n;
+}
 function load(){
   try{
     var raw = localStorage.getItem(STORE);
-    if(!raw) return;
-    var o = JSON.parse(raw);
-    if(o && typeof o === 'object'){
-      var d = defaults();
-      for(var k in o){ if(Object.prototype.hasOwnProperty.call(d,k)) d[k] = o[k]; }
-      S = d;
-    }
-    if(!Array.isArray(S.custom)) S.custom = [];
-    if(!S.log || typeof S.log !== 'object') S.log = {started:null, entries:{}};
-    if(!S.log.entries || typeof S.log.entries !== 'object') S.log.entries = {};
-    if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
-    S.meals.forEach(function(m){ if(!Array.isArray(m.items)) m.items = []; });
+    if(raw) adoptState(JSON.parse(raw));
   }catch(e){}
+}
+/* IndexedDB answers asynchronously, so it is read just after the first
+   paint. If it holds more than localStorage did — because localStorage was
+   cleared, or an older copy lingered — it wins and the page re-renders. */
+function loadFromIdbIfBetter(){
+  idbGet(function(raw){
+    if(!raw) return;
+    var o;
+    try{ o = JSON.parse(raw); }catch(e){ return; }
+    if(stateWeight(o) > stateWeight(S)){
+      var lang = S.lang;
+      if(adoptState(o)){
+        if(!o.lang) S.lang = lang;
+        L = (S.lang === 'zh') ? 'zh' : 'en';
+        C = compute(); solveDay(); render();
+      }
+    } else {
+      save();          /* keep the two copies in step */
+    }
+  });
 }
 function allFoods(){ return FOODS.concat(S.custom); }
 function foodById(id){
@@ -3383,6 +3522,12 @@ C = compute();
 solveDay();
 render();
 
+/* After the first paint: ask the browser not to evict us, then see whether
+   the local database holds a fuller copy than localStorage did. */
+requestPersistence();
+loadFromIdbIfBetter();
+setTimeout(function(){ if(C) renderRecord(); }, 900);   /* refresh the status once the answers land */
+
 /* ══ meal solver ═══════════════════════════════════════════════════════
    Given the foods you picked and the macros a meal has to hit, work out how
    much of each. This is non-negative least squares, solved by multiplicative
@@ -3403,10 +3548,12 @@ function foodCap(f, mealKcal){
            : f.cat === 'fruit' ? 3    /* nobody eats six bananas in one sitting */
            : f.kcal < 60  ? 3         /* watery veg */
            : 6;                       /* starches and the rest */
-  /* 500 g is the outer edge of one sitting for anything. Past that the
-     honest answer is that these foods cannot reach the target, which the
-     flag under the meals will say, rather than a portion nobody eats. */
-  return clamp(Math.min(mult*f.serv, 120*mealKcal/Math.max(f.kcal,1)), 5, 500);
+  /* The outer edge of what one bucket can hold: 500 g for a single sitting,
+     more when the bucket is a whole day. Past that the honest answer is that
+     these foods cannot reach the target, which the flag under the list says,
+     rather than a portion nobody would ever weigh out. */
+  var ceiling = dayMode() ? 1200 : 500;
+  return clamp(Math.min(mult*f.serv, 120*mealKcal/Math.max(f.kcal,1)), 5, ceiling);
 }
 
 /* protein, carbs, fat, calories. Calories are targeted directly as well as
@@ -3444,7 +3591,11 @@ function roundPortion(f, g){
   return Math.max(0, Math.round(g/5)*5);
 }
 
+/* In "whole day" mode everything lives in one list, so the solver sees a
+   single bucket holding 100% of the day rather than four shares. */
+function dayMode(){ return S.mealMode === 'day'; }
 function activeMeals(){
+  if(dayMode()) return [S.meals[0]];
   return S.meals.filter(function(m){
     return !(m.key === 'pw' && (!C.isTrain || C.gymDays === 0));  /* no workout, no post-workout meal */
   });
@@ -3525,6 +3676,8 @@ function dayTotals(){
 function renderMeals(){
   renderFoodGrid();
 
+  $('#modeDay').setAttribute('aria-pressed', String(dayMode()));
+  $('#modeMeals').setAttribute('aria-pressed', String(!dayMode()));
   $('#dayTrain').setAttribute('aria-pressed', String(C.isTrain));
   $('#dayRest').setAttribute('aria-pressed', String(!C.isTrain));
   $('#dayTypeRow').hidden = !C.cycActive;
@@ -3551,8 +3704,9 @@ function renderMeals(){
   var live = activeMeals();
   var shareSum = live.reduce(function(a,m){ return a + Math.max(0,m.share); }, 0) || 1;
 
-  var html = S.meals.map(function(m){
-    var off = (m.key === 'pw' && (!C.isTrain || C.gymDays === 0));
+  var cards = dayMode() ? [S.meals[0]] : S.meals;
+  var html = cards.map(function(m){
+    var off = !dayMode() && (m.key === 'pw' && (!C.isTrain || C.gymDays === 0));
     var mt = mealTotals(m);
     var share = Math.max(0,m.share)/shareSum;
     var sel = (S.activeMeal === m.key && !off);
@@ -3583,9 +3737,10 @@ function renderMeals(){
 
     return '<div class="meal'+(sel?' meal--on':'')+(off?' meal--off':'')+'" data-meal="'+m.key+'">'+
       '<div class="meal__hd">'+
-        '<span class="meal__name">'+esc(t('meal_'+m.key))+'</span>'+
+        '<span class="meal__name">'+esc(dayMode() ? t('mealWholeDay') : t('meal_'+m.key))+'</span>'+
         (off ? '<span class="hint">'+esc(t('mealOffRest'))+'</span>'
-             : '<span class="meal__share"><input type="text" inputmode="numeric" value="'+r0(m.share)+'" data-share="'+m.key+'" aria-label="'+esc(t('aShare'))+'" />%</span>'+
+             : (dayMode() ? ''
+                : '<span class="meal__share"><input type="text" inputmode="numeric" value="'+r0(m.share)+'" data-share="'+m.key+'" aria-label="'+esc(t('aShare'))+'" />%</span>')+
                '<span class="meal__tot">'+fmt(mt.kcal)+' <small>/ '+fmt(T.kcal*share)+' '+t('uKcal')+'</small></span>')+
       '</div>'+
       (off ? '' : (rows || '<p class="mealempty">'+esc(sel?t('mealPickHere'):t('mealTapToPick'))+'</p>'))+
@@ -3664,14 +3819,31 @@ $('#blockSeg').addEventListener('click', function(e){
   var b = e.target.closest('[data-block]'); if(!b) return;
   S.planBlock = +b.dataset.block; resolveAndRender();
 });
+on('#modeDay','click', function(){
+  if(dayMode()) return;
+  /* fold every meal into the one list, so switching never loses a food */
+  var all = S.meals[0].items.slice();
+  S.meals.slice(1).forEach(function(m){
+    m.items.forEach(function(it){
+      var dup = null;
+      for(var i=0;i<all.length;i++) if(all[i].id === it.id) dup = all[i];
+      if(dup) dup.g += it.g; else all.push(it);
+    });
+    m.items = [];
+  });
+  S.meals[0].items = all;
+  S.mealMode = 'day'; S.activeMeal = 'm1';
+  resolveAndRender();
+});
+on('#modeMeals','click', function(){ S.mealMode='meals'; resolveAndRender(); });
 on('#dayTrain','click', function(){ S.dayType='train'; resolveAndRender(); });
 on('#dayRest','click',  function(){ S.dayType='rest';  resolveAndRender(); });
 
 $('#foodGrid').addEventListener('click', function(e){
   var b = e.target.closest('.chip'); if(!b) return;
   var f = foodById(b.dataset.food); if(!f) return;
-  var m = mealByKey(S.activeMeal) || S.meals[0];
-  if(m.key === 'pw' && !C.isTrain){ m = S.meals[0]; S.activeMeal = m.key; }
+  var m = dayMode() ? S.meals[0] : (mealByKey(S.activeMeal) || S.meals[0]);
+  if(!dayMode() && m.key === 'pw' && !C.isTrain){ m = S.meals[0]; S.activeMeal = m.key; }
   var found = null;
   for(var i=0;i<m.items.length;i++) if(m.items[i].id === f.id) found = m.items[i];
   if(found){ if(found.lock) found.g += f.serv; }
@@ -3849,12 +4021,30 @@ function renderRecord(){
 
   /* ── storage state, stated rather than assumed ── */
   var st = $('#storeState');
-  if(STORAGE_OK === false){
-    st.innerHTML = flag('warn', t('icNoStore'), t('fNoStore'));
-  } else if(C.logCount > 0 || started){
-    st.innerHTML = '<p class="hint">' + esc(t('storeOk', C.logCount)) + '</p>';
+  if(STORAGE_OK === false && IDB_OK !== true){
+    st.innerHTML = flag('crit', t('icNoStore'), t('fNoStore'));
   } else {
-    st.innerHTML = '<p class="hint">' + esc(t('storeIdle')) + '</p>';
+    /* say exactly which copies exist and whether the browser has promised
+       not to evict them — vague reassurance is worse than none */
+    var where = [];
+    if(STORAGE_OK !== false) where.push(t('storeLocal'));
+    if(IDB_OK === true) where.push(t('storeIdb'));
+    var bits = '<p class="hint">' + esc(t('storeIn', where.join(t('storeAnd')), C.logCount)) + '</p>';
+    if(PERSISTED === true){
+      bits += '<p class="hint"><b style="color:var(--good-ink)">' + esc(t('storePersisted')) + '</b></p>';
+    } else if(PERSISTED === false){
+      bits += '<p class="hint">' + esc(t('storeNotPersisted')) + '</p>';
+    }
+    st.innerHTML = bits;
+
+    /* a file copy is the only one that survives deleting the app */
+    var days = S.lastExport ? dayDiff(parseISO(S.lastExport), today) : null;
+    if(C.logCount >= 3 && (days === null || days >= 14)){
+      st.innerHTML += flag('warn', t('icBackUp'),
+        days === null ? t('fNeverExported') : t('fStaleExport', days));
+    } else if(days !== null && days < 14){
+      st.innerHTML += '<p class="hint">' + esc(t('storeExported', days)) + '</p>';
+    }
   }
 
   /* ── start / stop ── */
@@ -3974,6 +4164,42 @@ on('#backupToggle','click', function(){
   var d = $('#backupBox');
   d.hidden = !d.hidden;
   if(!d.hidden) $('#backupText').value = exportState();
+});
+/* A file lands in Files / iCloud Drive, which outlives the browser, the
+   app and the phone. This is the copy that actually cannot be forgotten. */
+on('#backupSave','click', function(){
+  var name = 'load-' + iso(new Date()) + '.json';
+  var text = exportState();
+  try{
+    var blob = new Blob([text], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    S.lastExport = iso(new Date()); save(); render();
+  }catch(e){
+    /* if a download is refused, the text box is still there to copy from */
+    $('#backupText').value = text;
+    $('#backupText').select();
+  }
+});
+on('#backupOpen','click', function(){ $('#backupFile').click(); });
+on('#backupFile','change', function(e){
+  var f = e.target.files && e.target.files[0];
+  if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      importState(String(r.result));
+      L = (S.lang === 'zh') ? 'zh' : 'en';
+      $('#backupBox').hidden = true;
+      C = compute(); solveDay(); render();
+    }catch(err){ alert(t('pBadBackup')); }
+  };
+  r.onerror = function(){ alert(t('pBadBackup')); };
+  r.readAsText(f);
+  e.target.value = '';
 });
 on('#backupCopy','click', function(){
   var ta = $('#backupText');

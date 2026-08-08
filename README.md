@@ -28,10 +28,10 @@ thing as text.
 there is an add-food form; paste a free USDA key into it and it will look the numbers
 up for you, otherwise type the four numbers off the packet.
 
-**The meal planner solves portions for you.** Pick what goes into each of three meals
-plus an optional post-workout meal, and the grams — or piece counts — are worked out
-so the day lands on its targets. Type or nudge any amount to pin it and everything
-else re-solves around it.
+**Pick the foods, get the grams.** Choose what you want to eat and the app works out
+how much of each — the default is one list for the whole day, or switch to three meals
+plus a post-workout meal if you would rather split it. Type or nudge any amount to pin
+it and everything else re-solves around it.
 
 **The whole app is one self-contained `index.html`.** No build step, no dependencies,
 no network requests at runtime — the display font and the favicon are inlined as data
@@ -39,6 +39,23 @@ URIs, and the CSS and JS are inline. You can email the file to someone and it wo
 Your inputs are saved in `localStorage` on your own device and never leave it.
 
 ---
+
+## Is there a native app?
+
+No, and for this app there is little to gain from one. Getting a native build onto an
+iPhone needs a Mac, Xcode, and either a paid Apple Developer account or re-signing it
+every seven days. What native would buy you here is push notifications and HealthKit;
+everything else — home-screen icon, offline, local storage, camera — the installed web
+app already has.
+
+If you ever want to go native anyway, the whole app is one HTML file, so wrapping it
+takes minutes on a Mac:
+
+```bash
+npm i -D @capacitor/cli @capacitor/core @capacitor/ios
+npx cap init Load com.example.load --web-dir .
+npx cap add ios && npx cap open ios      # then Build & Run from Xcode
+```
 
 ## Put it on your phone
 
@@ -57,10 +74,19 @@ Once installed it runs from the copy on your device, so it opens instantly and w
 on a plane or in a basement gym. When you next have signal it quietly picks up any
 new version.
 
-> **Back your record up now and then.** Everything lives in this device's browser
-> storage. iOS can evict storage for apps left unused for a long stretch, and deleting
-> the home-screen app deletes its data. The **Backup / restore** box under *Your record*
-> exports the lot as text — keep a copy in Notes and you can never lose a plan.
+### Not losing your data
+
+Three independent things guard it:
+
+1. **Two stores.** Every save writes to `localStorage` *and* an IndexedDB database. If
+   one is cleared the other still has it, and on the next load the fuller copy wins.
+2. **Persistent storage.** The app calls `navigator.storage.persist()`, which asks the
+   browser not to evict it. Installed to a home screen this is normally granted; the
+   record panel says out loud whether it was.
+3. **A file copy.** *Save to a file* under **Backup / restore** writes a dated
+   `load-YYYY-MM-DD.json` into Files or Downloads. This is the only copy that survives
+   deleting the app or losing the phone, so the page nags for a fresh one every couple
+   of weeks. *Open a file* reads it straight back.
 
 The lookup and install features need the real site; a Claude artifact link cannot
 register a service worker or install to a home screen.

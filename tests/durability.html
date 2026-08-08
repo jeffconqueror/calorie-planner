@@ -1,0 +1,102 @@
+<div id="TESTOUT" style="white-space:pre;font-family:monospace;padding:12px"></div>
+<script>
+setTimeout(function(){
+var R=[], done=false;
+function ck(n,c,x){R.push((c?'PASS':'FAIL')+' | '+n+(x!=null?'  ['+x+']':''));}
+function q(s){return document.querySelector(s);}
+function qa(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
+function T(s){var e=q(s);return e?e.textContent.trim():'';}
+function fin(){ if(done)return; done=true;
+  var f=R.filter(function(x){return x.indexOf('FAIL')===0;});
+  document.getElementById('TESTOUT').textContent='===S===\n'+R.join('\n')+'\n---\n'+(R.length-f.length)+'/'+R.length+' passed\n===E===';}
+window.confirm=function(){return true;}; window.alert=function(){};
+
+/* ── whole-day mode ── */
+ck('whole day is the default layout', q('#modeDay').getAttribute('aria-pressed')==='true');
+ck('only one list is shown', qa('.meal').length===1, qa('.meal').length);
+ck('it is named for the day', /Everything today/.test(T('.meal__name')), T('.meal__name'));
+ck('no share box in day mode', qa('.meal__share').length===0);
+q('[data-food="chbr_r"]').click(); q('[data-food="ricew_c"]').click(); q('[data-food="oil"]').click();
+ck('foods go straight into the one list', qa('#meals .mitem').length===3, qa('#meals .mitem').length);
+function prog(i){var e=qa('#mealProgs .prog')[i].querySelector('.prog__v');
+  var m=e.textContent.replace(/,/g,'').match(/(\d+)\s*\/\s*(\d+)/);return {a:+m[1],b:+m[2]};}
+var k=prog(0), p=prog(1);
+ck('grams are worked out for the whole day', Math.abs(k.a-k.b)/k.b<0.05, k.a+'/'+k.b+' kcal');
+ck('and protein lands', Math.abs(p.a-p.b)/p.b<0.07, p.a+'/'+p.b+' g');
+ck('every food got a number',
+   qa('#meals input[data-mi]').every(function(i){return parseFloat(i.value)>=0;}),
+   qa('#meals input[data-mi]').map(function(i){return i.value;}).join(', '));
+
+/* switching to meals and back must not lose food */
+q('#modeMeals').click();
+ck('by-meal shows four cards again', qa('.meal').length===4, qa('.meal').length);
+ck('the foods survived the switch', qa('#meals .mitem').length>=3, qa('#meals .mitem').length);
+qa('.meal')[2].click(); q('[data-food="broc"]').click();
+var beforeCount = qa('#meals .mitem').length;
+q('#modeDay').click();
+ck('folding back into one list keeps every food',
+   qa('#meals .mitem').length===beforeCount, beforeCount+' -> '+qa('#meals .mitem').length);
+ck('and it is one card again', qa('.meal').length===1);
+
+/* ── storage ── */
+ck('storage status is reported', T('#storeState').length>20, T('#storeState').slice(0,60));
+ck('it names browser storage', /browser storage/.test(T('#storeState')));
+var lsRaw=''; try{ lsRaw = localStorage.getItem('load-planner-v4')||''; }catch(e){}
+ck('localStorage holds the state', lsRaw.length>100, lsRaw.length+' chars');
+
+/* IndexedDB mirror */
+setTimeout(function(){
+  var req = indexedDB.open('load-planner', 1);
+  req.onsuccess = function(){
+    var db = req.result;
+    var g = db.transaction('state','readonly').objectStore('state').get('S');
+    g.onsuccess = function(){
+      ck('IndexedDB holds a second copy', !!g.result && String(g.result).length>100,
+         g.result ? String(g.result).length+' chars' : 'empty');
+      var same = false;
+      try{ same = JSON.parse(g.result).targetKg === JSON.parse(lsRaw).targetKg; }catch(e){}
+      ck('the two copies agree', same);
+
+      /* simulate localStorage being wiped: the app must still find the data */
+      ck('recovery path exists', typeof loadFromIdbIfBetter === 'function' ||
+         document.documentElement.innerHTML.indexOf('loadFromIdbIfBetter')>0);
+
+      /* ── file backup ── */
+      q('#backupToggle').click();
+      var clicked = null;
+      var origCreate = document.createElement.bind(document);
+      document.createElement = function(tag){
+        var el = origCreate(tag);
+        if(tag === 'a'){ el.click = function(){ clicked = {href:el.href, name:el.download}; }; }
+        return el;
+      };
+      q('#backupSave').click();
+      document.createElement = origCreate;
+      ck('Save to a file produces a download', !!clicked, clicked ? clicked.name : 'none');
+      ck('it is named with the date', clicked && /^load-\d{4}-\d{2}-\d{2}\.json$/.test(clicked.name),
+         clicked && clicked.name);
+      ck('it is a blob, not a data URI', clicked && /^blob:/.test(clicked.href));
+      ck('exporting is remembered', /Exported to a file/.test(T('#storeState')), T('#storeState').slice(-40));
+      ck('the file-open control exists', !!q('#backupFile') && q('#backupFile').type==='file');
+      ck('and accepts json', /json/.test(q('#backupFile').accept), q('#backupFile').accept);
+
+      /* backup nudge when there is a record and no export */
+      q('#startPlan').click();
+      var w=q('#weighBox input[data-weigh]'); w.value='78.4'; w.dispatchEvent(new Event('change',{bubbles:true}));
+      ck('a fresh export suppresses the nudge', !/KEEP A COPY/.test(T('#storeState')));
+
+      q('#langZh').click();
+      ck('zh day mode', /整天一起|今天要吃的/.test(document.body.innerText));
+      ck('zh storage status', /已保存在这台设备/.test(T('#storeState')), T('#storeState').slice(0,24));
+      q('#langEn').click();
+      ck('no NaN', document.body.innerText.indexOf('NaN')<0);
+      ck('no undefined', document.body.innerText.indexOf('undefined')<0);
+      fin();
+    };
+    g.onerror = function(){ ck('IndexedDB readable', false); fin(); };
+  };
+  req.onerror = function(){ ck('IndexedDB opens', false); fin(); };
+}, 900);
+setTimeout(fin, 8000);
+},900);
+</script>

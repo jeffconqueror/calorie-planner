@@ -42,6 +42,7 @@ ck('no deadlift', !/[^n]Deadlift/.test(T('#liftBody').replace('Romanian deadlift
 ck('a week is arranged', qa('#arrangeBox .sess').length>0, qa('#arrangeBox .sess').length+' sessions');
 
 /* ── meals ── */
+q('#modeMeals').click();          // this suite exercises the by-meal layout
 qa('.meal')[0].click();
 q('[data-food="oats"]').click(); q('[data-food="eggw"]').click(); q('[data-food="pb"]').click();
 qa('.meal')[1].click();
@@ -54,7 +55,8 @@ var k=prog(0), p=prog(1);
 ck('solver lands calories within 4%', Math.abs(k.a-k.b)/k.b<0.04, k.a+'/'+k.b);
 ck('solver lands protein within 6%', Math.abs(p.a-p.b)/p.b<0.06, p.a+'/'+p.b);
 ck('no portion exceeds one sitting',
-   qa('#meals input[data-mi]:not([data-each])').every(function(i){return parseFloat(i.value)<=500;}));
+   qa('#meals input[data-mi]:not([data-each])').every(function(i){return parseFloat(i.value)<=500;}),
+   qa('#meals input[data-mi]:not([data-each])').map(function(i){return i.value;}).join(','));
 var f0=q('#meals input[data-mi]'); var key=f0.dataset.mi;
 f0.focus(); f0.value=''; f0.dispatchEvent(new Event('input',{bubbles:true}));
 '135'.split('').forEach(function(ch){var a=document.activeElement;a.value+=ch;a.dispatchEvent(new Event('input',{bubbles:true}));});
