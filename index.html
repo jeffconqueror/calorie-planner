@@ -1,6 +1,12 @@
 <meta charset="utf-8" />
 <title>Load — calorie &amp; strength planner / 热量与力量规划器</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Load" />
+<link rel="apple-touch-icon" href="icon-180.png" />
 <meta name="description" content="Plan calories, macros, body composition and strength for a diet, maintenance or bulk. 减脂、保持或增肌的热量、宏量营养素、身体成分与力量规划器。" />
 <meta name="theme-color" content="#E7E8E4" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#101315" media="(prefers-color-scheme: dark)" />
@@ -136,7 +142,12 @@ button{font:inherit;color:inherit}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;transition-duration:.001ms !important}
 }
-.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(14px,3vw,32px)}
+/* Installed to a home screen there is no browser chrome, so the page owes the
+   notch and the home indicator their space itself. */
+.wrap{max-width:1200px;margin:0 auto;
+  padding-left:max(clamp(14px,3vw,32px), env(safe-area-inset-left));
+  padding-right:max(clamp(14px,3vw,32px), env(safe-area-inset-right))}
+body{padding-top:env(safe-area-inset-top)}
 
 /* ── Masthead ───────────────────────────────────────────────────────── */
 .masthead{border-bottom:1px solid var(--rule);background:var(--panel);position:sticky;top:0;z-index:40}
@@ -162,7 +173,7 @@ button{font:inherit;color:inherit}
 .linkbtn:hover{color:var(--ink)}
 
 /* ── Sections ───────────────────────────────────────────────────────── */
-main{padding-bottom:64px}
+main{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
 .section{padding-top:clamp(28px,4vw,44px)}
 .section__hd{display:flex;align-items:baseline;gap:14px;margin-bottom:14px}
 .section__hd h2{font-size:15px;letter-spacing:var(--tr-wide);text-transform:uppercase;white-space:nowrap}
@@ -466,6 +477,13 @@ tr.liftrisk .delta{color:var(--crit-ink)}
   text-transform:uppercase;color:var(--accent-ink)}
 .weigh__pad{width:26px}
 .weigh .gramwrap input{width:64px;text-align:right;padding-right:4px}
+.installtip{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--accent);
+  border-radius:2px;background:var(--accent-soft);padding:10px 12px;margin-top:14px;
+  font-size:13px;line-height:1.5}
+.installtip b{font-weight:600}
+.installtip button{appearance:none;border:0;background:none;cursor:pointer;color:var(--ink-3);
+  font-size:17px;line-height:1;padding:0 2px;margin-left:auto;flex:none}
+.installtip button:hover{color:var(--ink)}
 .addbox{border:1px solid var(--accent);border-radius:2px;background:var(--panel-2);
   padding:12px 14px 14px;margin-bottom:16px}
 .afhits{display:flex;flex-direction:column;gap:4px;margin-top:8px}
@@ -525,6 +543,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 </header>
 
 <main class="wrap">
+  <div id="installTip"></div>
 
   <!-- ═══ SETUP ═══ -->
   <section class="section">
@@ -1102,6 +1121,11 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 var EN = {
   htmlLang:'en', locale:'en-US',
 
+  /* ── installing to a home screen ── */
+  installTip:'Put this on your home screen: tap <b>Share</b>, then <b>Add to Home Screen</b>. It gets an icon, opens without the browser bars, and keeps working with no signal.',
+  bDismiss:'Dismiss',
+  offlineReady:'Ready offline — the whole app is stored on this device.',
+
   /* ── adding a food ── */
   afTitle:'Add a food', afName:'Name', afNamePh:'e.g. pork shoulder',
   afKcal:'Calories', afServ:'Usual portion',
@@ -1481,6 +1505,11 @@ var EN = {
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   htmlLang:'zh-CN', locale:'zh-CN',
+
+  /* ── 添加到主屏幕 ── */
+  installTip:'把它放到主屏幕：点<b>分享</b>，然后选<b>添加到主屏幕</b>。会有独立图标，打开时没有浏览器边栏，没网也能用。',
+  bDismiss:'关闭',
+  offlineReady:'已可离线使用——整个应用都存在这台设备上。',
 
   /* ── 添加食物 ── */
   afTitle:'添加食物', afName:'名称', afNamePh:'例如：猪梅花肉',
@@ -2561,6 +2590,7 @@ function render(){
   renderComposition();
   renderRecord();
   renderRecordName();
+  renderInstallTip();
   renderStrength();
   renderArrangement();
   renderCheat();
@@ -3298,6 +3328,53 @@ on('#resetAll','click', function(){
   render();
 });
 window.addEventListener('resize', function(){ if(C) renderTrajectory(); });
+
+/* ══ go ════════════════════════════════════════════════════════════════ */
+/* ══ home-screen install ═══════════════════════════════════════════════
+   Installed from Safari the page becomes a standalone app: its own icon,
+   no browser bars, and — via the service worker — no need for signal. None
+   of this can work inside an embedded frame, so it stays quiet there. */
+var TIP_KEY = 'load-tip-dismissed';
+
+function inFrame(){
+  try{ return window.self !== window.top; }catch(e){ return true; }
+}
+function isStandalone(){
+  if(window.navigator.standalone === true) return true;               /* iOS */
+  return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+}
+function isApplePhone(){
+  var ua = navigator.userAgent || '';
+  if(/iPad|iPhone|iPod/.test(ua)) return true;
+  /* an iPad on recent iPadOS reports itself as a Mac, but with touch points */
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+}
+function tipDismissed(){
+  try{ return localStorage.getItem(TIP_KEY) === '1'; }catch(e){ return false; }
+}
+
+function renderInstallTip(){
+  var el = $('#installTip');
+  if(!el) return;
+  if(inFrame() || isStandalone() || !isApplePhone() || tipDismissed()){
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = '<div class="installtip"><span>' + t('installTip') + '</span>' +
+    '<button type="button" id="tipDismiss" aria-label="' + esc(t('bDismiss')) + '">×</button></div>';
+  $('#tipDismiss').addEventListener('click', function(){
+    try{ localStorage.setItem(TIP_KEY, '1'); }catch(e){}
+    el.innerHTML = '';
+  });
+}
+
+/* A service worker needs a secure context and a real page — never a frame. */
+if('serviceWorker' in navigator && !inFrame() &&
+   (location.protocol === 'https:' || location.hostname === 'localhost')){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js')['catch'](function(){});
+  });
+}
 
 /* ══ go ════════════════════════════════════════════════════════════════ */
 load();

@@ -40,6 +40,33 @@ Your inputs are saved in `localStorage` on your own device and never leave it.
 
 ---
 
+## Put it on your phone
+
+It installs as a Progressive Web App — a home-screen icon, no browser bars, and it
+keeps working with no signal. No App Store, no developer account.
+
+**iPhone / iPad (Safari — it must be Safari, not Chrome):**
+
+1. Open the site in Safari.
+2. Tap **Share** (the square with the arrow).
+3. Scroll down, tap **Add to Home Screen**, then **Add**.
+
+**Android (Chrome):** menu → *Install app* / *Add to Home screen*.
+
+Once installed it runs from the copy on your device, so it opens instantly and works
+on a plane or in a basement gym. When you next have signal it quietly picks up any
+new version.
+
+> **Back your record up now and then.** Everything lives in this device's browser
+> storage. iOS can evict storage for apps left unused for a long stretch, and deleting
+> the home-screen app deletes its data. The **Backup / restore** box under *Your record*
+> exports the lot as text — keep a copy in Notes and you can never lose a plan.
+
+The lookup and install features need the real site; a Claude artifact link cannot
+register a service worker or install to a home screen.
+
+---
+
 ## Run it locally
 
 Any of these — no install required beyond what you already have:
@@ -159,6 +186,9 @@ Claude artifact link, which blocks every external host by design.
 | `netlify.toml`, `vercel.json` | Host config + security headers |
 | `Dockerfile`, `nginx.conf` | Self-hosting |
 | `.github/workflows/deploy-pages.yml` | GitHub Pages CI |
+| `manifest.webmanifest`, `sw.js`, `icon-*.png` | Home-screen install and offline support |
+| `check.sh`, `stamp.sh`, `check-i18n.js` | Verification, and the service-worker cache stamp |
+| `tests/smoke.html` | Concatenate after `index.html` and open it — prints a pass/fail list |
 | `package.json` | Local preview scripts only — no runtime dependencies |
 
 ---
@@ -196,6 +226,10 @@ Chinese strings (`ZH`), the food database and model, and the render/wiring layer
   half cycling amplitude, 40% fully cycled. `spread` blends between no cycling
   and full; the weekly carb total is preserved at every value, so changing the
   split cannot change the rate the scale moves.
+- **After editing**, run `./stamp.sh && ./check.sh`. The stamp gives the service
+  worker a fresh cache name from a hash of `index.html`, so installed copies pick the
+  change up instead of serving a stale shell; the check parses the script, validates
+  the manifest, and verifies every `t()` key resolves with EN and ZH in parity.
 - **Model constants** (muscle-gain ceilings, MET values, rate guardrails, tissue
   energy costs) sit near the top of the script with the assumptions spelled out in the
   page's own "How the numbers are worked out" section — keep the two in sync.
@@ -228,6 +262,10 @@ data URI 内联，CSS 和 JS 也都内联。你的输入保存在本机浏览器
 `npx vercel --prod`、`npx netlify-cli deploy --prod --dir .`、
 `npx wrangler pages deploy .`；也可以用 `docker build -t load-planner . && docker run -p 8080:8080 load-planner`
 自行托管。请确保 HTML 以 `text/html; charset=utf-8` 提供。
+
+**装到手机上**：用 Safari 打开网站 → 点「分享」→「添加到主屏幕」。之后它就是一个独立图标的应用，
+没有浏览器边栏，断网也能用。安卓用 Chrome 的「安装应用」。注意：数据都存在这台设备的浏览器里，
+删除应用会一并删除数据，建议偶尔用「备份 / 恢复」导出一份文本留底。
 
 **语言切换**：页面右上角的 `EN / 中文` 按钮，选择会随其他设置一起保存。
 

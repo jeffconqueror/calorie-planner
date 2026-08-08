@@ -1,0 +1,101 @@
+<!-- Concatenate after index.html and open the result. Prints a pass/fail list. -->
+<div id="TESTOUT" style="white-space:pre;font-family:monospace;padding:12px"></div>
+<script>
+setTimeout(function(){
+var R=[];
+function ck(n,c,x){R.push((c?'PASS':'FAIL')+' | '+n+(x!=null?'  ['+x+']':''));}
+function q(s){return document.querySelector(s);}
+function qa(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
+function T(s){var e=q(s);return e?e.textContent.trim():'';}
+function V(s){return parseFloat(q(s).value);}
+function set(s,v){var e=q(s);e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));}
+function chg(s,v){var e=q(s);e.value=v;e.dispatchEvent(new Event('change',{bubbles:true}));}
+window.confirm=function(){return true;}; window.alert=function(){};
+
+/* ── plan ── */
+ck('daily target is plausible', V('#heroKcal')>1500 && V('#heroKcal')<2400, V('#heroKcal'));
+ck('protein is 2 g per kg of bodyweight',
+   Math.abs(parseInt(T('#mealDayTarget').match(/P(\d+)/)[1],10) - 2*V('#weight')) <= 2);
+ck('phased is the default', q('#carbPhased').getAttribute('aria-pressed')==='true');
+ck('three blocks are planned', q('#cycTable').querySelectorAll('tbody tr').length===3);
+ck('checkpoints step down',
+   parseInt(q('#checkBody').lastElementChild.children[4].textContent.replace(/\D/g,''),10) <
+   parseInt(q('#checkBody').firstElementChild.children[4].textContent.replace(/\D/g,''),10));
+qa('#checkBody tr')[2].click();
+ck('a checkpoint sets the working target', /week/.test(T('#heroSrc')));
+q('#heroReset').click();
+
+/* ── day types ── */
+qa('#blockSeg button')[2].click();
+q('#dayTrain').click(); var tr=T('#mealDayTarget');
+q('#dayRest').click();  var rs=T('#mealDayTarget');
+function g(s,k){var m=s.match(new RegExp(k+'(\\d+)'));return m?+m[1]:0;}
+ck('training day has more carbs than rest day', g(tr,'C')>g(rs,'C'), g(tr,'C')+' vs '+g(rs,'C'));
+ck('rest day has more fat than training day', g(rs,'F')>g(tr,'F'), g(tr,'F')+' vs '+g(rs,'F'));
+q('#dayTrain').click();
+
+/* ── lifts ── */
+ck('six measuring lifts', qa('#liftBody tr').length===6);
+ck('no deadlift', !/[^n]Deadlift/.test(T('#liftBody').replace('Romanian deadlift','')));
+['Back squat','Romanian deadlift','Bench press','Barbell row','Pull-up','Overhead press']
+  .forEach(function(n){ ck('covers '+n, T('#liftBody').indexOf(n)>=0); });
+ck('a week is arranged', qa('#arrangeBox .sess').length>0, qa('#arrangeBox .sess').length+' sessions');
+
+/* ── meals ── */
+qa('.meal')[0].click();
+q('[data-food="oats"]').click(); q('[data-food="eggw"]').click(); q('[data-food="pb"]').click();
+qa('.meal')[1].click();
+q('[data-food="chbr_r"]').click(); q('[data-food="ricew_c"]').click(); q('[data-food="broc"]').click();
+qa('.meal')[2].click();
+q('[data-food="basa"]').click(); q('[data-food="potato"]').click(); q('[data-food="oil"]').click();
+function prog(i){var e=qa('#mealProgs .prog')[i].querySelector('.prog__v');
+  var m=e.textContent.replace(/,/g,'').match(/(\d+)\s*\/\s*(\d+)/);return {a:+m[1],b:+m[2]};}
+var k=prog(0), p=prog(1);
+ck('solver lands calories within 4%', Math.abs(k.a-k.b)/k.b<0.04, k.a+'/'+k.b);
+ck('solver lands protein within 6%', Math.abs(p.a-p.b)/p.b<0.06, p.a+'/'+p.b);
+ck('no portion exceeds one sitting',
+   qa('#meals input[data-mi]:not([data-each])').every(function(i){return parseFloat(i.value)<=500;}));
+var f0=q('#meals input[data-mi]'); var key=f0.dataset.mi;
+f0.focus(); f0.value=''; f0.dispatchEvent(new Event('input',{bubbles:true}));
+'135'.split('').forEach(function(ch){var a=document.activeElement;a.value+=ch;a.dispatchEvent(new Event('input',{bubbles:true}));});
+ck('amounts can be typed digit by digit', q('#meals input[data-mi="'+key+'"]').value==='135',
+   q('#meals input[data-mi="'+key+'"]').value);
+q('#clearMeals').click();
+
+/* ── food database ── */
+ck('100 foods built in', qa('#foodGrid .chip').length===100, qa('#foodGrid .chip').length);
+set('#foodSearch','basa');
+ck('basa is present', qa('#foodGrid .chip').length===1);
+set('#foodSearch','');
+
+/* ── record ── */
+q('#startPlan').click();
+ck('starting gives day 1', /day 1 of/i.test(T('#recTag')), T('#recTag'));
+var w=q('#weighBox input[data-weigh]'); w.value='78.4'; w.dispatchEvent(new Event('change',{bubbles:true}));
+ck('a weigh-in is recorded', /78\.4/.test(T('#logBody')));
+q('#stopPlan').click();
+ck('stopping keeps the data', /78\.4/.test(T('#logBody')));
+
+/* ── PWA ── */
+ck('manifest is linked', !!q('link[rel="manifest"]'));
+ck('apple touch icon is declared', !!q('link[rel="apple-touch-icon"]'));
+ck('standalone capable on iOS', !!q('meta[name="apple-mobile-web-app-capable"]'));
+ck('viewport covers the notch', /viewport-fit=cover/.test(q('meta[name=viewport]').content));
+
+/* ── i18n ── */
+q('#langZh').click();
+ck('switches to Chinese', document.documentElement.lang==='zh-CN');
+ck('no untranslated keys leak', !/\b(fStrUpOnGain|installTip|afErr_)\b/.test(document.body.innerText));
+q('#langEn').click();
+
+/* ── reset ── */
+q('#resetAll').click();
+ck('reset clears the record', /Nothing logged/i.test(T('#logBody')));
+ck('reset restores defaults', V('#targetW')===72, V('#targetW'));
+
+ck('no NaN anywhere', document.body.innerText.indexOf('NaN')<0);
+ck('no undefined anywhere', document.body.innerText.indexOf('undefined')<0);
+var fl=R.filter(function(x){return x.indexOf('FAIL')===0;});
+document.getElementById('TESTOUT').textContent='===S===\n'+R.join('\n')+'\n---\n'+(R.length-fl.length)+'/'+R.length+' passed\n===E===';
+},800);
+</script>
