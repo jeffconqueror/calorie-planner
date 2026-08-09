@@ -1,0 +1,92 @@
+<div id="TESTOUT" style="white-space:pre;font-family:monospace;padding:12px"></div>
+<script>
+setTimeout(function(){
+var R=[];
+function ck(n,c,x){R.push((c?'PASS':'FAIL')+' | '+n+(x!=null?'  ['+x+']':''));}
+function q(s){return document.querySelector(s);}
+function qa(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
+function T(s){var e=q(s);return e?e.textContent.trim():'';}
+function V(s){return parseFloat(q(s).value);}
+function set(s,v){var e=q(s);e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));}
+function pick(v){var e=q('#profileSel');e.value=v;e.dispatchEvent(new Event('change',{bubbles:true}));}
+window.confirm=function(){return true;}; window.alert=function(){};
+function ls(k){try{return localStorage.getItem(k)||'';}catch(e){return '';}}
+
+/* ── migration: the pre-profiles record became person one ── */
+ck('a profile registry exists', ls('load-profiles').length>10, ls('load-profiles').slice(0,60));
+var reg = JSON.parse(ls('load-profiles'));
+ck('it starts with exactly one person', reg.list.length===1, reg.list.length);
+ck('the old record was carried over, not stranded',
+   ls('load-planner-v4:'+reg.list[0].id).length>50,
+   ls('load-planner-v4:'+reg.list[0].id).length+' chars');
+ck('the switcher is in the masthead', !!q('#profileSel'));
+ck('it offers to add someone', /Add someone/.test(T('#profileSel')), T('#profileSel'));
+
+/* ── person one sets up a plan ── */
+set('#profileName','Jeff'); set('#targetW', 72); set('#weight', 78);
+ck('the switcher shows the name', /Jeff/.test(T('#profileSel')), T('#profileSel'));
+ck('the record is labelled with it', /Jeff/.test(T('#recWho')), T('#recWho'));
+var jeffId = JSON.parse(ls('load-profiles')).active;
+
+/* ── add a friend ── */
+q('#profileAdd').click();
+var reg2 = JSON.parse(ls('load-profiles'));
+ck('a second person is created', reg2.list.length===2, reg2.list.length);
+ck('and becomes the active one', reg2.active!==jeffId);
+ck('their plan starts from defaults, not a copy',
+   V('#targetW')===72 && q('#profileName').value==='', 'target '+V('#targetW')+' name "'+q('#profileName').value+'"');
+ck('an unnamed person gets a placeholder', /Person 2/.test(T('#profileSel')), T('#profileSel'));
+set('#profileName','Mia'); set('#weight', 62); set('#targetW', 58);
+ck('the friend has their own numbers', V('#weight')===62 && V('#targetW')===58);
+ck('a note explains the plans are separate', /SEPARATE PLANS/.test(T('#storeState')));
+
+/* ── switching keeps them apart ── */
+pick(jeffId);
+ck('switching back restores the first person', q('#profileName').value==='Jeff', q('#profileName').value);
+ck('with their own weight', V('#weight')===78, V('#weight'));
+ck('and their own target', V('#targetW')===72, V('#targetW'));
+var miaId = JSON.parse(ls('load-profiles')).list.filter(function(x){return x.id!==jeffId;})[0].id;
+pick(miaId);
+ck('and forward again to the friend', q('#profileName').value==='Mia' && V('#weight')===62,
+   q('#profileName').value+' '+V('#weight'));
+
+/* ── independent records ── */
+q('#startPlan').click();
+var w=q('#weighBox input[data-weigh]'); w.value='61.8'; w.dispatchEvent(new Event('change',{bubbles:true}));
+ck('the friend logs a weigh-in', /61\.8/.test(T('#logBody')));
+pick(jeffId);
+ck('it does not appear on the first person', !/61\.8/.test(T('#logBody')), T('#logBody').slice(0,40));
+ck('who has no record of their own yet', /Nothing logged/i.test(T('#logBody')));
+
+/* ── separate storage keys, no bleed ── */
+ck('each person has their own storage slot',
+   ls('load-planner-v4:'+jeffId).indexOf('Jeff')>0 && ls('load-planner-v4:'+miaId).indexOf('Mia')>0);
+ck('neither slot contains the other name',
+   ls('load-planner-v4:'+jeffId).indexOf('Mia')<0 && ls('load-planner-v4:'+miaId).indexOf('Jeff')<0);
+
+/* ── reset is scoped to the person in front of you ── */
+set('#targetW', 70);
+q('#resetAll').click();
+ck('reset restores this person to defaults', V('#targetW')===72, V('#targetW'));
+pick(miaId);
+ck('and left the other person alone', q('#profileName').value==='Mia' && /61\.8/.test(T('#logBody')),
+   q('#profileName').value);
+
+/* ── removing someone ── */
+q('#profileDel').click();
+var reg3 = JSON.parse(ls('load-profiles'));
+ck('the person is removed', reg3.list.length===1, reg3.list.length);
+ck('their storage is cleared too', ls('load-planner-v4:'+miaId)==='', ls('load-planner-v4:'+miaId).length+' chars');
+ck('we land on the remaining person', reg3.active===jeffId);
+ck('the delete control hides when only one is left', q('#profileDel').style.display==='none');
+
+/* ── i18n ── */
+q('#langZh').click();
+ck('zh switcher', /添加一个人/.test(T('#profileSel')), T('#profileSel'));
+q('#langEn').click();
+ck('no NaN', document.body.innerText.indexOf('NaN')<0);
+ck('no undefined', document.body.innerText.indexOf('undefined')<0);
+var f=R.filter(function(x){return x.indexOf('FAIL')===0;});
+document.getElementById('TESTOUT').textContent='===S===\n'+R.join('\n')+'\n---\n'+(R.length-f.length)+'/'+R.length+' passed\n===E===';
+},900);
+</script>

@@ -41,7 +41,10 @@ ck('and it is one card again', qa('.meal').length===1);
 /* ── storage ── */
 ck('storage status is reported', T('#storeState').length>20, T('#storeState').slice(0,60));
 ck('it names browser storage', /browser storage/.test(T('#storeState')));
-var lsRaw=''; try{ lsRaw = localStorage.getItem('load-planner-v4')||''; }catch(e){}
+var lsRaw=''; try{
+  var reg = JSON.parse(localStorage.getItem('load-profiles')||'{}');
+  lsRaw = localStorage.getItem('load-planner-v4:'+reg.active)||'';   // keys are per-person now
+}catch(e){}
 ck('localStorage holds the state', lsRaw.length>100, lsRaw.length+' chars');
 
 /* IndexedDB mirror */

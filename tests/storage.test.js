@@ -39,7 +39,9 @@ const indexedDB = {
     return req;
   }
 };
-const sandbox = { window:{indexedDB}, indexedDB, setTimeout, clearTimeout, console, IDB_OK:null };
+/* the helpers now key by the active profile, so the registry must exist */
+const sandbox = { window:{indexedDB}, indexedDB, setTimeout, clearTimeout, console,
+                  IDB_OK:null, P:{list:[{id:'p1',name:''}], active:'p1'} };
 vm.createContext(sandbox);
 vm.runInContext(storageSrc + '\n' + weightSrc, sandbox);
 
@@ -60,13 +62,25 @@ const wait = (ms=20)=>new Promise(r=>setTimeout(r,ms));
   /* ── round trip ── */
   sandbox.idbPut('{"targetKg":72}');
   await wait();
-  ck('a write reaches the database', store.S === '{"targetKg":72}', store.S);
+  ck('a write reaches the database', store.p1 === '{"targetKg":72}', store.p1);
   ck('the database is marked usable', sandbox.IDB_OK === true, String(sandbox.IDB_OK));
 
   let got = null;
   sandbox.idbGet(v => { got = v; });
   await wait();
   ck('a read returns what was written', got === '{"targetKg":72}', got);
+
+  /* two people must not share a slot */
+  sandbox.P.list.push({id:'p2',name:'friend'});
+  sandbox.P.active = 'p2';
+  sandbox.idbPut('{"targetKg":90}');
+  await wait();
+  ck('a second person writes to their own slot', store.p2 === '{"targetKg":90}', store.p2);
+  ck('and the first person is untouched', store.p1 === '{"targetKg":72}', store.p1);
+  sandbox.P.active = 'p1';
+  let mine = null; sandbox.idbGet(v => { mine = v; }); await wait();
+  ck('switching back reads the right person', mine === '{"targetKg":72}', mine);
+  sandbox.P.active = 'p1';
 
   /* ── failure must be reported, never silent ── */
   sandbox.IDB = null; sandbox.IDB_OK = null; failOpen = true;

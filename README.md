@@ -74,6 +74,18 @@ Once installed it runs from the copy on your device, so it opens instantly and w
 on a plane or in a basement gym. When you next have signal it quietly picks up any
 new version.
 
+### More than one person
+
+Storage is per-device and per-browser, so a friend opening the site on their own phone
+already gets their own plan — nothing of theirs touches yours. The picker in the top
+bar is for the other case: **several people sharing one device**. Each person gets
+their own plan, weigh-ins, meals and custom foods under their own storage key; the only
+thing shared is the app itself. *Reset* only clears the person in front of you, and
+removing someone deletes their data with them.
+
+Anything saved before profiles existed becomes person one on first load, rather than
+being stranded under the old key.
+
 ### Not losing your data
 
 Three independent things guard it:
@@ -214,7 +226,8 @@ Claude artifact link, which blocks every external host by design.
 | `.github/workflows/deploy-pages.yml` | GitHub Pages CI |
 | `manifest.webmanifest`, `sw.js`, `icon-*.png` | Home-screen install and offline support |
 | `check.sh`, `stamp.sh`, `check-i18n.js` | Verification, and the service-worker cache stamp |
-| `tests/smoke.html` | Concatenate after `index.html` and open it — prints a pass/fail list |
+| `tests/*.html` | Concatenate after `index.html` and open — each prints a pass/fail list |
+| `tests/*.test.js` | Node suites for the storage layer and service worker (`node tests/x.test.js`) |
 | `package.json` | Local preview scripts only — no runtime dependencies |
 
 ---

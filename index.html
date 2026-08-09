@@ -165,6 +165,15 @@ body{padding-top:env(safe-area-inset-top)}
 .seg button:hover{background:var(--panel-3);color:var(--ink)}
 .seg button[aria-pressed="true"]{background:var(--accent-fill);color:var(--on-accent)}
 .seg--wide button{flex:1}
+.profsel{appearance:none;border:1px solid var(--rule-2);border-radius:2px;background:var(--panel-2);
+  color:var(--ink);font-family:var(--f-disp);font-weight:700;font-size:13px;
+  letter-spacing:var(--tr-lab);text-transform:uppercase;padding:7px 26px 7px 10px;cursor:pointer;
+  max-width:11rem;text-overflow:ellipsis;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),
+                   linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:right 12px center,right 7px center;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.profsel:hover{border-color:var(--accent)}
 .linkbtn{
   appearance:none;border:0;background:none;cursor:pointer;
   font-family:var(--f-disp);font-size:13px;letter-spacing:var(--tr-lab);text-transform:uppercase;
@@ -530,6 +539,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
       <span class="mark__word">Load</span>
       <span class="mark__sub" data-i18n="tagline">Calorie &amp; strength planner</span>
     </div>
+    <select id="profileSel" class="profsel" data-i18n-aria="aWhoIsThis"></select>
     <div class="seg" role="group" aria-label="Language / 语言">
       <button type="button" id="langEn" aria-pressed="true">EN</button>
       <button type="button" id="langZh" aria-pressed="false">中文</button>
@@ -865,6 +875,10 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
       <div class="panel">
         <div class="panel__hd"><h3 data-i18n="pnWeighIn">Weigh-in</h3><span class="panel__tag" id="recTag"></span></div>
         <div class="panel__bd">
+          <div id="profileRow" style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">
+            <button type="button" class="linkbtn" id="profileAdd" data-i18n="bAddPerson"></button>
+            <button type="button" class="linkbtn" id="profileDel" data-i18n="bDelPerson"></button>
+          </div>
           <div id="startRow" style="margin-bottom:10px"></div>
           <p class="hint" id="startHelp" style="margin-bottom:14px"></p>
           <div id="weighBox"></div>
@@ -1129,6 +1143,16 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
   htmlLang:'en', locale:'en-US',
+
+  /* ── several people on one device ── */
+  aWhoIsThis:'Whose plan is this',
+  personN: function(n){ return 'Person ' + n; },
+  oNewPerson:'+ Add someone',
+  bAddPerson:'Add someone', bDelPerson:'Remove this person',
+  pConfirmDelPerson: function(n){ return 'Remove ' + n + ' and everything recorded for them? This cannot be undone.'; },
+  fSeparate:'Each person here keeps their own plan, weigh-ins and meals — nothing is shared between them. A friend using this on their own phone already gets their own; this is only for sharing one device.',
+  icPeople:'SEPARATE PLANS',
+
 
   /* ── durability and the whole-day list ── */
   aMealMode:'How to lay the day out',
@@ -1529,6 +1553,16 @@ var EN = {
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   htmlLang:'zh-CN', locale:'zh-CN',
+
+  /* ── 一台设备，多个人 ── */
+  aWhoIsThis:'这是谁的方案',
+  personN: function(n){ return '用户 ' + n; },
+  oNewPerson:'＋ 添加一个人',
+  bAddPerson:'添加一个人', bDelPerson:'删除这个人',
+  pConfirmDelPerson: function(n){ return '删除 ' + n + '，以及他/她的全部记录？此操作无法撤销。'; },
+  fSeparate:'这里每个人都有自己独立的方案、体重记录和饮食安排，相互之间完全不共享。朋友在自己手机上打开时本来就是独立的；这个功能只是为了几个人共用同一台设备。',
+  icPeople:'各自独立',
+
 
   /* ── 数据保全与整日清单 ── */
   aMealMode:'一天怎么安排',
@@ -2187,7 +2221,52 @@ function defaults(){
   };
 }
 var S = defaults();
-var STORE = 'load-planner-v4';
+var STORE = 'load-planner-v4';          /* pre-profiles key, migrated on first run */
+var PROFILE_KEY = 'load-profiles';
+
+/* ── Several people, one device ────────────────────────────────────────
+   Storage is already per-device, so a friend on their own phone has their
+   own plan without any of this. What this adds is more than one person on
+   the SAME device: each gets an id, and their state lives under its own
+   key. Nothing is shared between them but the app itself. */
+var P = null;
+function newProfileId(){
+  return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+function profileStoreKey(id){ return STORE + ':' + id; }
+function activeKey(){ return profileStoreKey(P.active); }
+function saveProfiles(){
+  try{ localStorage.setItem(PROFILE_KEY, JSON.stringify(P)); }catch(e){}
+}
+function loadProfiles(){
+  try{
+    var raw = localStorage.getItem(PROFILE_KEY);
+    if(raw){
+      var o = JSON.parse(raw);
+      if(o && Array.isArray(o.list) && o.list.length) P = o;
+    }
+  }catch(e){}
+  if(!P){
+    /* First run under profiles. Anything saved before them belongs to the
+       person already using this device, so it becomes profile one rather
+       than being stranded under the old key. */
+    var id = newProfileId();
+    P = { list:[{id:id, name:''}], active:id };
+    try{
+      var legacy = localStorage.getItem(STORE);
+      if(legacy) localStorage.setItem(profileStoreKey(id), legacy);
+    }catch(e){}
+    saveProfiles();
+  }
+  if(!P.active || !P.list.some(function(x){ return x.id === P.active; })){
+    P.active = P.list[0].id;
+  }
+}
+function activeProfile(){
+  for(var i=0;i<P.list.length;i++) if(P.list[i].id === P.active) return P.list[i];
+  return P.list[0];
+}
+function profileLabel(pr, i){ return (pr.name || '').trim() || t('personN', i + 1); }
 /* A sandboxed iframe throws on localStorage, and a silent catch there means
    settings quietly evaporate on refresh. Track whether it really persisted
    so the page can say so instead of pretending. */
@@ -2218,7 +2297,7 @@ function idbPut(value){
     if(!db) return;
     try{
       var tx = db.transaction('state', 'readwrite');
-      tx.objectStore('state').put(value, 'S');
+      tx.objectStore('state').put(value, P.active);
       tx.onerror = function(){ IDB_OK = false; };
     }catch(e){ IDB_OK = false; }
   });
@@ -2227,7 +2306,7 @@ function idbGet(cb){
   idbOpen(function(db){
     if(!db) return cb(null);
     try{
-      var rq = db.transaction('state', 'readonly').objectStore('state').get('S');
+      var rq = db.transaction('state', 'readonly').objectStore('state').get(P.active);
       rq.onsuccess = function(){ cb(rq.result || null); };
       rq.onerror = function(){ cb(null); };
     }catch(e){ cb(null); }
@@ -2255,7 +2334,7 @@ function save(){
   var payload;
   try{ payload = JSON.stringify(S); }catch(e){ return; }
   try{
-    localStorage.setItem(STORE, payload);
+    localStorage.setItem(activeKey(), payload);
     STORAGE_OK = true; LAST_SAVED = new Date();
   }catch(e){ STORAGE_OK = false; }
   /* IndexedDB writes are async and this runs on every render, so coalesce */
@@ -2303,7 +2382,7 @@ function stateWeight(o){
 }
 function load(){
   try{
-    var raw = localStorage.getItem(STORE);
+    var raw = localStorage.getItem(activeKey());
     if(raw) adoptState(JSON.parse(raw));
   }catch(e){}
 }
@@ -3459,11 +3538,29 @@ $('#liftBody').addEventListener('input', function(e){
 
 on('#foodSearch','input', renderFoodGrid);
 
+$('#profileSel').addEventListener('change', function(e){
+  var v = e.target.value;
+  if(v === '__new'){ addProfile(); return; }
+  if(v !== P.active) switchProfile(v);
+});
+on('#profileAdd','click', addProfile);
+on('#profileDel','click', function(){
+  if(P.list.length < 2) return;
+  var i = P.list.indexOf(activeProfile());
+  if(!confirm(t('pConfirmDelPerson', profileLabel(P.list[i], i)))) return;
+  try{ localStorage.removeItem(activeKey()); }catch(e){}
+  P.list.splice(i, 1);
+  P.active = P.list[Math.max(0, i - 1)].id;
+  saveProfiles();
+  S = defaults(); load();
+  L = (S.lang === 'zh') ? 'zh' : 'en';
+  C = compute(); solveDay(); render();
+});
 on('#resetAll','click', function(){
   if(!confirm(t('pConfirmReset'))) return;
   var keepLang = S.lang;
   S = defaults(); S.lang = keepLang; L = keepLang;
-  try{ localStorage.removeItem(STORE); }catch(e){}
+  try{ localStorage.removeItem(activeKey()); }catch(e){}
   render();
 });
 window.addEventListener('resize', function(){ if(C) renderTrajectory(); });
@@ -3516,6 +3613,7 @@ if('serviceWorker' in navigator && !inFrame() &&
 }
 
 /* ══ go ════════════════════════════════════════════════════════════════ */
+loadProfiles();
 load();
 L = (S.lang === 'zh') ? 'zh' : 'en';
 C = compute();
@@ -4047,6 +4145,10 @@ function renderRecord(){
     }
   }
 
+  if(P.list.length > 1){
+    $('#storeState').innerHTML = flag('info', t('icPeople'), t('fSeparate')) + $('#storeState').innerHTML;
+  }
+
   /* ── start / stop ── */
   $('#recTag').textContent = started ? t('recDayOf', C.dayIndex, C.days) : t('recNotStarted');
   $('#startRow').innerHTML = started
@@ -4221,6 +4323,42 @@ on('#profileName','input', function(e){ S.name = e.target.value.slice(0,40); sav
 function renderRecordName(){
   var n = (S.name || '').trim();
   $('#recWho').textContent = n ? t('recWhose', n) : t('recYours');
+  /* the name field IS this person's name in the registry */
+  var pr = activeProfile();
+  if(pr.name !== S.name){ pr.name = S.name || ''; saveProfiles(); }
+  renderProfileSwitcher();
+}
+function renderProfileSwitcher(){
+  var sel = $('#profileSel');
+  if(!sel) return;
+  sel.innerHTML = P.list.map(function(pr, i){
+    return '<option value="' + esc(pr.id) + '"' + (pr.id === P.active ? ' selected' : '') + '>' +
+           esc(profileLabel(pr, i)) + '</option>';
+  }).join('') + '<option value="__new">' + esc(t('oNewPerson')) + '</option>';
+  $('#profileDel').style.display = P.list.length > 1 ? '' : 'none';
+}
+
+/* Switching people is a full swap: persist what is on screen, then load the
+   other person's state from scratch so nothing bleeds across. */
+function switchProfile(id){
+  save();
+  P.active = id; saveProfiles();
+  S = defaults();
+  load();
+  L = (S.lang === 'zh') ? 'zh' : 'en';
+  IDB_OK = null;
+  C = compute(); solveDay(); render();
+  loadFromIdbIfBetter();
+}
+function addProfile(){
+  save();
+  var id = newProfileId();
+  P.list.push({id:id, name:''});
+  P.active = id; saveProfiles();
+  var lang = S.lang;
+  S = defaults(); S.lang = lang;
+  L = (S.lang === 'zh') ? 'zh' : 'en';
+  C = compute(); solveDay(); render();
 }
 
 /* ══ adding a food ═════════════════════════════════════════════════════
