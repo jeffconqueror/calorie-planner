@@ -25,6 +25,7 @@ for(const m of src.matchAll(/\bt\(\s*'([A-Za-z_][A-Za-z0-9_]*)'\s*[,)]/g)) used.
 for(const m of html.matchAll(/data-i18n(?:-html|-ph|-aria)?="([A-Za-z_][A-Za-z0-9_]*)"/g)) used.add(m[1]);
 // keys built by concatenation, checked as their concrete members
 ['m1','m2','m3','pw'].forEach(k => used.add('meal_' + k));
+['High','Medium','Low'].forEach(k => used.add('mealCycle' + k));
 ['fullA','fullB','fullC','push','pull','legs','push2','pull2','legs2',
  'upA','loA','upB','loB','easy'].forEach(k => used.add('ses_' + k));
 ['nokey','badkey','blocked','timeout','none','http'].forEach(k => used.add('afErr_' + k));

@@ -33,6 +33,12 @@ how much of each — the default is one list for the whole day, or switch to thr
 plus a post-workout meal if you would rather split it. Type or nudge any amount to pin
 it and everything else re-solves around it.
 
+The meal planner also has a high / medium / low carb selector and a date picker.
+It uses the current calorie setting as today's baseline and adjusts future dates with
+the projected plan. The three daily targets share the same weekly average; choosing
+one changes the existing food solver's calorie and macro targets without replacing
+your foods or locked amounts.
+
 **The whole app is one self-contained `index.html`.** No build step, no dependencies,
 no network requests at runtime — the display font and the favicon are inlined as data
 URIs, and the CSS and JS are inline. You can email the file to someone and it works.

@@ -531,17 +531,16 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
   border:1px solid var(--rule);border-radius:2px;padding:1px 4px}
 .pagefoot{margin-top:36px;padding-top:16px;border-top:1px solid var(--rule-2);
   font-size:12.5px;color:var(--ink-3);line-height:1.7;max-width:74ch}
-.cycle-template .cycle-intro{margin:0 0 18px;line-height:1.7}
-.cycle-template p{line-height:1.7}
-.cycle-table{width:100%;min-width:640px}
-.cycle-table th[scope="row"]{text-align:left;font-weight:500;white-space:normal}
-.cycle-table td{font-variant-numeric:tabular-nums}
-.cycle-table thead th{white-space:normal}
-.cycle-table tfoot{border-top:2px solid var(--accent);font-weight:600}
-.cycle-table tbody tr:nth-child(2),.cycle-table tbody tr:nth-child(3){background:var(--ground);font-weight:700}
-.cycle-template .cycle-week{padding:12px 14px;border-left:3px solid var(--accent);background:var(--ground);margin-top:18px}
-.cycle-template .tablewrap:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-@media(max-width:600px){.cycle-template .section__hd{flex-wrap:wrap}.cycle-template .section__spec{width:100%}.cycle-table{min-width:560px}}
+.meal-cycle{border:1px solid var(--rule);padding:14px;margin:14px 0;background:var(--panel-2)}
+.meal-cycle__date{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}
+.meal-cycle__date label{font-size:13px;color:var(--ink-2)}
+.meal-cycle__date input{width:auto;min-width:150px}
+.meal-cycle__choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.meal-cycle__choices button{border:1px solid var(--rule);background:var(--panel);color:var(--ink);padding:10px 8px;text-align:left;cursor:pointer}
+.meal-cycle__choices button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.meal-cycle__choices b,.meal-cycle__choices small{display:block}
+.meal-cycle__choices small{color:var(--ink-3);line-height:1.5;margin-top:4px}
+@media(max-width:600px){.meal-cycle__choices{grid-template-columns:1fr}.meal-cycle__choices button{display:flex;align-items:center;gap:10px}.meal-cycle__choices small{margin:0 0 0 auto;text-align:right}}
 </style>
 
 <header class="masthead">
@@ -565,36 +564,6 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 
 <main class="wrap">
   <div id="installTip"></div>
-
-  <section class="section cycle-template" id="carb-cycle-template" aria-labelledby="cycle-template-title">
-    <div class="section__hd"><h2 id="cycle-template-title" data-i18n="ccTitle">碳循环饮食模板 · jc</h2><span class="section__rule"></span><span class="section__spec" data-i18n="ccSpec">2 高碳 · 4 中碳 · 1 低碳</span></div>
-    <div class="panel"><div class="panel__bd">
-      <p class="cycle-intro" data-i18n="ccIntro">按你 2026 年 10 月 13 日的食物清单和每周 6 次力量训练制定。周平均约 1,959 千卡／天；这份固定模板不会随计算器参数自动变化。</p>
-      <div class="tablewrap" tabindex="0" aria-labelledby="cycle-template-title">
-        <table class="cycle-table"><thead><tr><th scope="col"><span data-i18n="ccFood">食物／全天总量</span></th><th scope="col"><span data-i18n="ccHigh">高碳日 · 每周 2 天</span></th><th scope="col"><span data-i18n="ccMedium">中碳日 · 每周 4 天</span></th><th scope="col"><span data-i18n="ccLow">低碳日 · 每周 1 天</span></th></tr></thead><tbody>
-          <tr><th scope="row"><span data-i18n="ccUse">训练安排</span></th><td><span data-i18n="ccHard">训练量最大的两次，例如腿日</span></td><td><span data-i18n="ccNormal">其余四次力量训练</span></td><td><span data-i18n="ccRest">休息或轻松散步</span></td></tr>
-          <tr><th scope="row"><span data-i18n="ccRice">大米 · 煮前干重</span></th><td>210 g</td><td>120 g</td><td>50 g</td></tr>
-          <tr><th scope="row"><span data-i18n="ccOil">烹调油 · 全天总量</span></th><td>15 g</td><td>25 g</td><td>35 g</td></tr>
-          <tr><th scope="row"><span data-i18n="ccChicken">鸡胸肉 · 生重</span></th><td>500 g</td><td>500 g</td><td>500 g</td></tr>
-<tr><th scope="row"><span data-i18n="ccMilk">脱脂牛奶</span></th><td>280 g</td><td>280 g</td><td>280 g</td></tr>
-<tr><th scope="row"><span data-i18n="ccNuts">混合坚果</span></th><td>40 g</td><td>40 g</td><td>40 g</td></tr>
-<tr><th scope="row"><span data-i18n="ccBlue">蓝莓</span></th><td>100 g</td><td>100 g</td><td>100 g</td></tr>
-<tr><th scope="row"><span data-i18n="ccBanana">香蕉 · 去皮</span></th><td>118 g</td><td>118 g</td><td>118 g</td></tr>
-<tr><th scope="row"><span data-i18n="ccMushroom">蘑菇</span></th><td>160 g</td><td>160 g</td><td>160 g</td></tr>
-<tr><th scope="row"><span data-i18n="ccVeg">你的蔬菜组合2</span></th><td>340 g</td><td>340 g</td><td>340 g</td></tr>
-        </tbody><tfoot>
-          <tr><th scope="row"><span data-i18n="ccEnergy">热量 · 千卡</span></th><td>2,154</td><td>1,914</td><td>1,747</td></tr>
-          <tr><th scope="row"><span data-i18n="ccProtein">蛋白质 · 克</span></th><td>159</td><td>152</td><td>147</td></tr>
-          <tr><th scope="row"><span data-i18n="ccCarbs">碳水化合物 · 克</span></th><td>257</td><td>185</td><td>129</td></tr>
-          <tr><th scope="row"><span data-i18n="ccFat">脂肪 · 克</span></th><td>53</td><td>62</td><td>72</td></tr>
-        </tfoot></table>
-      </div>
-      <p class="cycle-week" data-i18n="ccWeek">排期示例：推／拉／腿／推／拉／腿／休 → 中／中／高／中／中／高／低。高碳日跟着最费力的训练调整，不必固定星期。</p>
-      <p data-i18n="ccMeals">鸡胸肉和蔬菜分到两至三餐，米饭优先安排在训练前后两餐。高碳日的 210 克干米可分成午餐 100 克、晚餐 110 克。低碳日仍保留水果、牛奶和蔬菜。</p>
-      <p class="hint" data-i18n="ccNote">所有克数都是全天总量，油需计入全部烹调用量。营养值按本站食物库及你的蔬菜组合估算，以包装标签为准。先执行 2–3 周，观察体重周平均、腰围和训练表现；若恢复明显受影响，可把低碳日改为中碳日再评估。</p>
-    </div></div>
-  </section>
-
 
   <!-- ═══ SETUP ═══ -->
   <section class="section">
@@ -1123,14 +1092,15 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
               <button type="button" id="modeMeals" data-i18n="mmMeals" aria-pressed="true"></button>
             </div>
           </div>
-          <div class="daybar" id="blockRow">
-            <div class="seg" id="blockSeg" role="group" data-i18n-aria="aBlock"></div>
-          </div>
-          <div class="daybar" id="dayTypeRow">
-            <div class="seg" role="group" data-i18n-aria="aDayType">
-              <button type="button" id="dayTrain" data-i18n="dayTrain" aria-pressed="true"></button>
-              <button type="button" id="dayRest" data-i18n="dayRest" aria-pressed="false"></button>
+          <div class="meal-cycle" aria-labelledby="mealCycleTitle">
+            <div class="subhd"><span id="mealCycleTitle" data-i18n="mealCycleTitle">Carb cycling</span></div>
+            <div class="meal-cycle__date">
+              <label for="mealCycleDate" data-i18n="mealCycleDate">Plan for date</label>
+              <input type="date" id="mealCycleDate" />
+              <button type="button" class="linkbtn" id="mealCycleToday" data-i18n="mealCycleToday">Today</button>
             </div>
+            <p class="hint" id="mealCycleHint"></p>
+            <div class="meal-cycle__choices" id="mealCycleChoices" role="group" data-i18n-aria="mealCycleTitle"></div>
           </div>
           <div class="stat" style="border-top:1px solid var(--rule)">
             <span class="stat__k" id="mealDayTag"></span>
@@ -1183,33 +1153,9 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 /* ══ English ═══════════════════════════════════════════════════════════
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
-  ccTitle: "Carb-cycle meal template · jc",
-  ccSpec: "2 high · 4 medium · 1 low",
-  ccIntro: "A fixed starting template based on your 13 Oct 2026 food list and six lifting days per week. Weekly average: about 1,959 kcal/day. This table stays fixed when calculator settings change.",
-  ccHigh: "High carb · 2 days",
-  ccMedium: "Medium carb · 4 days",
-  ccLow: "Low carb · 1 day",
-  ccUse: "Best fit",
-  ccHard: "Two most demanding sessions, e.g. legs",
-  ccNormal: "Other four lifting sessions",
-  ccRest: "Rest or easy walking",
-  ccFood: "Food / daily total",
-  ccRice: "Rice · dry weight",
-  ccOil: "Cooking oil · total for the day",
-  ccChicken: "Chicken breast · raw weight",
-  ccMilk: "Skim milk",
-  ccNuts: "Mixed nuts",
-  ccBlue: "Blueberries",
-  ccBanana: "Banana · peeled",
-  ccMushroom: "Mushrooms",
-  ccVeg: "Your vegetable mix 2",
-  ccEnergy: "Energy · kcal",
-  ccProtein: "Protein · g",
-  ccCarbs: "Carbohydrate · g",
-  ccFat: "Fat · g",
-  ccWeek: "Example week: push / pull / legs / push / pull / legs / rest → medium / medium / high / medium / medium / high / low. Move the high days to match your hardest sessions.",
-  ccMeals: "Split chicken and vegetables across two or three meals. Put rice mainly in meals before and after training. On a high day, split the 210 g dry rice into 100 g at lunch and 110 g at dinner. Keep fruit, milk and vegetables on low days too.",
-  ccNote: "All amounts are whole-day totals in grams, including all cooking oil. Nutrition is approximate, calculated from this food database and your vegetable mix; check package labels. Review weekly average weight, waist and training after 2–3 weeks. If recovery suffers, use the medium day in place of the low day and reassess.",
+  mealCycleTitle:'Carb cycling', mealCycleDate:'Plan for date', mealCycleToday:'Today',
+  mealCycleHigh:'High carb', mealCycleMedium:'Medium carb', mealCycleLow:'Low carb',
+  mealCycleHint: function(k,h,m,l){ return 'Daily baseline '+k+' kcal · '+h+' high / '+m+' medium / '+l+' low days per week. Select a day, then add foods below; targets follow the date and calorie setting.'; },
   htmlLang:'en', locale:'en-US',
 
   /* ── several people on one device ── */
@@ -1620,33 +1566,9 @@ var EN = {
 
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
-  ccTitle: "碳循环饮食模板 · jc",
-  ccSpec: "2 高碳 · 4 中碳 · 1 低碳",
-  ccIntro: "按你 2026 年 10 月 13 日的食物清单和每周 6 次力量训练制定。周平均约 1,959 千卡／天；这份固定模板不会随计算器参数自动变化。",
-  ccHigh: "高碳日 · 每周 2 天",
-  ccMedium: "中碳日 · 每周 4 天",
-  ccLow: "低碳日 · 每周 1 天",
-  ccUse: "训练安排",
-  ccHard: "训练量最大的两次，例如腿日",
-  ccNormal: "其余四次力量训练",
-  ccRest: "休息或轻松散步",
-  ccFood: "食物／全天总量",
-  ccRice: "大米 · 煮前干重",
-  ccOil: "烹调油 · 全天总量",
-  ccChicken: "鸡胸肉 · 生重",
-  ccMilk: "脱脂牛奶",
-  ccNuts: "混合坚果",
-  ccBlue: "蓝莓",
-  ccBanana: "香蕉 · 去皮",
-  ccMushroom: "蘑菇",
-  ccVeg: "你的蔬菜组合2",
-  ccEnergy: "热量 · 千卡",
-  ccProtein: "蛋白质 · 克",
-  ccCarbs: "碳水化合物 · 克",
-  ccFat: "脂肪 · 克",
-  ccWeek: "排期示例：推／拉／腿／推／拉／腿／休 → 中／中／高／中／中／高／低。高碳日跟着最费力的训练调整，不必固定星期。",
-  ccMeals: "鸡胸肉和蔬菜分到两至三餐，米饭优先安排在训练前后两餐。高碳日的 210 克干米可分成午餐 100 克、晚餐 110 克。低碳日仍保留水果、牛奶和蔬菜。",
-  ccNote: "所有克数都是全天总量，油需计入全部烹调用量。营养值按本站食物库及你的蔬菜组合估算，以包装标签为准。先执行 2–3 周，观察体重周平均、腰围和训练表现；若恢复明显受影响，可把低碳日改为中碳日再评估。",
+  mealCycleTitle:'碳循环', mealCycleDate:'规划日期', mealCycleToday:'今天',
+  mealCycleHigh:'高碳日', mealCycleMedium:'中碳日', mealCycleLow:'低碳日',
+  mealCycleHint: function(k,h,m,l){ return '当天基础目标 '+k+' 千卡 · 每周 '+h+' 高／'+m+' 中／'+l+' 低碳日。选择日型后在下方添加食物；目标随日期和热量设置变化。'; },
   htmlLang:'zh-CN', locale:'zh-CN',
 
   /* ── 一台设备，多个人 ── */
@@ -2303,7 +2225,8 @@ function defaults(){
     cheatKcal:800, proteinPerKg:2.0,
     name:'', usdaKey:'', log:{started:null, entries:{}},
     kcalOverride:null, kcalSource:'plan',
-    dayType:'train', activeMeal:'m1', planBlock:null, mealMode:'day', lastExport:null,
+    dayType:'train', foodCycleDay:'medium', foodDate:null,
+    activeMeal:'m1', planBlock:null, mealMode:'day', lastExport:null,
     meals:[
       {key:'m1', share:30, items:[]},
       {key:'m2', share:30, items:[]},
@@ -2518,6 +2441,39 @@ function deurenbergBF(kg, cm, age, sex){
 /* net METs — an MET already includes resting metabolism, which the BMR term
    is paying for, so subtract one before charging the session. */
 function metKcalMin(met, kg){ return (met-1)*3.5*kg/200; }
+
+/* Three food-planning days share one weekly calorie budget. Protein stays
+   level; a little fat moves opposite to carbohydrate. */
+function mealCycleTargets(base, protein, fat, fatFloor, minIntake, gymDays){
+  var highN = Math.max(1, Math.round(gymDays/3));
+  var lowN = 7-gymDays;
+  var mediumN = gymDays-highN;
+  if(gymDays < 1 || lowN < 1){
+    var flatC = Math.max(0,(base-protein*4-fat*9)/4);
+    var flat = {kcal:base,p:protein,c:flatC,f:fat,fib:14*base/1000};
+    return {high:flat,medium:flat,low:flat,highN:0,mediumN:7,lowN:0,base:base};
+  }
+  var lowDrop = Math.min(base*0.10, Math.max(0,base-minIntake));
+  var highRise = Math.min(base*0.09, 180);
+  if(mediumN){
+    highRise = Math.min(highRise,(lowN*lowDrop+mediumN*Math.max(0,base-minIntake))/highN);
+  } else {
+    lowDrop = Math.min(lowDrop,highRise*highN/lowN);
+    highRise = lowDrop*lowN/highN;
+  }
+  var mediumOffset = mediumN ? (lowN*lowDrop-highN*highRise)/mediumN : 0;
+  var highFat = Math.max(fatFloor,fat-5);
+  var lowFat = fat+(fat-highFat)*highN/lowN;
+  function target(kcal, f){
+    f = Math.min(f,Math.max(0,(kcal-protein*4)/9));
+    return {kcal:kcal,p:protein,c:Math.max(0,(kcal-protein*4-f*9)/4),f:f,
+            fib:14*kcal/1000};
+  }
+  return {high:target(base+highRise,highFat),
+          medium:target(base+mediumOffset,fat),
+          low:target(base-lowDrop,lowFat),
+          highN:highN,mediumN:mediumN,lowN:lowN,base:base};
+}
 
 function compute(){
   var sex = S.sex, age = clamp(S.age,14,90), cm = clamp(S.heightCm,120,230);
@@ -2743,31 +2699,20 @@ function compute(){
     liveBlock = phases[blockIdx];
     liveSplit = liveBlock.split;
   }
-  var isTrain = S.dayType !== 'rest';
-  var dayTarget;
-  if(liveSplit){
-    dayTarget = {
-      kcal: isTrain ? liveSplit.kHigh : liveSplit.kLow,
-      p: protein,
-      c: isTrain ? liveSplit.cHigh : liveSplit.cLow,
-      f: isTrain ? liveSplit.fHigh : liveSplit.fLow
-    };
-  } else {
-    dayTarget = {kcal:intake, p:protein, c:carbG, f:fatG};
+  /* Food planning follows its selected date. An edited headline calorie
+     target remains the anchor for today, then moves with the projected plan. */
+  var mealDate = parseISO(S.foodDate) || today;
+  if(mealDate < sd) mealDate = sd;
+  if(mealDate > ed) mealDate = ed;
+  function plannedAt(frac){
+    return tdeeAt(startKg+dW*frac,lbmStart+dLBM*frac).total*adaptAt(frac)+dailyDelta;
   }
-  /* An overridden headline is the number you intend to eat that day, so it
-     becomes the day's calorie target outright; protein holds, fat keeps the
-     day type's value, and carbs take the difference. */
-  if(overridden){
-    dayTarget.kcal = intake;
-    dayTarget.c = (intake - protein*4 - dayTarget.f*9)/4;
-    if(dayTarget.c < 0){
-      dayTarget.f = Math.max(0, (intake - protein*4)/9);
-      dayTarget.c = 0;
-    }
-  }
-  dayTarget.fib = 14*dayTarget.kcal/1000;
-  var cycActive = !!liveSplit && (!liveBlock || liveBlock.spread > 0);
+  var mealFrac = clamp(dayDiff(sd,mealDate)/Math.max(days,1),0,1);
+  var mealBase = clamp(intake+plannedAt(mealFrac)-plannedAt(todayFrac),600,8000);
+  var mealCycle = mealCycleTargets(mealBase,protein,fatG,fatFloorG,minIntake,gymDays);
+  var foodCycleDay = ['high','medium','low'].indexOf(S.foodCycleDay) >= 0 ? S.foodCycleDay : 'medium';
+  var dayTarget = mealCycle[foodCycleDay];
+  var isTrain = foodCycleDay !== 'low';
 
   /* Weekly averages from whatever has actually been weighed. A single
      morning is mostly water; the week is the signal. */
@@ -2858,7 +2803,8 @@ function compute(){
     intakeEnd:intakeEnd, floorLate:floorLate,
     protein:protein, fatG:fatG, carbG:carbG, fibreG:fibreG, waterMl:waterMl,
     planIntake:planIntake, overridden:overridden, dayTarget:dayTarget,
-    liveSplit:liveSplit, liveBlock:liveBlock, isTrain:isTrain, cycActive:cycActive,
+    mealDate:mealDate, mealCycle:mealCycle, foodCycleDay:foodCycleDay,
+    liveSplit:liveSplit, liveBlock:liveBlock, isTrain:isTrain,
     blockIdx:blockIdx, todayIdx:todayIdx,
     logWeeks:logWeeks, logCount:logCount, trend:trend, started:started,
     dayIndex:dayIndex, todayKey:todayKey,
@@ -3871,26 +3817,21 @@ function renderMeals(){
 
   $('#modeDay').setAttribute('aria-pressed', String(dayMode()));
   $('#modeMeals').setAttribute('aria-pressed', String(!dayMode()));
-  $('#dayTrain').setAttribute('aria-pressed', String(C.isTrain));
-  $('#dayRest').setAttribute('aria-pressed', String(!C.isTrain));
-  $('#dayTypeRow').hidden = !C.cycActive;
-
-  /* which block you are planning for — today's by default, but any of them */
-  var br = $('#blockRow');
-  if(C.phases){
-    br.hidden = false;
-    $('#blockSeg').innerHTML = C.phases.map(function(ph, i){
-      return '<button type="button" data-block="'+i+'" aria-pressed="'+(i===C.blockIdx)+'">'+
-        esc(t(ph.key)) + (i===C.todayIdx ? ' ·' : '') + '</button>';
-    }).join('');
-  } else {
-    br.hidden = true;
-  }
+  $('#mealCycleDate').min = iso(C.sd);
+  $('#mealCycleDate').max = iso(C.ed);
+  $('#mealCycleDate').value = iso(C.mealDate);
+  $('#mealCycleHint').textContent = t('mealCycleHint',fmt(C.mealCycle.base),
+    C.mealCycle.highN,C.mealCycle.mediumN,C.mealCycle.lowN);
+  $('#mealCycleChoices').innerHTML = ['high','medium','low'].map(function(day){
+    var v = C.mealCycle[day];
+    return '<button type="button" data-cycle-day="'+day+'" aria-pressed="'+(day===C.foodCycleDay)+'">'+
+      '<b>'+esc(t('mealCycle'+day[0].toUpperCase()+day.slice(1)))+'</b>'+
+      '<small>'+fmt(v.kcal)+' '+esc(t('uKcal'))+' · '+esc(t('abbrP'))+r0(v.p)+
+      ' '+esc(t('abbrC'))+r0(v.c)+' '+esc(t('abbrF'))+r0(v.f)+'</small></button>';
+  }).join('');
 
   var T = C.dayTarget;
-  $('#mealDayTag').textContent = C.cycActive
-    ? (C.isTrain ? t('dayTrain') : t('dayRest'))
-    : t('daySame');
+  $('#mealDayTag').textContent = t('mealCycle'+C.foodCycleDay[0].toUpperCase()+C.foodCycleDay.slice(1));
   $('#mealDayTarget').innerHTML = fmt(T.kcal) + ' <small>' + t('uKcal') + ' · ' +
     t('abbrP') + r0(T.p) + ' ' + t('abbrC') + r0(T.c) + ' ' + t('abbrF') + r0(T.f) + '</small>';
 
@@ -4008,10 +3949,13 @@ function mealByKey(k){
 }
 function resolveAndRender(){ solveDay(); render(); }
 
-$('#blockSeg').addEventListener('click', function(e){
-  var b = e.target.closest('[data-block]'); if(!b) return;
-  S.planBlock = +b.dataset.block; resolveAndRender();
+$('#mealCycleChoices').addEventListener('click', function(e){
+  var b = e.target.closest('[data-cycle-day]'); if(!b) return;
+  S.foodCycleDay = b.dataset.cycleDay;
+  resolveAndRender();
 });
+on('#mealCycleDate','change',function(){ S.foodDate = this.value || null; resolveAndRender(); });
+on('#mealCycleToday','click',function(){ S.foodDate = null; resolveAndRender(); });
 on('#modeDay','click', function(){
   if(dayMode()) return;
   /* fold every meal into the one list, so switching never loses a food */
@@ -4029,8 +3973,6 @@ on('#modeDay','click', function(){
   resolveAndRender();
 });
 on('#modeMeals','click', function(){ S.mealMode='meals'; resolveAndRender(); });
-on('#dayTrain','click', function(){ S.dayType='train'; resolveAndRender(); });
-on('#dayRest','click',  function(){ S.dayType='rest';  resolveAndRender(); });
 
 $('#foodGrid').addEventListener('click', function(e){
   var b = e.target.closest('.chip'); if(!b) return;

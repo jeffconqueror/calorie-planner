@@ -9,4 +9,5 @@ python3 -c "import json;json.load(open('manifest.webmanifest'));json.load(open('
 node check-i18n.js
 node tests/storage.test.js
 node tests/sw.test.js
+node tests/meal-cycle.test.js
 echo "all checks passed"
