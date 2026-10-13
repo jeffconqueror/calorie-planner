@@ -531,6 +531,17 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
   border:1px solid var(--rule);border-radius:2px;padding:1px 4px}
 .pagefoot{margin-top:36px;padding-top:16px;border-top:1px solid var(--rule-2);
   font-size:12.5px;color:var(--ink-3);line-height:1.7;max-width:74ch}
+.cycle-template .cycle-intro{margin:0 0 18px;line-height:1.7}
+.cycle-template p{line-height:1.7}
+.cycle-table{width:100%;min-width:640px}
+.cycle-table th[scope="row"]{text-align:left;font-weight:500;white-space:normal}
+.cycle-table td{font-variant-numeric:tabular-nums}
+.cycle-table thead th{white-space:normal}
+.cycle-table tfoot{border-top:2px solid var(--accent);font-weight:600}
+.cycle-table tbody tr:nth-child(2),.cycle-table tbody tr:nth-child(3){background:var(--ground);font-weight:700}
+.cycle-template .cycle-week{padding:12px 14px;border-left:3px solid var(--accent);background:var(--ground);margin-top:18px}
+.cycle-template .tablewrap:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:600px){.cycle-template .section__hd{flex-wrap:wrap}.cycle-template .section__spec{width:100%}.cycle-table{min-width:560px}}
 </style>
 
 <header class="masthead">
@@ -554,6 +565,36 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 
 <main class="wrap">
   <div id="installTip"></div>
+
+  <section class="section cycle-template" id="carb-cycle-template" aria-labelledby="cycle-template-title">
+    <div class="section__hd"><h2 id="cycle-template-title" data-i18n="ccTitle">碳循环饮食模板 · jc</h2><span class="section__rule"></span><span class="section__spec" data-i18n="ccSpec">2 高碳 · 4 中碳 · 1 低碳</span></div>
+    <div class="panel"><div class="panel__bd">
+      <p class="cycle-intro" data-i18n="ccIntro">按你 2026 年 10 月 13 日的食物清单和每周 6 次力量训练制定。周平均约 1,959 千卡／天；这份固定模板不会随计算器参数自动变化。</p>
+      <div class="tablewrap" tabindex="0" aria-labelledby="cycle-template-title">
+        <table class="cycle-table"><thead><tr><th scope="col"><span data-i18n="ccFood">食物／全天总量</span></th><th scope="col"><span data-i18n="ccHigh">高碳日 · 每周 2 天</span></th><th scope="col"><span data-i18n="ccMedium">中碳日 · 每周 4 天</span></th><th scope="col"><span data-i18n="ccLow">低碳日 · 每周 1 天</span></th></tr></thead><tbody>
+          <tr><th scope="row"><span data-i18n="ccUse">训练安排</span></th><td><span data-i18n="ccHard">训练量最大的两次，例如腿日</span></td><td><span data-i18n="ccNormal">其余四次力量训练</span></td><td><span data-i18n="ccRest">休息或轻松散步</span></td></tr>
+          <tr><th scope="row"><span data-i18n="ccRice">大米 · 煮前干重</span></th><td>210 g</td><td>120 g</td><td>50 g</td></tr>
+          <tr><th scope="row"><span data-i18n="ccOil">烹调油 · 全天总量</span></th><td>15 g</td><td>25 g</td><td>35 g</td></tr>
+          <tr><th scope="row"><span data-i18n="ccChicken">鸡胸肉 · 生重</span></th><td>500 g</td><td>500 g</td><td>500 g</td></tr>
+<tr><th scope="row"><span data-i18n="ccMilk">脱脂牛奶</span></th><td>280 g</td><td>280 g</td><td>280 g</td></tr>
+<tr><th scope="row"><span data-i18n="ccNuts">混合坚果</span></th><td>40 g</td><td>40 g</td><td>40 g</td></tr>
+<tr><th scope="row"><span data-i18n="ccBlue">蓝莓</span></th><td>100 g</td><td>100 g</td><td>100 g</td></tr>
+<tr><th scope="row"><span data-i18n="ccBanana">香蕉 · 去皮</span></th><td>118 g</td><td>118 g</td><td>118 g</td></tr>
+<tr><th scope="row"><span data-i18n="ccMushroom">蘑菇</span></th><td>160 g</td><td>160 g</td><td>160 g</td></tr>
+<tr><th scope="row"><span data-i18n="ccVeg">你的蔬菜组合2</span></th><td>340 g</td><td>340 g</td><td>340 g</td></tr>
+        </tbody><tfoot>
+          <tr><th scope="row"><span data-i18n="ccEnergy">热量 · 千卡</span></th><td>2,154</td><td>1,914</td><td>1,747</td></tr>
+          <tr><th scope="row"><span data-i18n="ccProtein">蛋白质 · 克</span></th><td>159</td><td>152</td><td>147</td></tr>
+          <tr><th scope="row"><span data-i18n="ccCarbs">碳水化合物 · 克</span></th><td>257</td><td>185</td><td>129</td></tr>
+          <tr><th scope="row"><span data-i18n="ccFat">脂肪 · 克</span></th><td>53</td><td>62</td><td>72</td></tr>
+        </tfoot></table>
+      </div>
+      <p class="cycle-week" data-i18n="ccWeek">排期示例：推／拉／腿／推／拉／腿／休 → 中／中／高／中／中／高／低。高碳日跟着最费力的训练调整，不必固定星期。</p>
+      <p data-i18n="ccMeals">鸡胸肉和蔬菜分到两至三餐，米饭优先安排在训练前后两餐。高碳日的 210 克干米可分成午餐 100 克、晚餐 110 克。低碳日仍保留水果、牛奶和蔬菜。</p>
+      <p class="hint" data-i18n="ccNote">所有克数都是全天总量，油需计入全部烹调用量。营养值按本站食物库及你的蔬菜组合估算，以包装标签为准。先执行 2–3 周，观察体重周平均、腰围和训练表现；若恢复明显受影响，可把低碳日改为中碳日再评估。</p>
+    </div></div>
+  </section>
+
 
   <!-- ═══ SETUP ═══ -->
   <section class="section">
@@ -1142,6 +1183,33 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 /* ══ English ═══════════════════════════════════════════════════════════
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
+  ccTitle: "Carb-cycle meal template · jc",
+  ccSpec: "2 high · 4 medium · 1 low",
+  ccIntro: "A fixed starting template based on your 13 Oct 2026 food list and six lifting days per week. Weekly average: about 1,959 kcal/day. This table stays fixed when calculator settings change.",
+  ccHigh: "High carb · 2 days",
+  ccMedium: "Medium carb · 4 days",
+  ccLow: "Low carb · 1 day",
+  ccUse: "Best fit",
+  ccHard: "Two most demanding sessions, e.g. legs",
+  ccNormal: "Other four lifting sessions",
+  ccRest: "Rest or easy walking",
+  ccFood: "Food / daily total",
+  ccRice: "Rice · dry weight",
+  ccOil: "Cooking oil · total for the day",
+  ccChicken: "Chicken breast · raw weight",
+  ccMilk: "Skim milk",
+  ccNuts: "Mixed nuts",
+  ccBlue: "Blueberries",
+  ccBanana: "Banana · peeled",
+  ccMushroom: "Mushrooms",
+  ccVeg: "Your vegetable mix 2",
+  ccEnergy: "Energy · kcal",
+  ccProtein: "Protein · g",
+  ccCarbs: "Carbohydrate · g",
+  ccFat: "Fat · g",
+  ccWeek: "Example week: push / pull / legs / push / pull / legs / rest → medium / medium / high / medium / medium / high / low. Move the high days to match your hardest sessions.",
+  ccMeals: "Split chicken and vegetables across two or three meals. Put rice mainly in meals before and after training. On a high day, split the 210 g dry rice into 100 g at lunch and 110 g at dinner. Keep fruit, milk and vegetables on low days too.",
+  ccNote: "All amounts are whole-day totals in grams, including all cooking oil. Nutrition is approximate, calculated from this food database and your vegetable mix; check package labels. Review weekly average weight, waist and training after 2–3 weeks. If recovery suffers, use the medium day in place of the low day and reassess.",
   htmlLang:'en', locale:'en-US',
 
   /* ── several people on one device ── */
@@ -1552,6 +1620,33 @@ var EN = {
 
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
+  ccTitle: "碳循环饮食模板 · jc",
+  ccSpec: "2 高碳 · 4 中碳 · 1 低碳",
+  ccIntro: "按你 2026 年 10 月 13 日的食物清单和每周 6 次力量训练制定。周平均约 1,959 千卡／天；这份固定模板不会随计算器参数自动变化。",
+  ccHigh: "高碳日 · 每周 2 天",
+  ccMedium: "中碳日 · 每周 4 天",
+  ccLow: "低碳日 · 每周 1 天",
+  ccUse: "训练安排",
+  ccHard: "训练量最大的两次，例如腿日",
+  ccNormal: "其余四次力量训练",
+  ccRest: "休息或轻松散步",
+  ccFood: "食物／全天总量",
+  ccRice: "大米 · 煮前干重",
+  ccOil: "烹调油 · 全天总量",
+  ccChicken: "鸡胸肉 · 生重",
+  ccMilk: "脱脂牛奶",
+  ccNuts: "混合坚果",
+  ccBlue: "蓝莓",
+  ccBanana: "香蕉 · 去皮",
+  ccMushroom: "蘑菇",
+  ccVeg: "你的蔬菜组合2",
+  ccEnergy: "热量 · 千卡",
+  ccProtein: "蛋白质 · 克",
+  ccCarbs: "碳水化合物 · 克",
+  ccFat: "脂肪 · 克",
+  ccWeek: "排期示例：推／拉／腿／推／拉／腿／休 → 中／中／高／中／中／高／低。高碳日跟着最费力的训练调整，不必固定星期。",
+  ccMeals: "鸡胸肉和蔬菜分到两至三餐，米饭优先安排在训练前后两餐。高碳日的 210 克干米可分成午餐 100 克、晚餐 110 克。低碳日仍保留水果、牛奶和蔬菜。",
+  ccNote: "所有克数都是全天总量，油需计入全部烹调用量。营养值按本站食物库及你的蔬菜组合估算，以包装标签为准。先执行 2–3 周，观察体重周平均、腰围和训练表现；若恢复明显受影响，可把低碳日改为中碳日再评估。",
   htmlLang:'zh-CN', locale:'zh-CN',
 
   /* ── 一台设备，多个人 ── */
