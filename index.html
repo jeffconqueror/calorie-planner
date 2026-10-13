@@ -3529,20 +3529,20 @@ on('#syncStart','click', function(){
   if(S.mode==='keep') S.targetKg = S.startKg;
   render();
 });
-on('#startDate','change', function(e){ if(parseISO(e.target.value)) S.startDate = e.target.value; render(); });
-on('#endDate','change', function(e){ if(parseISO(e.target.value)) S.endDate = e.target.value; render(); });
+on('#startDate','change', function(e){ if(parseISO(e.target.value)){ S.startDate = e.target.value; resolveAndRender(); } });
+on('#endDate','change', function(e){ if(parseISO(e.target.value)){ S.endDate = e.target.value; resolveAndRender(); } });
 on('#fitTarget','click', function(){
   var wk = Math.max(1, dayDiff(parseISO(S.startDate)||today, parseISO(S.endDate)||addDays(today,84))/7);
   if(S.mode==='diet')      S.targetKg = r1(S.startKg*(1 - 0.0075*wk));
   else if(S.mode==='bulk') S.targetKg = r1(S.startKg*(1 + 0.00375*wk));
-  render();
+  resolveAndRender();
 });
 on('#fitDuration','click', function(){
   var dw = Math.abs(S.targetKg - S.startKg);
   var rate = (S.mode==='bulk' ? 0.00375 : 0.0075)*S.startKg;
   var wk = clamp(dw/Math.max(rate,0.001), 1, 104);
   S.endDate = iso(addDays(parseISO(S.startDate) || today, Math.round(wk*7)));
-  render();
+  resolveAndRender();
 });
 on('#cheatKcal','input', function(e){ S.cheatKcal = num(e.target.value, 800); render(); });
 bindNum('#proteinPerKg', function(v){ S.proteinPerKg = clamp(v, 0.8, 4); solveDay(); });
