@@ -2,7 +2,7 @@
    The whole app is one self-contained index.html, so caching it plus the
    icons is the entire job. Cache name carries a build stamp, so a deploy
    retires the previous cache instead of stranding an old version. */
-var CACHE = 'load-3643b4b1d8a1';
+var CACHE = 'load-33415a975a39';
 var ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './icon-180.png', './icon-192.png', './icon-512.png'
@@ -40,10 +40,10 @@ self.addEventListener('fetch', function(e){
               url.pathname === '/' || /\/(index\.html)?$/.test(url.pathname);
 
   if(isDoc){
-    /* network first, so a deploy is picked up as soon as there is signal,
-       falling back to the cached shell when there is none */
+    /* Bypass the browser's HTTP cache when checking for a new deployment.
+       GitHub Pages otherwise allows a ten-minute-old HTML response here. */
     e.respondWith(
-      fetch(req).then(function(res){
+      fetch(req, {cache:'no-store'}).then(function(res){
         var copy = res.clone();
         caches.open(CACHE).then(function(c){ c.put('./index.html', copy); });
         return res;

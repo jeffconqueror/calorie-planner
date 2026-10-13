@@ -26,6 +26,7 @@ const caches = {
 const handlers = {};
 let claimed=false, skipped=false;
 let netMode = 'up';
+let lastFetchInit = null;
 const sandbox = {
   self: {
     addEventListener: (t,f) => handlers[t]=f,
@@ -34,7 +35,8 @@ const sandbox = {
     location: { origin: 'https://site.test' }
   },
   caches,
-  fetch: async (req) => {
+  fetch: async (req, init) => {
+    lastFetchInit = init;
     if(netMode==='down') throw new Error('offline');
     return new Res('network:'+(req.url||req));
   },
@@ -79,6 +81,7 @@ vm.runInContext(fs.readFileSync('sw.js','utf8'), sandbox);
                    respondWith:(x)=>{responded=x;} });
   let res = await responded;
   ck('a page load online comes from the network', /^network:/.test(res.body), res.body);
+  ck('a page load bypasses the browser HTTP cache', lastFetchInit && lastFetchInit.cache==='no-store');
 
   // fetch: navigation offline -> cached shell
   responded = null; netMode = 'down';
