@@ -322,6 +322,16 @@ input[type="date"]{width:100%;border:1px solid var(--rule-2);border-radius:2px;b
 @media (min-width:900px){.chartgrid{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}}
 .chartbox{position:relative}
 .chartbox svg{display:block;width:100%;height:auto;overflow:visible}
+.trainingform{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));align-items:end;gap:12px}
+.trainingform input[type="number"]{width:100%;border:1px solid var(--rule-2);border-radius:2px;background:var(--panel-2);color:var(--ink);font:inherit;font-size:14px;padding:8px 10px}
+.trainingform__save{min-height:38px}
+#trainingFormHint{margin-top:10px}
+.trainingcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.trainingchart{border:1px solid var(--rule);padding:12px;min-width:0}
+.trainingchart__head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-family:var(--f-disp);font-weight:700}
+.trainingchart__meta{font-size:12px;color:var(--ink-2);margin:7px 0 0}
+.trainingchart svg{width:100%;height:90px;display:block;margin-top:8px;overflow:visible}
+.trainingchart__dates{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px}
 .legend span{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}
 .tip{position:absolute;pointer-events:none;z-index:5;opacity:0;transition:opacity .09s;
@@ -928,84 +938,35 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     </div>
   </section>
 
-  <!-- ═══ STRENGTH ═══ -->
+  <!-- ═══ TRAINING LOG ═══ -->
   <section class="section">
     <div class="section__hd">
-      <h2 data-i18n="secStrength">Strength after the plan</h2>
+      <h2 data-i18n="secTrainingLog">Strength during the cut</h2>
       <span class="section__rule"></span>
-      <span class="section__spec" data-i18n="secStrengthSpec"></span>
-    </div>
-    <div class="chartgrid">
-      <div class="panel">
-        <div class="panel__hd"><h3 data-i18n="pnLifts">Projected lifts</h3><span class="panel__tag" id="tagLift">kg</span></div>
-        <div class="panel__bd">
-          <p class="hint" style="margin-bottom:14px" data-i18n="hLifts"></p>
-          <div class="tablewrap">
-            <table>
-              <thead><tr>
-                <th scope="col" data-i18n="lLift">Lift</th>
-                <th scope="col" data-i18n="lWeight">Weight</th>
-                <th scope="col" data-i18n="lReps">Reps</th>
-                <th scope="col" data-i18n="lNow">1RM now</th>
-                <th scope="col" data-i18n="lAfter">1RM after</th>
-                <th scope="col" data-i18n="lChange">Change</th>
-              </tr></thead>
-              <tbody id="liftBody"></tbody>
-            </table>
-          </div>
-          <p class="hint" style="margin-top:12px" data-i18n="hLiftsGroups"></p>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel__hd"><h3 data-i18n="pnWhy">Why that number</h3><span class="panel__tag" data-i18n="pnWhyTag"></span></div>
-        <div class="panel__bd">
-          <div class="hero__fig" style="margin-bottom:16px">
-            <span class="hero__num" id="strPct" style="font-size:clamp(44px,7.5vw,72px)">—</span>
-            <span class="hero__unit" data-i18n="strUnit"></span>
-          </div>
-          <div class="stats" id="strStats"></div>
-          <div class="flags" style="margin-top:14px" id="strFlags"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel" style="margin-top:var(--gap)">
-      <div class="panel__hd"><h3 data-i18n="pnArrange">How to train it</h3><span class="panel__tag" id="arrangeTag"></span></div>
-      <div class="panel__bd">
-        <p class="hint" style="margin-bottom:14px" data-i18n="hArrange"></p>
-        <div id="arrangeBox"></div>
-        <div class="stats" style="margin-top:16px" id="arrangeNote"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ CHEAT ═══ -->
-  <section class="section">
-    <div class="section__hd">
-      <h2 data-i18n="secCheat">Cheat meals</h2>
-      <span class="section__rule"></span>
-      <span class="section__spec" data-i18n="secCheatSpec"></span>
+      <span class="section__spec" data-i18n="trainingLogSpec"></span>
     </div>
     <div class="panel">
+      <div class="panel__hd"><h3 data-i18n="trainingLogAdd">Log a session</h3><span class="panel__tag" data-i18n="trainingLogTag"></span></div>
       <div class="panel__bd">
-        <div class="cheat">
-          <div>
-            <div class="field" style="margin-bottom:20px">
-              <label for="cheatKcal" data-i18n="fCheatSize">How big is your cheat meal?</label>
-              <input type="range" id="cheatKcal" min="300" max="2000" step="50" />
-              <div class="stat" style="border-bottom:0;padding:4px 0 0">
-                <span class="stat__k" id="cheatExample">—</span>
-                <span class="stat__v" id="cheatKcalV">—</span>
-              </div>
-            </div>
-            <div class="bignum" id="cheatFreq">—</div>
-          </div>
-          <div>
-            <div class="flags" id="cheatFlags"></div>
-            <div class="stats" style="margin-top:14px" id="cheatStats"></div>
-          </div>
-        </div>
+        <p class="hint" style="margin-bottom:14px" data-i18n="trainingLogHint"></p>
+        <form id="trainingForm" class="trainingform">
+          <div class="field"><label for="trainingDate" data-i18n="trainingDate">Date</label><input type="date" id="trainingDate" required /></div>
+          <div class="field"><label for="trainingLift" data-i18n="trainingLift">Lift</label><select id="trainingLift"><option value="bench" data-i18n="trainingBench">Barbell bench press</option><option value="squat" data-i18n="trainingSquat">Barbell squat</option><option value="pull" data-i18n="trainingPull">Pull-up</option></select></div>
+          <div class="field" id="trainingPullModeField" hidden><label for="trainingPullMode" data-i18n="trainingPullModeLabel">Pull-up type</label><select id="trainingPullMode"><option value="bodyweight" data-i18n="trainingBodyweight">Bodyweight</option><option value="weighted" data-i18n="trainingWeighted">Weighted</option></select></div>
+          <div class="field"><label for="trainingWeight" id="trainingWeightLabel" data-i18n="trainingWeight">Weight</label><input type="number" id="trainingWeight" min="0" max="1500" step="any" inputmode="decimal" required /></div>
+          <div class="field"><label for="trainingSets" data-i18n="trainingSets">Sets</label><input type="number" id="trainingSets" min="1" max="50" step="1" inputmode="numeric" required /></div>
+          <button type="submit" class="trainingform__save" data-i18n="trainingSave">Save session</button>
+        </form>
+        <p class="hint" id="trainingFormHint" aria-live="polite"></p>
       </div>
+    </div>
+    <div class="panel" style="margin-top:var(--gap)">
+      <div class="panel__hd"><h3 data-i18n="trainingTrend">Strength trend</h3><span class="panel__tag" id="trainingUnit">kg</span></div>
+      <div class="panel__bd"><p class="hint" style="margin-bottom:14px" data-i18n="trainingCompare"></p><div class="trainingcharts" id="trainingCharts"></div></div>
+    </div>
+    <div class="panel" style="margin-top:var(--gap)">
+      <div class="panel__hd"><h3 data-i18n="trainingHistory">Session history</h3></div>
+      <div class="panel__bd"><div class="tablewrap"><table><thead><tr><th scope="col" data-i18n="trainingDate">Date</th><th scope="col" data-i18n="trainingLift">Lift</th><th scope="col" data-i18n="trainingWeight">Weight</th><th scope="col" data-i18n="trainingSets">Sets</th><th scope="col" data-i18n="trainingEdit">Edit</th></tr></thead><tbody id="trainingHistoryBody"></tbody></table></div></div>
     </div>
   </section>
 
@@ -1131,20 +1092,6 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     </div>
   </section>
 
-  <!-- ═══ NOTES ═══ -->
-  <section class="section">
-    <div class="section__hd">
-      <h2 data-i18n="secNotes">How the numbers are worked out</h2>
-      <span class="section__rule"></span>
-      <span class="section__spec" data-i18n="secNotesSpec"></span>
-    </div>
-    <details class="notes"><summary data-i18n="n1Title"></summary><div class="nb" data-i18n-html="n1Body"></div></details>
-    <details class="notes"><summary data-i18n="n2Title"></summary><div class="nb" data-i18n-html="n2Body"></div></details>
-    <details class="notes"><summary data-i18n="n3Title"></summary><div class="nb" data-i18n-html="n3Body"></div></details>
-    <details class="notes"><summary data-i18n="n4Title"></summary><div class="nb" data-i18n-html="n4Body"></div></details>
-    <details class="notes"><summary data-i18n="nRecTitle"></summary><div class="nb" data-i18n-html="nRecBody"></div></details>
-    <p class="pagefoot" data-i18n-html="footNote"></p>
-  </section>
 </main>
 
 <script>
@@ -1156,6 +1103,19 @@ var EN = {
   mealCycleTitle:'Carb cycling', mealCycleDate:'Plan for date', mealCycleToday:'Today',
   mealCycleHigh:'High carb', mealCycleMedium:'Medium carb', mealCycleLow:'Low carb',
   mealCycleHint: function(k,h,m,l){ return 'Daily baseline '+k+' kcal · '+h+' high / '+m+' medium / '+l+' low days per week. Select a day, then add foods below; targets follow the date and calorie setting.'; },
+  secTrainingLog:'Strength during the cut', trainingLogSpec:'your actual sessions',
+  trainingLogAdd:'Log a session', trainingLogTag:'bench · squat · pull-up',
+  trainingLogHint:'Enter the most recent working weight and number of sets for each lift. Use the same date again to correct an entry.',
+  trainingDate:'Date', trainingLift:'Lift', trainingBench:'Barbell bench press', trainingSquat:'Barbell squat', trainingPull:'Pull-up',
+  trainingPullModeLabel:'Pull-up type', trainingBodyweight:'Bodyweight', trainingWeighted:'Weighted',
+  trainingWeight:'Weight', trainingAddedWeight:'Added weight', trainingSets:'Sets', trainingSave:'Save session',
+  trainingTrend:'Strength trend', trainingHistory:'Session history', trainingEdit:'Edit',
+  trainingCompare:'Lines show your logged working weight, not an estimated 1RM. Compare sessions with similar reps and effort. Pull-up lines show added weight; bodyweight sessions sit at 0.',
+  trainingEmpty:'No sessions yet.', trainingOne:'Log another session to see a trend.',
+  trainingLatest: function(d,w,s){ return d+' · '+w+' · '+s+' sets'; },
+  trainingPullBody:'Bodyweight', trainingPullAdded: function(w){ return '+'+w; },
+  trainingBadDate:'Choose a valid date.', trainingBadWeight:'Enter a valid weight.', trainingBadSets:'Enter a whole number of sets from 1 to 50.',
+  trainingSaved:'Session saved. It is included in your backup file.',
   htmlLang:'en', locale:'en-US',
 
   /* ── several people on one device ── */
@@ -1234,7 +1194,7 @@ var EN = {
   storeIdle:'Saved on this device. Your settings survive a refresh; Reset clears them.',
   fNoStore:'This browser is not letting the page store anything — usually a private window, or an embedded frame. Your settings will vanish on refresh. Use the backup below to keep a copy, or open the page in a normal tab.',
   bBackup:'Backup / restore', bCopy:'Copy', bCopied:'Copied', bRestore:'Restore from text',
-  hBackup:'Everything — settings, meals and every weigh-in — as text. Copy it somewhere safe, or paste a previous copy back in and press Restore.',
+  hBackup:'Everything — settings, meals, weigh-ins and training sessions — as text. Copy it somewhere safe, or paste a previous copy back in and press Restore.',
   pConfirmStop:'Stop recording? Your weigh-ins are kept — only the running plan stops.',
   pBadBackup:'That does not look like a backup from this page — nothing was changed.',
 
@@ -1569,6 +1529,19 @@ var ZH = {
   mealCycleTitle:'碳循环', mealCycleDate:'规划日期', mealCycleToday:'今天',
   mealCycleHigh:'高碳日', mealCycleMedium:'中碳日', mealCycleLow:'低碳日',
   mealCycleHint: function(k,h,m,l){ return '当天基础目标 '+k+' 千卡 · 每周 '+h+' 高／'+m+' 中／'+l+' 低碳日。选择日型后在下方添加食物；目标随日期和热量设置变化。'; },
+  secTrainingLog:'减脂期力量记录', trainingLogSpec:'实际训练数据',
+  trainingLogAdd:'记录一次训练', trainingLogTag:'卧推 · 深蹲 · 引体向上',
+  trainingLogHint:'记录最近一次训练的工作重量和组数。每周更新；同一动作、同一日期再次保存会覆盖旧记录。',
+  trainingDate:'日期', trainingLift:'动作', trainingBench:'杠铃卧推', trainingSquat:'杠铃深蹲', trainingPull:'引体向上',
+  trainingPullModeLabel:'引体方式', trainingBodyweight:'自重', trainingWeighted:'负重',
+  trainingWeight:'重量', trainingAddedWeight:'额外负重', trainingSets:'组数', trainingSave:'保存训练',
+  trainingTrend:'力量变化趋势', trainingHistory:'训练历史', trainingEdit:'编辑',
+  trainingCompare:'曲线显示记录的工作重量，不是估算的极限重量。尽量用相近的次数和用力程度比较。引体曲线显示额外负重；自重为 0。',
+  trainingEmpty:'还没有训练记录。', trainingOne:'再记录一次就能看到趋势。',
+  trainingLatest: function(d,w,s){ return d+' · '+w+' · '+s+' 组'; },
+  trainingPullBody:'自重', trainingPullAdded: function(w){ return '负重 +'+w; },
+  trainingBadDate:'请选择有效日期。', trainingBadWeight:'请输入有效重量。', trainingBadSets:'组数需为 1 到 50 的整数。',
+  trainingSaved:'训练已保存，也会包含在备份文件里。',
   htmlLang:'zh-CN', locale:'zh-CN',
 
   /* ── 一台设备，多个人 ── */
@@ -1647,7 +1620,7 @@ var ZH = {
   storeIdle:'已保存在这台设备上。刷新后设置仍然保留；点"重置"会清空。',
   fNoStore:'这个浏览器不允许页面保存任何内容——通常是无痕窗口，或者嵌套在框架里。刷新之后设置会消失。可以用下面的备份功能保留一份，或者在普通标签页里打开本页面。',
   bBackup:'备份 / 恢复', bCopy:'复制', bCopied:'已复制', bRestore:'从文本恢复',
-  hBackup:'把所有内容——设置、分餐和每一次称重——导出成文本。复制到安全的地方保存，或者把之前的备份粘贴回来再点"恢复"。',
+  hBackup:'把所有内容——设置、分餐、称重和训练记录——导出成文本。复制到安全的地方保存，或者把之前的备份粘贴回来再点"恢复"。',
   pConfirmStop:'停止记录？已有的体重数据会保留，只是不再继续跑这个计划。',
   pBadBackup:'这看起来不像是本页面导出的备份——没有做任何改动。',
 
@@ -2223,7 +2196,7 @@ function defaults(){
     mode:'diet', startKg:78, targetKg:72, startPinned:false, carbPlan:'phased',
     startDate: iso(today), endDate: iso(addDays(today,84)),
     cheatKcal:800, proteinPerKg:2.0,
-    name:'', usdaKey:'', log:{started:null, entries:{}},
+    name:'', usdaKey:'', log:{started:null, entries:{}}, trainingLog:[],
     kcalOverride:null, kcalSource:'plan',
     dayType:'train', foodCycleDay:'medium', foodDate:null,
     activeMeal:'m1', planBlock:null, mealMode:'day', lastExport:null,
@@ -2360,6 +2333,20 @@ function save(){
   saveTimer = setTimeout(function(){ idbPut(payload); }, 400);
 }
 function exportState(){ return JSON.stringify(S, null, 2); }
+function cleanTrainingLog(rows){
+  if(!Array.isArray(rows)) return [];
+  var byDay = {};
+  rows.forEach(function(e){
+    if(!e || !/^\d{4}-\d{2}-\d{2}$/.test(e.date || '') || !parseISO(e.date) || iso(parseISO(e.date)) !== e.date) return;
+    if(['bench','squat','pull'].indexOf(e.lift) < 0) return;
+    var kg = Number(e.weightKg), sets = Number(e.sets);
+    if(!isFinite(kg) || kg < 0 || kg > 600 || e.lift !== 'pull' && kg === 0) return;
+    if(!Number.isInteger(sets) || sets < 1 || sets > 50) return;
+    var mode = e.lift === 'pull' && e.mode === 'weighted' && kg > 0 ? 'weighted' : 'bodyweight';
+    byDay[e.date+'|'+e.lift] = {date:e.date, lift:e.lift, weightKg:e.lift === 'pull' && mode === 'bodyweight' ? 0 : kg, sets:sets, mode:mode};
+  });
+  return Object.keys(byDay).sort().map(function(k){ return byDay[k]; });
+}
 function importState(text){
   var o = JSON.parse(text);
   if(!o || typeof o !== 'object') throw new Error('not an object');
@@ -2369,6 +2356,7 @@ function importState(text){
   if(!S.log || typeof S.log !== 'object') S.log = {started:null, entries:{}};
   if(!S.log.entries) S.log.entries = {};
   if(!Array.isArray(S.custom)) S.custom = [];
+  S.trainingLog = cleanTrainingLog(S.trainingLog);
   if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
 }
 /* Normalise whatever came out of storage into a usable state object. */
@@ -2378,6 +2366,7 @@ function adoptState(o){
   for(var k in o){ if(Object.prototype.hasOwnProperty.call(d,k)) d[k] = o[k]; }
   S = d;
   if(!Array.isArray(S.custom)) S.custom = [];
+  S.trainingLog = cleanTrainingLog(S.trainingLog);
   if(!S.log || typeof S.log !== 'object') S.log = {started:null, entries:{}};
   if(!S.log.entries || typeof S.log.entries !== 'object') S.log.entries = {};
   if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
@@ -2391,6 +2380,7 @@ function stateWeight(o){
   try{
     if(o.log && o.log.entries) n += Object.keys(o.log.entries).length * 10;
     if(Array.isArray(o.custom)) n += o.custom.length * 5;
+    if(Array.isArray(o.trainingLog)) n += o.trainingLog.length * 10;
     if(Array.isArray(o.meals)) o.meals.forEach(function(m){
       if(m && Array.isArray(m.items)) n += m.items.length;
     });
@@ -2850,9 +2840,7 @@ function render(){
   renderRecord();
   renderRecordName();
   renderInstallTip();
-  renderStrength();
-  renderArrangement();
-  renderCheat();
+  renderTrainingLog();
   renderMeals();
   save();
 }
@@ -2893,7 +2881,6 @@ function renderControls(){
   $('#tagTraining').textContent = 'kcal/' + (L==='zh' ? '周' : 'wk');
   $('#tagGoal').textContent = wUnit()+' · '+t('uWeeks');
   $('#tagTraj').textContent = wUnit();
-  $('#tagLift').textContent = wUnit();
   $('#uWeight1').textContent = $('#uWeight2').textContent = $('#uWeight3').textContent = wUnit();
   $('#tagMacros').textContent = (C.cyc || C.phases) ? t('tagMacrosCyc') : t('tagMacros');
 
@@ -2920,7 +2907,6 @@ function renderControls(){
   $('#exp').value = S.exp;
   $('#gymStyle').value = S.gymStyle;
   $('#cardioType').value = S.cardioType;
-  $('#cheatKcal').value = S.cheatKcal;
 
   $('#targetW').disabled = S.mode==='keep';
   $('#fitTarget').style.display = S.mode==='keep' ? 'none' : '';
@@ -3427,6 +3413,61 @@ function renderCheat(){
   }).join('');
 }
 
+/* Actual working weights and sets, kept separately from the old projected 1RM inputs. */
+var TRAINING_LIFTS = [{key:'bench', label:'trainingBench'}, {key:'squat', label:'trainingSquat'}, {key:'pull', label:'trainingPull'}];
+function trainingLoad(e){
+  if(e.lift === 'pull') return e.mode === 'weighted' ? t('trainingPullAdded', wShow(e.weightKg))+' '+wUnit() : t('trainingPullBody');
+  return wShow(e.weightKg)+' '+wUnit();
+}
+function syncTrainingForm(){
+  var pull = $('#trainingLift').value === 'pull';
+  var weighted = pull && $('#trainingPullMode').value === 'weighted';
+  $('#trainingPullModeField').hidden = !pull;
+  $('#trainingWeight').disabled = pull && !weighted;
+  $('#trainingWeight').required = !pull || weighted;
+  $('#trainingWeightLabel').textContent = t(weighted ? 'trainingAddedWeight' : 'trainingWeight')+' ('+wUnit()+')';
+  if(pull && !weighted) $('#trainingWeight').value = '0';
+}
+function trainingChart(rows, lift){
+  var name = t(lift.label), last = rows[rows.length-1];
+  var latest = last ? t('trainingLatest', last.date, trainingLoad(last), last.sets) : t('trainingEmpty');
+  var chart = rows.length === 1 ? '<p class="trainingchart__meta">'+esc(t('trainingOne'))+'</p>' : '';
+  if(rows.length >= 2){
+    var values = rows.map(function(e){ return e.weightKg; });
+    var lo = Math.min.apply(null,values), hi = Math.max.apply(null,values);
+    var pad = Math.max((hi-lo)*0.2, lift.key === 'pull' ? 2.5 : 5);
+    lo -= pad; hi += pad;
+    var firstTime = parseISO(rows[0].date).getTime(), lastTime = parseISO(last.date).getTime();
+    var pts = rows.map(function(e){
+      var x = 10 + 220*(parseISO(e.date).getTime()-firstTime)/Math.max(lastTime-firstTime,1);
+      var y = 77 - 65*(e.weightKg-lo)/(hi-lo);
+      return [Math.round(x*10)/10, Math.round(y*10)/10];
+    });
+    var path = pts.map(function(p,i){ return (i?'L':'M')+p[0]+' '+p[1]; }).join(' ');
+    var circles = pts.map(function(p){ return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--accent)" />'; }).join('');
+    chart = '<svg viewBox="0 0 240 90" role="img" aria-label="'+esc(name+' · '+rows.length+' '+t('trainingHistory'))+'">'+
+      '<line x1="10" y1="77" x2="230" y2="77" stroke="var(--rule-2)" />'+
+      '<path d="'+path+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" />'+circles+'</svg>'+
+      '<div class="trainingchart__dates"><span>'+esc(rows[0].date)+'</span><span>'+esc(last.date)+'</span></div>';
+  }
+  return '<div class="trainingchart"><div class="trainingchart__head"><span>'+esc(name)+'</span><span>'+esc(last ? trainingLoad(last) : '—')+'</span></div>'+
+    '<p class="trainingchart__meta">'+esc(latest)+'</p>'+chart+'</div>';
+}
+function renderTrainingLog(){
+  $('#trainingUnit').textContent = wUnit();
+  if(!$('#trainingDate').value) $('#trainingDate').value = iso(today);
+  syncTrainingForm();
+  var rows = S.trainingLog || [];
+  $('#trainingCharts').innerHTML = TRAINING_LIFTS.map(function(lift){
+    return trainingChart(rows.filter(function(e){ return e.lift === lift.key; }), lift);
+  }).join('');
+  $('#trainingHistoryBody').innerHTML = rows.length ? rows.slice().reverse().map(function(e){
+    var lift = TRAINING_LIFTS.filter(function(x){ return x.key === e.lift; })[0];
+    return '<tr><td>'+esc(e.date)+'</td><td>'+esc(t(lift.label))+'</td><td>'+esc(trainingLoad(e))+'</td><td>'+e.sets+'</td>'+
+      '<td><button type="button" data-training-date="'+esc(e.date)+'" data-training-lift="'+e.lift+'">'+esc(t('trainingEdit'))+'</button></td></tr>';
+  }).join('') : '<tr><td colspan="5">'+esc(t('trainingEmpty'))+'</td></tr>';
+}
+
 function renderFoodGrid(){
   var q = ($('#foodSearch').value || '').trim().toLowerCase();
   var inPlate = {};
@@ -3458,8 +3499,16 @@ function bindNum(sel, apply){ on(sel,'input', function(e){ apply(num(e.target.va
 
 on('#langEn','click', function(){ L = S.lang = 'en'; render(); });
 on('#langZh','click', function(){ L = S.lang = 'zh'; render(); });
-on('#uMetric','click', function(){ S.units='metric'; render(); });
-on('#uImperial','click', function(){ S.units='imperial'; render(); });
+function setUnits(units){
+  if(S.units === units) return;
+  var input = $('#trainingWeight'), value = input.value;
+  var kg = value !== '' ? wIn(Number(value)) : null;
+  S.units = units;
+  if(kg !== null && isFinite(kg)) input.value = wShow(kg);
+  render();
+}
+on('#uMetric','click', function(){ setUnits('metric'); });
+on('#uImperial','click', function(){ setUnits('imperial'); });
 
 on('#sexMale','click', function(){ S.sex='male'; render(); });
 on('#sexFemale','click', function(){ S.sex='female'; render(); });
@@ -3544,7 +3593,6 @@ on('#fitDuration','click', function(){
   S.endDate = iso(addDays(parseISO(S.startDate) || today, Math.round(wk*7)));
   resolveAndRender();
 });
-on('#cheatKcal','input', function(e){ S.cheatKcal = num(e.target.value, 800); render(); });
 bindNum('#proteinPerKg', function(v){ S.proteinPerKg = clamp(v, 0.8, 4); solveDay(); });
 
 /* the hero number is the working target — typing it overrides the plan */
@@ -3566,15 +3614,34 @@ $('#checkBody').addEventListener('keydown', function(e){
   if(tr){ e.preventDefault(); pickCheckpoint(tr); }
 });
 
-$('#liftBody').addEventListener('input', function(e){
-  var el = e.target.closest('input[data-lift]'); if(!el) return;
-  var k = el.dataset.lift;
-  S.lifts[k] = S.lifts[k] || {w:100, r:1};
-  var Lf = null;
-  for(var li=0; li<LIFTS.length; li++) if(LIFTS[li].k === k) Lf = LIFTS[li];
-  if(el.dataset.part === 'w') S.lifts[k].w = clamp(wIn(num(el.value,0)), Lf && Lf.bw ? -100 : 0, 600);
-  else                        S.lifts[k].r = clamp(Math.round(num(el.value,1)), 1, 20);
+on('#trainingLift','change', syncTrainingForm);
+on('#trainingPullMode','change', syncTrainingForm);
+on('#trainingForm','submit', function(e){
+  e.preventDefault();
+  var date = $('#trainingDate').value, lift = $('#trainingLift').value;
+  var kg = wIn(Number($('#trainingWeight').value)), sets = Number($('#trainingSets').value);
+  var hint = $('#trainingFormHint');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !parseISO(date) || iso(parseISO(date)) !== date){ hint.textContent = t('trainingBadDate'); return; }
+  if(!isFinite(kg) || kg < 0 || kg > 600 || lift !== 'pull' && kg === 0 || lift === 'pull' && $('#trainingPullMode').value === 'weighted' && kg === 0){ hint.textContent = t('trainingBadWeight'); return; }
+  if(!Number.isInteger(sets) || sets < 1 || sets > 50){ hint.textContent = t('trainingBadSets'); return; }
+  var mode = lift === 'pull' && $('#trainingPullMode').value === 'weighted' ? 'weighted' : 'bodyweight';
+  S.trainingLog = cleanTrainingLog(S.trainingLog.concat([{date:date, lift:lift, weightKg:mode === 'bodyweight' && lift === 'pull' ? 0 : kg, sets:sets, mode:mode}]));
+  hint.textContent = t('trainingSaved');
   render();
+});
+on('#trainingHistoryBody','click', function(e){
+  var btn = e.target.closest('button[data-training-date]'); if(!btn) return;
+  var row = S.trainingLog.filter(function(x){ return x.date === btn.dataset.trainingDate && x.lift === btn.dataset.trainingLift; })[0];
+  if(!row) return;
+  $('#trainingDate').value = row.date;
+  $('#trainingLift').value = row.lift;
+  $('#trainingPullMode').value = row.mode;
+  syncTrainingForm();
+  $('#trainingWeight').value = wShow(row.weightKg);
+  $('#trainingSets').value = row.sets;
+  $('#trainingFormHint').textContent = '';
+  $('#trainingForm').scrollIntoView({behavior:'smooth',block:'center'});
+  $('#trainingWeight').focus();
 });
 
 on('#foodSearch','input', renderFoodGrid);

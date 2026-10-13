@@ -1,7 +1,7 @@
 /* Verify every t('key') resolves and that EN/ZH stay in step. */
 const fs = require('fs');
-const src = fs.readFileSync('/tmp/load-app.js', 'utf8');
 const html = fs.readFileSync('index.html', 'utf8');
+const src = html.match(/<script>\s*([\s\S]*?)<\/script>/)[1];
 
 function isolate(name){
   const start = src.indexOf('var ' + name + ' = {');

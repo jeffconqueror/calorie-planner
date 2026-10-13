@@ -1,9 +1,9 @@
 # Load — calorie & strength planner
 
 A bilingual (English / 简体中文) planner for a diet, maintenance or bulk. It works out
-your daily calories and macros, projects where your body composition and lifts land at
-the end, tells you how often you can afford a cheat meal, and lets you build a day of
-food from a tap-to-add list.
+your daily calories and macros, projects where your body composition lands at
+the end, and lets you build a day of food from a tap-to-add list. A training log
+tracks bench press, squat, and pull-up working weights and sets across the cut.
 
 Lifting and cardio are tracked as separate modalities, each with its own days, session
 length and type. Carbs can run steady, cycled, or **phased** — the default — which is
@@ -20,7 +20,7 @@ weekly total of every macro preserved exactly.
 the plan, averages each week, draws those averages against the planned line, and
 compares your measured rate to the planned one — telling you what calorie change
 would close the gap, or to leave it alone when the difference is just noise.
-Everything is stored on your own device; if the browser blocks storage the page
+The training log keeps weekly sessions and graphs actual working weights. Everything is stored on your own device; if the browser blocks storage the page
 says so rather than losing your record quietly, and a backup box exports the whole
 thing as text.
 
@@ -295,7 +295,7 @@ General fitness information, not medical advice.
 ## 简体中文
 
 **Load** 是一个中英双语的热量与力量规划器，支持减脂 / 保持 / 增肌三种模式，会计算每日热量和三大营养素、
-预测计划结束时的身体成分与力量变化、告诉你多久能吃一次欺骗餐，并提供点击即加的食物清单。
+预测计划结束时的身体成分，提供点击即加的食物清单，并记录卧推、深蹲和引体向上的实际训练重量与组数。
 
 整个应用就是一个自包含的 `index.html`：没有构建步骤、没有依赖、运行时不发起任何网络请求。字体和图标都以
 data URI 内联，CSS 和 JS 也都内联。你的输入保存在本机浏览器的 `localStorage` 中，不会离开你的设备。
@@ -329,7 +329,7 @@ data URI 内联，CSS 和 JS 也都内联。你的输入保存在本机浏览器
 每个阶段都按你那时的实际体重重新计算热量。也可以切换为全程恒定或全程循环。
 鸡蛋、香蕉、苹果、面包片、蛋白粉等按「个 / 根 / 片 / 勺」计数，其余食物按克计。
 
-页面内的"这些数字是怎么算出来的"一节完整说明了所有计算假设。本页面提供的是一般健身信息，不构成医疗建议。
+本页面提供的是一般健身信息，不构成医疗建议。
 
 ---
 

@@ -34,12 +34,16 @@ ck('training day has more carbs than rest day', g(tr,'C')>g(rs,'C'), g(tr,'C')+'
 ck('rest day has more fat than training day', g(rs,'F')>g(tr,'F'), g(tr,'F')+' vs '+g(rs,'F'));
 q('#dayTrain').click();
 
-/* ── lifts ── */
-ck('six measuring lifts', qa('#liftBody tr').length===6);
-ck('no deadlift', !/[^n]Deadlift/.test(T('#liftBody').replace('Romanian deadlift','')));
-['Back squat','Romanian deadlift','Bench press','Barbell row','Pull-up','Overhead press']
-  .forEach(function(n){ ck('covers '+n, T('#liftBody').indexOf(n)>=0); });
-ck('a week is arranged', qa('#arrangeBox .sess').length>0, qa('#arrangeBox .sess').length+' sessions');
+/* ── training log ── */
+ck('three tracked lifts', qa('#trainingLift option').length===3);
+ck('removed sections are gone', !q('#cheatKcal') && !q('#arrangeBox') && !q('details.notes'));
+set('#trainingDate','2026-10-13'); chg('#trainingLift','bench');
+set('#trainingWeight','83'); set('#trainingSets','4');
+q('#trainingForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+ck('a bench session appears in history', qa('#trainingHistoryBody tr').length===1 && /83/.test(T('#trainingHistoryBody')));
+set('#trainingWeight','85');
+q('#trainingForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+ck('saving the same date updates the session', qa('#trainingHistoryBody tr').length===1 && /85/.test(T('#trainingHistoryBody')));
 
 /* ── meals ── */
 q('#modeMeals').click();          // this suite exercises the by-meal layout
