@@ -3,7 +3,8 @@
 A bilingual (English / 简体中文) planner for a diet, maintenance or bulk. It works out
 your daily calories and macros, projects where your body composition lands at
 the end, and lets you build a day of food from a tap-to-add list. A training log
-tracks bench press, squat, and pull-up working weights and sets across the cut.
+tracks bench press, squat, and pull-up working weights, sets, completed reps,
+and failed reps across the cut.
 
 Lifting and cardio are tracked as separate modalities, each with its own days, session
 length and type. Carbs can run steady, cycled, or **phased** — the default — which is
@@ -295,7 +296,7 @@ General fitness information, not medical advice.
 ## 简体中文
 
 **Load** 是一个中英双语的热量与力量规划器，支持减脂 / 保持 / 增肌三种模式，会计算每日热量和三大营养素、
-预测计划结束时的身体成分，提供点击即加的食物清单，并记录卧推、深蹲和引体向上的实际训练重量与组数。
+预测计划结束时的身体成分，提供点击即加的食物清单，并记录卧推、深蹲和引体向上的实际训练重量、组数、次数与力竭未完成次数。
 
 整个应用就是一个自包含的 `index.html`：没有构建步骤、没有依赖、运行时不发起任何网络请求。字体和图标都以
 data URI 内联，CSS 和 JS 也都内联。你的输入保存在本机浏览器的 `localStorage` 中，不会离开你的设备。

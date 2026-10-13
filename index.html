@@ -955,6 +955,8 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
           <div class="field" id="trainingPullModeField" hidden><label for="trainingPullMode" data-i18n="trainingPullModeLabel">Pull-up type</label><select id="trainingPullMode"><option value="bodyweight" data-i18n="trainingBodyweight">Bodyweight</option><option value="weighted" data-i18n="trainingWeighted">Weighted</option></select></div>
           <div class="field"><label for="trainingWeight" id="trainingWeightLabel" data-i18n="trainingWeight">Weight</label><input type="number" id="trainingWeight" min="0" max="1500" step="any" inputmode="decimal" required /></div>
           <div class="field"><label for="trainingSets" data-i18n="trainingSets">Sets</label><input type="number" id="trainingSets" min="1" max="50" step="1" inputmode="numeric" required /></div>
+          <div class="field"><label for="trainingReps" data-i18n="trainingReps">Reps</label><input type="number" id="trainingReps" min="1" max="50" step="1" inputmode="numeric" required /></div>
+          <div class="field"><label for="trainingFailedReps" data-i18n="trainingFailedReps">Failed reps</label><input type="number" id="trainingFailedReps" min="0" max="50" step="1" inputmode="numeric" value="0" required /></div>
           <button type="submit" class="trainingform__save" data-i18n="trainingSave">Save session</button>
         </form>
         <p class="hint" id="trainingFormHint" aria-live="polite"></p>
@@ -966,7 +968,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     </div>
     <div class="panel" style="margin-top:var(--gap)">
       <div class="panel__hd"><h3 data-i18n="trainingHistory">Session history</h3></div>
-      <div class="panel__bd"><div class="tablewrap"><table><thead><tr><th scope="col" data-i18n="trainingDate">Date</th><th scope="col" data-i18n="trainingLift">Lift</th><th scope="col" data-i18n="trainingWeight">Weight</th><th scope="col" data-i18n="trainingSets">Sets</th><th scope="col" data-i18n="trainingEdit">Edit</th></tr></thead><tbody id="trainingHistoryBody"></tbody></table></div></div>
+      <div class="panel__bd"><div class="tablewrap"><table><thead><tr><th scope="col" data-i18n="trainingDate">Date</th><th scope="col" data-i18n="trainingLift">Lift</th><th scope="col" data-i18n="trainingWeight">Weight</th><th scope="col" data-i18n="trainingSets">Sets</th><th scope="col" data-i18n="trainingReps">Reps</th><th scope="col" data-i18n="trainingFailedReps">Failed reps</th><th scope="col" data-i18n="trainingEdit">Edit</th></tr></thead><tbody id="trainingHistoryBody"></tbody></table></div></div>
     </div>
   </section>
 
@@ -1105,16 +1107,18 @@ var EN = {
   mealCycleHint: function(k,h,m,l){ return 'Daily baseline '+k+' kcal · '+h+' high / '+m+' medium / '+l+' low days per week. Select a day, then add foods below; targets follow the date and calorie setting.'; },
   secTrainingLog:'Strength during the cut', trainingLogSpec:'your actual sessions',
   trainingLogAdd:'Log a session', trainingLogTag:'bench · squat · pull-up',
-  trainingLogHint:'Enter the most recent working weight and number of sets for each lift. Use the same date again to correct an entry.',
+  trainingLogHint:'Enter your working weight, sets, completed reps in the last set, and total failed reps in this session (0 if none). Use the same date again to correct an entry.',
   trainingDate:'Date', trainingLift:'Lift', trainingBench:'Barbell bench press', trainingSquat:'Barbell squat', trainingPull:'Pull-up',
   trainingPullModeLabel:'Pull-up type', trainingBodyweight:'Bodyweight', trainingWeighted:'Weighted',
-  trainingWeight:'Weight', trainingAddedWeight:'Added weight', trainingSets:'Sets', trainingSave:'Save session',
+  trainingWeight:'Weight', trainingAddedWeight:'Added weight', trainingSets:'Sets', trainingReps:'Reps', trainingFailedReps:'Failed reps', trainingSave:'Save session',
   trainingTrend:'Strength trend', trainingHistory:'Session history', trainingEdit:'Edit',
   trainingCompare:'Lines show your logged working weight, not an estimated 1RM. Compare sessions with similar reps and effort. Pull-up lines show added weight; bodyweight sessions sit at 0.',
   trainingEmpty:'No sessions yet.', trainingOne:'Log another session to see a trend.',
   trainingLatest: function(d,w,s){ return d+' · '+w+' · '+s+' sets'; },
+  trainingRepSummary: function(r,f){ return r+' reps · '+f+' failed'; }, trainingUnknown:'—',
   trainingPullBody:'Bodyweight', trainingPullAdded: function(w){ return '+'+w; },
   trainingBadDate:'Choose a valid date.', trainingBadWeight:'Enter a valid weight.', trainingBadSets:'Enter a whole number of sets from 1 to 50.',
+  trainingBadReps:'Enter completed reps from 1 to 50.', trainingBadFailedReps:'Enter failed reps from 0 to 50.',
   trainingSaved:'Session saved. It is included in your backup file.',
   htmlLang:'en', locale:'en-US',
 
@@ -1531,16 +1535,18 @@ var ZH = {
   mealCycleHint: function(k,h,m,l){ return '当天基础目标 '+k+' 千卡 · 每周 '+h+' 高／'+m+' 中／'+l+' 低碳日。选择日型后在下方添加食物；目标随日期和热量设置变化。'; },
   secTrainingLog:'减脂期力量记录', trainingLogSpec:'实际训练数据',
   trainingLogAdd:'记录一次训练', trainingLogTag:'卧推 · 深蹲 · 引体向上',
-  trainingLogHint:'记录最近一次训练的工作重量和组数。每周更新；同一动作、同一日期再次保存会覆盖旧记录。',
+  trainingLogHint:'记录工作重量、组数、最后一组完成的次数，以及本次训练力竭没做成的总次数（没有填 0）。每周更新；同一动作、同一日期再次保存会覆盖旧记录。',
   trainingDate:'日期', trainingLift:'动作', trainingBench:'杠铃卧推', trainingSquat:'杠铃深蹲', trainingPull:'引体向上',
   trainingPullModeLabel:'引体方式', trainingBodyweight:'自重', trainingWeighted:'负重',
-  trainingWeight:'重量', trainingAddedWeight:'额外负重', trainingSets:'组数', trainingSave:'保存训练',
+  trainingWeight:'重量', trainingAddedWeight:'额外负重', trainingSets:'组数', trainingReps:'次数', trainingFailedReps:'力竭未完成次数', trainingSave:'保存训练',
   trainingTrend:'力量变化趋势', trainingHistory:'训练历史', trainingEdit:'编辑',
   trainingCompare:'曲线显示记录的工作重量，不是估算的极限重量。尽量用相近的次数和用力程度比较。引体曲线显示额外负重；自重为 0。',
   trainingEmpty:'还没有训练记录。', trainingOne:'再记录一次就能看到趋势。',
   trainingLatest: function(d,w,s){ return d+' · '+w+' · '+s+' 组'; },
+  trainingRepSummary: function(r,f){ return r+' 次 · 力竭未完成 '+f+' 次'; }, trainingUnknown:'—',
   trainingPullBody:'自重', trainingPullAdded: function(w){ return '负重 +'+w; },
   trainingBadDate:'请选择有效日期。', trainingBadWeight:'请输入有效重量。', trainingBadSets:'组数需为 1 到 50 的整数。',
+  trainingBadReps:'完成次数需为 1 到 50 的整数。', trainingBadFailedReps:'力竭未完成次数需为 0 到 50 的整数。',
   trainingSaved:'训练已保存，也会包含在备份文件里。',
   htmlLang:'zh-CN', locale:'zh-CN',
 
@@ -2342,8 +2348,12 @@ function cleanTrainingLog(rows){
     var kg = Number(e.weightKg), sets = Number(e.sets);
     if(!isFinite(kg) || kg < 0 || kg > 600 || e.lift !== 'pull' && kg === 0) return;
     if(!Number.isInteger(sets) || sets < 1 || sets > 50) return;
+    var reps = e.reps == null || e.reps === '' ? null : Number(e.reps);
+    var failedReps = e.failedReps == null || e.failedReps === '' ? null : Number(e.failedReps);
+    if(reps !== null && (!Number.isInteger(reps) || reps < 1 || reps > 50)) reps = null;
+    if(failedReps !== null && (!Number.isInteger(failedReps) || failedReps < 0 || failedReps > 50)) failedReps = null;
     var mode = e.lift === 'pull' && e.mode === 'weighted' && kg > 0 ? 'weighted' : 'bodyweight';
-    byDay[e.date+'|'+e.lift] = {date:e.date, lift:e.lift, weightKg:e.lift === 'pull' && mode === 'bodyweight' ? 0 : kg, sets:sets, mode:mode};
+    byDay[e.date+'|'+e.lift] = {date:e.date, lift:e.lift, weightKg:e.lift === 'pull' && mode === 'bodyweight' ? 0 : kg, sets:sets, reps:reps, failedReps:failedReps, mode:mode};
   });
   return Object.keys(byDay).sort().map(function(k){ return byDay[k]; });
 }
@@ -3430,7 +3440,9 @@ function syncTrainingForm(){
 }
 function trainingChart(rows, lift){
   var name = t(lift.label), last = rows[rows.length-1];
-  var latest = last ? t('trainingLatest', last.date, trainingLoad(last), last.sets) : t('trainingEmpty');
+  var latest = last ? t('trainingLatest', last.date, trainingLoad(last), last.sets)+' · '+
+    t('trainingRepSummary', last.reps == null ? t('trainingUnknown') : last.reps,
+      last.failedReps == null ? t('trainingUnknown') : last.failedReps) : t('trainingEmpty');
   var chart = rows.length === 1 ? '<p class="trainingchart__meta">'+esc(t('trainingOne'))+'</p>' : '';
   if(rows.length >= 2){
     var values = rows.map(function(e){ return e.weightKg; });
@@ -3464,8 +3476,10 @@ function renderTrainingLog(){
   $('#trainingHistoryBody').innerHTML = rows.length ? rows.slice().reverse().map(function(e){
     var lift = TRAINING_LIFTS.filter(function(x){ return x.key === e.lift; })[0];
     return '<tr><td>'+esc(e.date)+'</td><td>'+esc(t(lift.label))+'</td><td>'+esc(trainingLoad(e))+'</td><td>'+e.sets+'</td>'+
+      '<td>'+(e.reps == null ? esc(t('trainingUnknown')) : e.reps)+'</td><td>'+
+      (e.failedReps == null ? esc(t('trainingUnknown')) : e.failedReps)+'</td>'+
       '<td><button type="button" data-training-date="'+esc(e.date)+'" data-training-lift="'+e.lift+'">'+esc(t('trainingEdit'))+'</button></td></tr>';
-  }).join('') : '<tr><td colspan="5">'+esc(t('trainingEmpty'))+'</td></tr>';
+  }).join('') : '<tr><td colspan="7">'+esc(t('trainingEmpty'))+'</td></tr>';
 }
 
 function renderFoodGrid(){
@@ -3620,12 +3634,15 @@ on('#trainingForm','submit', function(e){
   e.preventDefault();
   var date = $('#trainingDate').value, lift = $('#trainingLift').value;
   var kg = wIn(Number($('#trainingWeight').value)), sets = Number($('#trainingSets').value);
+  var reps = Number($('#trainingReps').value), failedReps = Number($('#trainingFailedReps').value);
   var hint = $('#trainingFormHint');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !parseISO(date) || iso(parseISO(date)) !== date){ hint.textContent = t('trainingBadDate'); return; }
   if(!isFinite(kg) || kg < 0 || kg > 600 || lift !== 'pull' && kg === 0 || lift === 'pull' && $('#trainingPullMode').value === 'weighted' && kg === 0){ hint.textContent = t('trainingBadWeight'); return; }
   if(!Number.isInteger(sets) || sets < 1 || sets > 50){ hint.textContent = t('trainingBadSets'); return; }
+  if($('#trainingReps').value === '' || !Number.isInteger(reps) || reps < 1 || reps > 50){ hint.textContent = t('trainingBadReps'); return; }
+  if($('#trainingFailedReps').value === '' || !Number.isInteger(failedReps) || failedReps < 0 || failedReps > 50){ hint.textContent = t('trainingBadFailedReps'); return; }
   var mode = lift === 'pull' && $('#trainingPullMode').value === 'weighted' ? 'weighted' : 'bodyweight';
-  S.trainingLog = cleanTrainingLog(S.trainingLog.concat([{date:date, lift:lift, weightKg:mode === 'bodyweight' && lift === 'pull' ? 0 : kg, sets:sets, mode:mode}]));
+  S.trainingLog = cleanTrainingLog(S.trainingLog.concat([{date:date, lift:lift, weightKg:mode === 'bodyweight' && lift === 'pull' ? 0 : kg, sets:sets, reps:reps, failedReps:failedReps, mode:mode}]));
   hint.textContent = t('trainingSaved');
   render();
 });
@@ -3639,6 +3656,8 @@ on('#trainingHistoryBody','click', function(e){
   syncTrainingForm();
   $('#trainingWeight').value = wShow(row.weightKg);
   $('#trainingSets').value = row.sets;
+  $('#trainingReps').value = row.reps == null ? '' : row.reps;
+  $('#trainingFailedReps').value = row.failedReps == null ? '0' : row.failedReps;
   $('#trainingFormHint').textContent = '';
   $('#trainingForm').scrollIntoView({behavior:'smooth',block:'center'});
   $('#trainingWeight').focus();
