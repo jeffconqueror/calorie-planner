@@ -1207,8 +1207,8 @@ var EN = {
   sKey:"Publishable key",
   sSaveConfig:"Save connection",
   sEmail:"Email",
-  sSend:"Send login code",
-  sCode:"Email code",
+  sSend:"Send login email",
+  sCode:"Code (only if your email contains one)",
   sVerify:"Sign in",
   sEnable:"Enable sync & merge",
   sNow:"Sync now",
@@ -1235,7 +1235,8 @@ var EN = {
   sSetupError:"Database setup or access check failed. Check the Supabase migration and account permissions.",
   sConfigError:"Use an https://…supabase.co URL and a publishable/anon key, never a secret key.",
   sStorageError:"Browser storage is unavailable. Sync is stopped to protect the recovery copy.",
-  sCodeSent:"Code sent. Check your email, then enter the code here.",
+  sCodeSent:"Email sent. Open its confirmation/sign-in link in this same browser. If the email contains a code instead, enter it below.",
+  sLinkError:"Login link is invalid, expired, or opened in a different browser/profile. Request a fresh email here and open its link in this browser.",
   sCodeError:"Could not verify the code. Check it or request a new one.",
   sRateLimit:"Too many emails requested. Please wait before trying again.",
   sEmailError:"Could not send email. Check connectivity and Supabase email settings; default delivery is restricted to project-team emails.",
@@ -1763,8 +1764,8 @@ var ZH = {
   sKey:"Publishable 公钥",
   sSaveConfig:"保存连接配置",
   sEmail:"邮箱",
-  sSend:"发送登录验证码",
-  sCode:"邮箱验证码",
+  sSend:"发送登录邮件",
+  sCode:"验证码（仅在邮件包含数字验证码时填写）",
   sVerify:"验证并登录",
   sEnable:"开启同步并合并",
   sNow:"立即同步",
@@ -1791,7 +1792,8 @@ var ZH = {
   sSetupError:"数据库配置或权限检查失败，请检查 Supabase 数据库脚本与账号权限。",
   sConfigError:"请输入 https://…supabase.co 项目地址和 publishable/anon 公钥，不接受服务端密钥。",
   sStorageError:"浏览器无法保存数据；为保留恢复副本，同步已停止。",
-  sCodeSent:"验证码已发送，请查收邮箱并在这里输入。",
+  sCodeSent:"邮件已发送。请在当前浏览器打开邮件中的确认／登录链接。如果邮件提供的是数字验证码，也可在下方填写。",
+  sLinkError:"登录链接无效、已过期，或在不同浏览器／用户档案中打开。请在这里重新发送邮件，并在当前浏览器打开新链接。",
   sCodeError:"验证码验证失败，请检查或重新获取。",
   sRateLimit:"验证码请求过于频繁，请稍后重试。",
   sEmailError:"邮件发送失败。请检查网络和 Supabase 邮件设置；默认邮件服务仅向项目团队邮箱发送。",
@@ -4485,6 +4487,33 @@ async function cloudRequest(config,path,body,token){
   }finally{clearTimeout(timer);}
 }
 function cloudSession(s){if(!s||!s.access_token||!s.refresh_token||!s.user||!s.user.id)throw new Error('sync-auth');return {access_token:s.access_token,refresh_token:s.refresh_token,expires_at:s.expires_at||Math.floor(Date.now()/1000)+(s.expires_in||3600),user:{id:s.user.id,email:s.user.email||''}};}
+function cloudAcceptSession(session){
+  var owner=cloudOwner(session,cloud.config);
+  if(cloud.meta.owner&&cloud.meta.owner!==owner){cloudSetStatus('sOwnerError');return;}
+  if(P.list.some(function(p){var m=cloudRead('meta',p.id);return p.id!==P.active&&m&&m.owner===owner;})){cloudSetStatus('sOwnerError');return;}
+  cloud.meta.owner=owner;cloud.meta.enabled=false;clearTimeout(cloud.timer);
+  cloudWrite('meta',cloud.meta);cloudWrite('auth',session);cloud.session=session;
+  localStorage.removeItem(cloudStorageKey('login'));$('#cloudCode').value='';cloudSetStatus('sReady');renderCloud();
+}
+async function cloudHandleLink(){
+  var params=new URLSearchParams(location.hash.slice(1));
+  if(!params.has('access_token')&&!params.has('refresh_token')&&!params.has('error'))return;
+  // Remove credentials from the address bar before any asynchronous work.
+  history.replaceState(null,'',location.pathname+location.search);
+  cloudContext();clearTimeout(cloud.timer);appGo('settings');
+  var profile=P.active,epoch=cloud.epoch,pending=cloudRead('login'),config=cloud.config;
+  if(params.has('error')||!pending||pending.url!==config.url||Date.now()-pending.at>3600000||!params.get('access_token')||!params.get('refresh_token')){cloudSetStatus('sLinkError');return;}
+  cloud.authBusy=true;renderCloudStatus();
+  try{
+    // Ask Auth to validate the token and its email; never trust URL/JWT claims alone.
+    var user=await cloudRequest(config,'/auth/v1/user',undefined,params.get('access_token'));
+    if(profile!==P.active||epoch!==cloud.epoch)return;
+    if(!user.email_confirmed_at||String(user.email||'').toLowerCase()!==pending.email.toLowerCase())throw new Error('sync-auth');
+    var expires=Number(params.get('expires_in'));
+    cloudAcceptSession(cloudSession({access_token:params.get('access_token'),refresh_token:params.get('refresh_token'),expires_in:expires>0&&expires<=3600?expires:60,user:user}));
+  }catch(e){if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus('sLinkError');}
+  finally{if(profile===P.active&&epoch===cloud.epoch){cloud.authBusy=false;renderCloudStatus();}}
+}
 async function cloudToken(ctx){
   var stored=cloudRead('auth',ctx.profile);if(stored&&stored.user.id===ctx.session.user.id&&stored.expires_at>ctx.session.expires_at)ctx.session=stored;
   if(ctx.session.expires_at*1000<Date.now()+60000){
@@ -4495,7 +4524,7 @@ async function cloudToken(ctx){
   return ctx.session.access_token;
 }
 async function cloudSync(){
-  cloudContext();if(cloud.busy||!cloud.session||!cloud.meta.enabled||cloud.conflicts.length||!cloudValidConfig(cloud.config))return;
+  cloudContext();if(cloud.busy||cloud.authBusy||!cloud.session||!cloud.meta.enabled||cloud.conflicts.length||!cloudValidConfig(cloud.config))return;
   if(!navigator.onLine){cloudSetStatus('sOffline');return;}
   var epoch=cloud.epoch,profile=P.active;
   var ctx={profile:profile,config:cloud.config,session:cloud.session,current:function(){return P.active===profile&&cloud.epoch===epoch&&cloud.meta.enabled;}};
@@ -4552,7 +4581,7 @@ on('#cloudConfigSave','click',function(){
 on('#cloudSend','click',async function(){
   if(cloud.authBusy||!$('#cloudEmail').checkValidity()||!$('#cloudEmail').value){$('#cloudEmail').reportValidity();return;}
   var profile=P.active,epoch=cloud.epoch;cloud.authBusy=true;renderCloudStatus();
-  try{await cloudRequest(cloud.config,'/auth/v1/otp',{email:$('#cloudEmail').value.trim(),create_user:true});if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus('sCodeSent');}
+  try{var email=$('#cloudEmail').value.trim();cloudWrite('login',{email:email,url:cloud.config.url,at:Date.now()});await cloudRequest(cloud.config,'/auth/v1/otp',{email:email,create_user:true});if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus('sCodeSent');}
   catch(e){if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus(e.status===429?'sRateLimit':'sEmailError');}
   finally{if(profile===P.active&&epoch===cloud.epoch){cloud.authBusy=false;renderCloudStatus();}}
 });
@@ -4562,11 +4591,7 @@ on('#cloudVerify','click',async function(){
   try{
     var session=cloudSession(await cloudRequest(cloud.config,'/auth/v1/verify',{email:email,token:code,type:'email'}));
     if(profile!==P.active||epoch!==cloud.epoch)return;
-    var owner=cloudOwner(session,cloud.config);
-    if(cloud.meta.owner&&cloud.meta.owner!==owner){cloudSetStatus('sOwnerError');return;}
-    var linked=P.list.some(function(p){var m=cloudRead('meta',p.id);return p.id!==profile&&m&&m.owner===owner;});
-    if(linked){cloudSetStatus('sOwnerError');return;}
-    cloud.meta.owner=owner;cloud.meta.enabled=false;cloudWrite('meta',cloud.meta);cloudWrite('auth',session);cloud.session=session;$('#cloudCode').value='';cloudSetStatus('sReady');renderCloud();
+    cloudAcceptSession(session);
   }catch(e){if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus('sCodeError');}
   finally{if(profile===P.active&&epoch===cloud.epoch){cloud.authBusy=false;renderCloudStatus();}}
 });
@@ -4584,6 +4609,7 @@ on('#cloudResolve','click',function(){
 });
 on('#cloudRecovery','click',function(){var copy=cloudRead('recovery');if(!copy)return;var a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(copy.state,null,2)],{type:'application/json'}));a.href=url;a.download='load-before-sync-'+copy.savedAt.slice(0,10)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);});
 window.addEventListener('online',cloudQueue);
+window.addEventListener('hashchange',cloudHandleLink);
 window.addEventListener('focus',cloudQueue);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)cloudQueue();});
 setInterval(function(){if(!document.hidden)cloudSync();},30000);
@@ -4643,6 +4669,7 @@ L = (S.lang === 'zh') ? 'zh' : 'en';
 C = compute();
 solveDay();
 render();
+cloudHandleLink();
 
 /* After the first paint: ask the browser not to evict us, then see whether
    the local database holds a fuller copy than localStorage did. */

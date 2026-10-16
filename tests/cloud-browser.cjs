@@ -16,8 +16,10 @@ const fs=require('fs'),http=require('http'),assert=require('assert');
    const send=(body,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
    if(url.pathname==='/auth/v1/otp')return send({});
    if(url.pathname==='/auth/v1/verify'||url.pathname==='/auth/v1/token')return send({access_token:'test-user-token',refresh_token:'test-refresh-token',expires_in:3600,user:{id:uid,email:'test@example.com'}});
+   if(url.pathname==='/auth/v1/user'&&token==='Bearer wrong-email')return send({id:uid,email:'another@example.com',email_confirmed_at:new Date().toISOString()});
+   if(url.pathname==='/auth/v1/user')return token==='Bearer link-token'?send({id:uid,email:'test@example.com',email_confirmed_at:new Date().toISOString()}):send({error:'invalid-token'},401);
    if(url.pathname==='/auth/v1/logout')return route.fulfill({status:204});
-   if(token!=='Bearer test-user-token')return send({error:'unauthorized'},401);
+   if(token!=='Bearer test-user-token'&&token!=='Bearer link-token')return send({error:'unauthorized'},401);
    if(url.pathname==='/rest/v1/load_sync_documents'){
     if(holdRead){const wait=holdRead;holdRead=null;if(readReached)readReached();await wait;}
     return send(documents.has(uid)?[documents.get(uid)]:[]);
@@ -35,15 +37,23 @@ const fs=require('fs'),http=require('http'),assert=require('assert');
  }
  async function backup(d,state){if(await d.p.locator('#backupBox').isHidden())await d.p.locator('#backupToggle').click();await d.p.locator('#backupText').fill(JSON.stringify(state));await d.p.locator('#backupLoad').click();}
  async function exportState(d){if(await d.p.locator('#backupBox').isVisible())await d.p.locator('#backupToggle').click();await d.p.locator('#backupToggle').click();return JSON.parse(await d.p.locator('#backupText').inputValue());}
- async function login(d){const p=d.p;if(await p.locator('#cloudUrl').isHidden())await p.locator('#cloudSetup summary').click();await p.locator('#cloudUrl').fill('https://sync-test.supabase.co');await p.locator('#cloudKey').fill('sb_publishable_test');await p.locator('#cloudConfigSave').click();await p.locator('#cloudEmail').fill('test@example.com');await p.locator('#cloudSend').click();await expect(p.locator('#cloudStatus')).toContainText('Code sent');await p.locator('#cloudCode').fill('123456');await p.locator('#cloudVerify').click();await expect(p.locator('#cloudStatus')).toContainText('Signed in');}
+ async function login(d,link=false){let p=d.p;if(await p.locator('#cloudUrl').isHidden())await p.locator('#cloudSetup summary').click();await p.locator('#cloudUrl').fill('https://sync-test.supabase.co');await p.locator('#cloudKey').fill('sb_publishable_test');await p.locator('#cloudConfigSave').click();await p.locator('#cloudEmail').fill('test@example.com');await p.locator('#cloudSend').click();await expect(p.locator('#cloudStatus')).toContainText('Email sent');if(link){p=await d.c.newPage();p.on('pageerror',e=>errors.push(e.message));p.on('dialog',d=>d.accept());d.p=p;await p.goto(origin+'/#access_token=link-token&refresh_token=test-refresh-token&expires_in=3600&type=signup');await expect(p.locator('#cloudStatus')).toContainText('Signed in');assert.equal(new URL(p.url()).hash,'','callback clears tokens from address bar');}else{await p.locator('#cloudCode').fill('123456');await p.locator('#cloudVerify').click();await expect(p.locator('#cloudStatus')).toContainText('Signed in');}}
  async function sync(d,enable=false){await d.p.locator(enable?'#cloudEnable':'#cloudNow').click();await expect(d.p.locator('#cloudStatus')).toContainText('Cloud sync complete');}
  try{
+ const invalid=await context(true);
+ await invalid.p.goto(origin+'/#error=access_denied&error_code=otp_expired');
+ await expect(invalid.p.locator('#cloudStatus')).toContainText('Login link is invalid');assert.equal(new URL(invalid.p.url()).hash,'');
+ await invalid.p.goto(origin+'/#access_token=link-token&refresh_token=unrequested');
+ await expect(invalid.p.locator('#cloudStatus')).toContainText('Login link is invalid');assert.equal(await invalid.p.locator('#cloudConnected').isVisible(),false);await invalid.c.close();
+ const linkPhone=await context(true);await login(linkPhone,true);assert.equal(documents.size,0,'mobile link login alone does not sync');await linkPhone.p.locator('#cloudLogout').click();
+ await linkPhone.p.locator('#cloudEmail').fill('test@example.com');await linkPhone.p.locator('#cloudSend').click();await expect(linkPhone.p.locator('#cloudStatus')).toContainText('Email sent');
+ await linkPhone.p.goto(origin+'/#access_token=wrong-email&refresh_token=wrong-refresh');await expect(linkPhone.p.locator('#cloudStatus')).toContainText('Login link is invalid');assert.equal(await linkPhone.p.locator('#cloudConnected').isVisible(),false,'different verified email is rejected');await linkPhone.c.close();requests=0;
  const pc=await context(false),phone=await context(true);
  const date=await pc.p.evaluate(()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');});
  await backup(pc,{lang:'en',kcalOverride:1950,log:{started:date,entries:{[date]:77.2}},usdaKey:'local-private-key'});
  await backup(phone,{lang:'en',workouts:[{id:'phone-workout',date,name:'Phone workout',exercises:[{key:'',name:'Bench',sets:[{weightKg:60,reps:8,done:true,warmup:false,rir:2}]}]}]});
  assert.equal(requests,0,'app does not contact cloud before login even with preset configuration');
- await login(pc);assert.equal(documents.size,0,'login alone does not upload health records');await sync(pc,true);
+ await login(pc,true);assert.equal(documents.size,0,'login alone does not upload health records');await sync(pc,true);
  await login(phone);await sync(phone,true);let ps=await exportState(phone);assert.equal(ps.log.entries[date],77.2);assert.equal(ps.workouts.length,1);assert.equal(ps.kcalOverride,1950);
  await sync(pc);let cs=await exportState(pc);assert.equal(cs.workouts.length,1);assert.equal(cs.usdaKey,'local-private-key');assert.ok(!JSON.stringify(documents.get(uid)).includes('local-private-key'));
  // Offline, independent edits: a new weigh-in and an edited workout merge.
