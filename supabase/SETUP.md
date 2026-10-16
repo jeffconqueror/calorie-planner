@@ -1,47 +1,43 @@
-# 启用电脑 / 手机同步
+# 电脑 / 手机同步
 
-本站已经预置站点所有者的 Supabase 项目地址与公开客户端密钥。使用本站时无需手动填写项目配置；在电脑和手机使用同一邮箱登录，再分别开启同步。登录前不会上传记录。Fork 本仓库时请替换 `CLOUD_DEFAULT` 为自己的项目，按以下步骤配置。
+本站已预置项目地址和公开客户端密钥。先在保存完整规划的电脑登录并开启同步，再连接手机。登录本身不会上传记录。
 
-## 一次性配置
+## 默认邮件链接登录
 
-1. 在 [Supabase Dashboard](https://supabase.com/dashboard) 注册／登录，并创建项目。项目归你所有；数据库密码留在 Supabase，不填写到网页、不提交到仓库。
-2. 在项目 **SQL Editor** 运行同目录的 [schema.sql](schema.sql)。它建立账号隔离的私有表和有版本检查的写入函数；不能省略权限部分。
-3. 在 **Authentication → Email Templates** 中，分别为 **Confirm sign up** 和 **Magic Link** 两个模板设置以下正文（覆盖首次注册与后续登录）：
+1. Supabase → Authentication → URL Configuration：将 Site URL 设成 `https://jeffconqueror.github.io/calorie-planner/` 并保存。
+2. 保持 custom SMTP 关闭，使用默认邮件模板。默认服务只向组织 Team 成员邮箱发信，目前每小时最多 2 封，电脑和手机共用额度。见 [官方邮件说明](https://supabase.com/docs/guides/auth/auth-smtp)。
+3. 网页「私人云端同步」输入成员邮箱，点「发送登录邮件」。在同一浏览器、同一本机用户档案打开新邮件的确认／登录链接，再点「开启同步并合并」。
+4. 手机入口在右上角齿轮。邮件链接应在发起登录的 Safari／Chrome 打开；邮件内置浏览器、主屏幕独立应用可能使用不同存储。
 
-   ```html
-   <h2>Load 登录验证码</h2>
-   <p>你的验证码是：{{ .Token }}</p>
-   <p>回到 Load 网页输入验证码即可登录。</p>
-   ```
+默认模板不需要修改。只有配置自定义 SMTP 后才可编辑模板；如需可选数字验证码模式，可把 `{{ .Token }}` 放进 Confirm sign up 和 Magic Link 正文，网页仍支持验证码输入。不要关闭邮箱验证来绕过邮件限制。
 
-   本应用使用 OTP 输入，不依赖邮件链接跳转。Supabase 的默认邮件发送只面向项目团队邮箱，并且有较低限额；你个人使用时应先用注册项目的同一邮箱在两端登录。其他邮箱／多人使用需要配置自己的 SMTP 服务。不要通过关闭邮箱验证来绕过发送限制。见 [Supabase 邮件说明](https://supabase.com/docs/guides/auth/auth-smtp) 与 [OTP 说明](https://supabase.com/docs/guides/auth/auth-email-passwordless)。
+## 手机免邮件登录
 
-4. 从项目 Connect/API Keys 获取 **Project URL** 和 **publishable key**（`sb_publishable_…`）。网页也兼容旧版 `anon` 公钥。不要使用 `sb_secret_…`、`service_role` 或数据库密码。公钥的访问范围由登录用户和数据库权限控制，参见 [API keys](https://supabase.com/docs/guides/getting-started/api-keys)。
-5. 电脑网页的「私人云端同步」中保存地址、公钥，填写邮箱并验证。先在保存完整热量规划的电脑点「开启同步并合并」。首次上传前会保留可下载的本机恢复副本。
-6. 手机右上角齿轮 → 「私人云端同步」，填写相同项目配置、使用相同邮箱登录，再开启同步。后续只需正常联网打开网页。
+在已登录的电脑展开「设置／修改同步密码」，输入两次至少 12 个字符的密码并保存。手机输入同一邮箱和该密码，点「使用密码登录」，再开启同步。
 
-项目 URL 和 publishable key 也可由维护者填进 `index.html` 的 `CLOUD_DEFAULT` 并重新发布，这样两端不必手动填写项目配置。只有公钥可放在那里，登录令牌永远不提交代码库。
+这是应用账号密码，不是 Supabase 后台或 GitHub 密码。密码登录不发送邮件；密码只传给项目 Auth API，不进入 localStorage、IndexedDB 或导出备份。如果项目安全设置要求近期登录或重新验证，设置密码可能仍需先完成邮件登录，应用不会关闭这些检查。
 
-## 合并规则
+## 部署自己的副本
 
-- 体重按日期、训练按场次 ID、自定义食物按食物 ID、模板按动作、力量基准按动作分别合并。
-- 首次连接保留已有云端身体／饮食规划，追加独有记录。因此先连接规划最完整的电脑；手机的默认值不会覆盖它。
-- 首次连接遇到两份不同的同日体重／同 ID 训练等，会列出双方内容供选择。之后同一记录的并发修改（包括修改与删除）也会暂停等待选择。
-- 保存删除标记，避免旧设备重新带回已经删除的记录。写入使用数据库原子版本比较；服务端版本变化则重新读取合并。
-- 请求期间新增的本机编辑会继续保留并在下一轮上传。离线仍使用原来的 localStorage / IndexedDB。
-- 语言、单位、USDA 密钥、登录凭据、训练草稿和当前界面选择不上传。正在进行的训练需在原设备继续，完成后才同步。
-- 恢复备份或重置会先暂停同步。核对内容后手动重新开启；不会悄悄把整份恢复操作传播到其他设备。
-- 同一台设备的一个本机用户档案绑定一个云端账号。要使用另一个云端账号，应新建本机用户，避免混合私人数据。
-- 修改后约 1.2 秒尝试同步；回到页面、重新联网时也尝试，页面可见时每 30 秒检查。不是后台推送服务，关闭网页时不会持续联网。
+1. 创建自己的 Supabase 项目，在 SQL Editor 执行 [schema.sql](schema.sql)，保留全部权限与行级安全设置。
+2. 按上述步骤设置自己的 Site URL。
+3. 替换 `index.html` 的 `CLOUD_DEFAULT`，或在网页项目配置中填写自己的 Project URL 和 publishable key。
+4. 只能使用公开 publishable key（也兼容 legacy anon）。不要提交 secret、service_role、数据库密码或登录令牌。
 
-## 检查与边界
+## 合并与恢复
 
-数据库安全检查会提示已登录用户可调用 `SECURITY DEFINER` 函数 `load_sync_commit`。这是有意设计的唯一写入入口，用于原子版本检查；函数只使用 `auth.uid()` 确定所有者，固定空 `search_path`，拒绝无登录请求，且撤销了 PUBLIC/anon 的执行权限。已登录用户没有表的直接写入权限。参见 [Supabase 检查说明](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)。
+- 体重按日期、训练按场次 ID、食物按 ID、模板和力量基准按动作分别合并。
+- 首次连接保留已有云端规划并追加独有记录，因此先连接规划完整的电脑。同一记录有不同内容时提示选择。
+- 使用删除标记防止旧设备恢复已删除记录；数据库原子版本检查防止并发覆盖。请求期间的本机修改保留并再次上传。
+- 首次合并前保留本机恢复副本；导入备份和重置会暂停同步，核对后需重新开启。
+- 语言、单位、USDA 密钥、登录凭据、密码、训练草稿和当前界面选择不作为同步记录上传。训练完成后才同步。
+- 每个本机档案绑定一个云端账号，避免混合用户数据。
+- 修改后约 1.2 秒尝试同步，回到页面和恢复网络也会尝试；页面可见时每 30 秒检查。关闭网页后不会后台同步。
 
-`npm test` 验证纯合并和现有应用回归；`npm run test:cloud-db` 用本地 Postgres 引擎验证权限与原子版本检查；`npm run test:cloud` 用两份隔离浏览器状态模拟 Supabase REST，验证完整前端流程。
+## 验证与边界
 
-这些自动化测试不会注册真实账号、发送真实邮件或上传私人记录。正式启用后仍需用目标项目验证真实邮件投递和两台设备的数据往返。免费服务的额度、休眠和邮件限制以 Supabase 当前项目设置为准。3. ? **Authentication ? URL Configuration** ?? **Site URL** ?????????? `https://jeffconqueror.github.io/calorie-planner/`???????? custom SMTP ??????????????????????????????????? Team ?????????? 2 ??????????????????????? [Supabase ????](https://supabase.com/docs/guides/auth/auth-smtp)?
+`npm test` 验证合并和应用回归；`npm run test:cloud-db` 用本地 Postgres 验证权限和原子版本检查；`npm run test:cloud` 用隔离的浏览器及模拟 Auth/REST 验证链接登录、密码设置、免邮件手机登录、冲突处理、离线编辑和同步。
 
-   ?????????????????????????????????????????????????????????????????????????????????????????????????????????? Safari?Chrome????????????????????????????????????
+这些测试不修改真实用户密码、不发送真实邮件、不上传私人记录。真实设备登录仍需本人完成。
 
-   ??????? SMTP ???????????? OTP ??????? `{{ .Token }}` ?? Confirm sign up ? Magic Link ?????????????????????????????
+安全检查可能提示 authenticated 可执行 `SECURITY DEFINER` 函数 `load_sync_commit`。这是唯一写入入口的有意设计：所有者取自 `auth.uid()`，固定空 search_path，拒绝未登录请求，撤销 PUBLIC/anon 执行权限，authenticated 没有表的直接写入权限。见 [检查说明](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)。
