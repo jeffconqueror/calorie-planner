@@ -49,6 +49,12 @@ Your inputs are saved in `localStorage` on your own device and never leave it.
 
 ## Workout journal and openGym imports
 
+On phones (up to 760 px), Load opens as a dark app with Home, Plan, Workout, Stats and Nutrition tabs. Home shows the selected day's routine, recorded weight trend and calorie budget. The workout tab focuses on one exercise at a time, with weight/rep steppers, completion progress, previous-session values and a 90/120-second rest timer. The gear opens profile controls, weigh-ins, backup/restore and legacy summaries. Desktop retains the full planner.
+
+The weekly preset is Monday rest; Tuesday quads (11 sets); Wednesday heavy chest (30); Thursday heavy back (19); Friday hamstrings (16); Saturday upper-body deload (18); Sunday shoulders, arms and abs (24). Saturday's flat/incline presses and two back movements each have 3 sets; Sunday has 3 sets per delt head. Set counts are editable and saved per profile as `routineSets`, including in backups. Starting a template leaves weights/reps blank unless actual history exists. Reusing recorded weights is a convenience, not an automatic deload prescription. The planner's exercise frequency changes only when the user chooses the six-day frequency button.
+
+`npm run test:mobile` checks the routine counts, mobile navigation, session editing, timer, draft recovery, backup and responsive layouts. Append a private backup path to `node tests/mobile-browser.cjs` to verify it without committing it.
+
 The **Workout journal / 训练日志** section records sessions with multiple exercises and individual weight × rep sets, optional RIR, warm-ups, duration and notes. Start from the planner's current training split or an empty session; edit saved workouts or repeat one today. Drafts save as you type. Check completed sets before saving. Warm-ups do not contribute to work-set counts or volume; bodyweight exercises use added weight only.
 
 Weekly totals compare actual lifting days with the planned frequency. A saved session links to its date in the food planner without changing calorie targets or the selected carb-cycle day. Exercise expenditure is already budgeted by the planner.

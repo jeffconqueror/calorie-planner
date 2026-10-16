@@ -34,7 +34,7 @@ const assert=require('assert'),fs=require('fs'),http=require('http'),path=requir
  await page.addStyleTag({content:'.masthead{position:static!important}'});
  fs.mkdirSync('artifacts',{recursive:true});await page.locator('#workoutJournal').screenshot({path:'artifacts/workout-journal-mobile.png'});
  await page.setViewportSize({width:1280,height:900});await page.locator('#workoutJournal').screenshot({path:'artifacts/workout-journal-desktop.png'});
- await page.locator('#langEn').click();assert.ok((await page.locator('#workoutJournal h2').textContent()).includes('Workout'));
+ await page.locator('#langEn').click();assert.ok((await page.locator('#workoutJournal h2[data-i18n="jTitle"]').textContent()).includes('Workout'));
  if(process.argv[2]){
    const original=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
    await page.locator('#backupToggle').click();await page.locator('#backupText').fill(JSON.stringify(original));await page.locator('#backupLoad').click();
