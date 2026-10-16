@@ -551,6 +551,29 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 .meal-cycle__choices b,.meal-cycle__choices small{display:block}
 .meal-cycle__choices small{color:var(--ink-3);line-height:1.5;margin-top:4px}
 @media(max-width:600px){.meal-cycle__choices{grid-template-columns:1fr}.meal-cycle__choices button{display:flex;align-items:center;gap:10px}.meal-cycle__choices small{margin:0 0 0 auto;text-align:right}}
+
+/* Per-set journal, sharing the planner's type and palette. */
+.journal-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+.journal-summary{font-family:var(--f-disp);font-weight:700;padding:16px 0;border-bottom:1px solid var(--rule)}
+.journal-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+#journalEditor label{display:block;font-size:12px;color:var(--ink-2)}
+#journalEditor input:not([type=checkbox]),#journalEditor textarea{display:block;width:100%;min-width:0;box-sizing:border-box;background:var(--panel-2);color:var(--ink);border:1px solid var(--rule-2);padding:9px;font:inherit;font-size:16px;border-radius:2px}
+.journal-exercise{border-top:1px solid var(--rule);margin-top:18px;padding-top:4px;min-width:0}
+.journal-exname{flex:1;min-width:160px}.journal-sets{min-width:460px;width:100%}.journal-sets td{padding:8px 5px}.journal-sets th{padding:8px 5px}.journal-sets input[type=number]{min-width:62px!important}.journal-sets input[type=checkbox]{width:20px;height:20px;accent-color:var(--ink)}
+.journal-history{border-bottom:1px solid var(--rule);padding:14px 0;overflow-wrap:anywhere}.journal-history summary{cursor:pointer}.journal-history summary span{display:block;font-size:12px;color:var(--ink-2);margin:6px 0}.journal-history p{margin:10px 0;line-height:1.6}
+#journalImportFile{max-width:100%;margin-top:14px}#journalTemplate{max-width:100%}#journalEditor{margin-top:20px}
+#workoutJournal button{background:var(--panel-2);color:var(--ink);border:1px solid var(--rule-2);border-radius:3px;padding:9px 12px;min-height:40px;font:inherit;font-size:13px;cursor:pointer}
+#workoutJournal button:hover{border-color:var(--accent)}
+#workoutJournal #journalStart,#workoutJournal [data-j-action=finish],#workoutJournal #journalImportApply{background:var(--accent-fill);color:var(--on-accent);border-color:var(--accent-fill)}
+@media(max-width:600px){
+  .journal-sets{min-width:0}.journal-sets thead{display:none}.journal-sets tbody{display:block}
+  .journal-sets tr{display:grid;grid-template-columns:22px repeat(3,minmax(0,1fr));gap:8px;margin:12px 0;padding:12px 0;border-block:1px solid var(--rule)}
+  .journal-sets td{padding:0;border:0;display:flex;flex-direction:column;justify-content:end;gap:6px;text-align:left}
+  .journal-sets td[data-label]::before{content:attr(data-label);font-size:11px;color:var(--ink-2)}
+  .journal-sets td:nth-child(5){grid-column:2}.journal-sets td:nth-child(6){grid-column:3}
+  .journal-sets input[type=number]{min-width:0!important}.journal-sets td:last-child button{min-height:36px;padding:4px}
+}
+
 </style>
 
 <header class="masthead">
@@ -938,10 +961,23 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     </div>
   </section>
 
+  <section class="section" id="workoutJournal">
+    <div class="section__hd"><h2 data-i18n="jTitle">Workout journal</h2><span class="section__rule"></span><span class="section__spec" data-i18n="jSpec"></span></div>
+    <div class="panel"><div class="panel__bd">
+      <p data-i18n="jIntro"></p><p class="journal-summary" id="journalSummary"></p>
+      <p class="hint" data-i18n="jCalorieNote"></p>
+      <div class="journal-toolbar"><label for="journalTemplate" data-i18n="pnArrange">Training plan</label><select id="journalTemplate"></select><button type="button" id="journalStart" data-i18n="jStart">Start session</button></div>
+      <p id="journalMessage" class="hint" aria-live="polite"></p>
+      <div id="journalEditor" hidden></div>
+    </div></div>
+    <div class="panel" style="margin-top:var(--gap)"><div class="panel__hd"><h3 data-i18n="trainingHistory">Session history</h3></div><div class="panel__bd" id="journalHistory"></div></div>
+    <details class="panel" style="margin-top:var(--gap)"><summary class="panel__hd" data-i18n="jImport">Import openGym JSON</summary><div class="panel__bd"><p class="hint" data-i18n="jImportHelp"></p><input id="journalImportFile" type="file" accept=".json,application/json" data-i18n-aria="jImport"><p id="journalImportMessage" class="hint" aria-live="polite"></p><button type="button" id="journalImportApply" data-i18n="jImportApply" hidden>Import these sessions</button></div></details>
+  </section>
+
   <!-- ═══ TRAINING LOG ═══ -->
   <section class="section">
     <div class="section__hd">
-      <h2 data-i18n="secTrainingLog">Strength during the cut</h2>
+      <h2 data-i18n="jLegacy">Quick strength summaries (existing records)</h2>
       <span class="section__rule"></span>
       <span class="section__spec" data-i18n="trainingLogSpec"></span>
     </div>
@@ -1102,6 +1138,42 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 /* ══ English ═══════════════════════════════════════════════════════════
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
+  jTitle:"Workout journal",
+  jSpec:"plan · train · review",
+  jIntro:"Log each completed set. Keep your calorie plan and actual training together. Added weight only for bodyweight exercises; warm-ups are excluded from work-set totals and volume.",
+  jBlank:"Empty session",
+  jStart:"Start session",
+  jSessionName:"Session name",
+  jMinutes:"Minutes",
+  jRemove:"Remove",
+  jPrevious:"Last session:",
+  jWarmup:"Warm-up",
+  jDone:"Done",
+  jAddSet:"+ Add set",
+  jAddExercise:"+ Add exercise",
+  jNotes:"Notes",
+  jDraftHint:"Draft saves on this device as you type. RIR = reps left in reserve (optional). Only checked sets are saved when you finish; 0 weight means bodyweight / no external load.",
+  jFinish:"Save completed session",
+  jDiscard:"Discard draft",
+  jWorkout:"Workout",
+  jWorkSets:"work sets",
+  jRepeat:"Repeat today",
+  jFood:"View food plan for this date",
+  jDelete:"Delete",
+  jReplace:"Replace the current draft? Its unsaved session will be discarded.",
+  jDiscardConfirm:"Discard this draft? Saved sessions will stay.",
+  jDeleteConfirm:"Delete this saved session?",
+  jUnchecked:"Unchecked sets will be omitted. Save the completed sets only?",
+  jInvalid:"Check the date, exercise names and set values. Mark at least one valid set as done.",
+  jImport:"Import openGym JSON",
+  jImportHelp:"In openGym: Settings → Export backup (JSON). Imports completed, ordinary weight × rep sets and warm-ups. Timed/cardio, drop, rest-pause and per-side sets are skipped and counted in the preview. Built-in exercise names absent from the backup appear as openGym #ID; you can rename them. RPE, photos, routines and bodyweight history are not imported. Reimporting the same session ID keeps the existing copy. JSON only, up to 10 MB.",
+  jImportApply:"Import these sessions",
+  jImportError:"Cannot read this file. Choose an openGym JSON backup with workouts and a kg/lb unit (up to 10 MB).",
+  jCalorieNote:"Training records do not add calories to your budget: planned exercise is already included in expenditure. The food-plan shortcut opens the date and keeps your selected carb-cycle day.",
+  jLegacy:"Quick strength summaries (existing records)",
+  jWeekSummary:function(a,b,d,p,s,v,u){return a+' — '+b+' · '+d+' / '+p+' planned lifting days · '+s+' work sets · '+v+' '+u+' × reps';},
+  jImportPreview:function(a,d,w,s,n){return a+' new sessions · '+d+' duplicates · '+w+' sessions skipped · '+s+' unsupported/invalid completed sets skipped · '+n+' exercises need names. Review before importing.';},
+
   mealCycleTitle:'Carb cycling', mealCycleDate:'Plan for date', mealCycleToday:'Today',
   mealCycleHigh:'High carb', mealCycleMedium:'Medium carb', mealCycleLow:'Low carb',
   mealCycleHint: function(k,h,m,l){ return 'Daily baseline '+k+' kcal · '+h+' high / '+m+' medium / '+l+' low days per week. Select a day, then add foods below; targets follow the date and calorie setting.'; },
@@ -1530,6 +1602,42 @@ var EN = {
 
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
+  jTitle:"训练日志",
+  jSpec:"计划 · 训练 · 复盘",
+  jIntro:"逐组记录实际训练，把饮食计划和训练执行放在一起看。自重动作只填额外负重；热身组不计入工作组数和训练容量。",
+  jBlank:"空白训练",
+  jStart:"开始记录",
+  jSessionName:"训练名称",
+  jMinutes:"分钟",
+  jRemove:"移除",
+  jPrevious:"上次训练：",
+  jWarmup:"热身",
+  jDone:"完成",
+  jAddSet:"+ 加一组",
+  jAddExercise:"+ 添加动作",
+  jNotes:"备注",
+  jDraftHint:"输入时自动保存本机草稿。RIR 表示还能完成的次数（可留空）。结束时只保存勾选完成的组；自重或无额外负重填 0。",
+  jFinish:"保存已完成训练",
+  jDiscard:"丢弃草稿",
+  jWorkout:"训练",
+  jWorkSets:"工作组",
+  jRepeat:"今天再练一次",
+  jFood:"查看当天饮食计划",
+  jDelete:"删除",
+  jReplace:"替换当前草稿？这次尚未保存的训练将被丢弃。",
+  jDiscardConfirm:"丢弃当前草稿？已保存的训练不会改变。",
+  jDeleteConfirm:"删除这次已保存的训练？",
+  jUnchecked:"未勾选的组不会保存。只保存已完成的组？",
+  jInvalid:"请检查日期、动作名称和每组数值，并至少勾选一组有效训练。",
+  jImport:"导入 openGym JSON",
+  jImportHelp:"在 openGym 设置中导出 JSON 备份。导入已完成的普通重量 × 次数组和热身组；计时、有氧、递减组、休息暂停组和单侧分组会跳过，并在预览中列出数量。备份未包含名称的内置动作显示为 openGym #ID，可编辑改名。不导入 RPE、照片、训练模板和体重历史。重复导入同一训练 ID 时保留本地记录。仅支持 JSON，最大 10 MB。",
+  jImportApply:"导入这些训练",
+  jImportError:"无法读取文件。请选择包含 workouts 和 kg/lb 单位的 openGym JSON 备份（最大 10 MB）。",
+  jCalorieNote:"训练记录不会额外增加热量预算：计划中的运动已计入消耗。饮食入口会打开对应日期，并保留当前选择的碳循环日类型。",
+  jLegacy:"快捷力量汇总（原有记录）",
+  jWeekSummary:function(a,b,d,p,s,v,u){return a+' — '+b+' · 已练 '+d+' / 计划 '+p+' 天 · '+s+' 工作组 · '+v+' '+u+' × 次';},
+  jImportPreview:function(a,d,w,s,n){return '新增 '+a+' 次训练 · 重复 '+d+' 次 · 跳过 '+w+' 次训练、'+s+' 个不支持或无效的完成组 · '+n+' 个动作待命名。请核对后导入。';},
+
   mealCycleTitle:'碳循环', mealCycleDate:'规划日期', mealCycleToday:'今天',
   mealCycleHigh:'高碳日', mealCycleMedium:'中碳日', mealCycleLow:'低碳日',
   mealCycleHint: function(k,h,m,l){ return '当天基础目标 '+k+' 千卡 · 每周 '+h+' 高／'+m+' 中／'+l+' 低碳日。选择日型后在下方添加食物；目标随日期和热量设置变化。'; },
@@ -1970,12 +2078,12 @@ var KG_LB = 2.2046226;
 /* ── i18n ── */
 var DICT = { en: EN, zh: ZH };
 var L = 'en';
-function t(k,a,b,c,e){
+function t(k){
   var dict = DICT[L] || DICT.en;
   var v = dict[k];
   if(v == null) v = DICT.en[k];
   if(v == null) return k;
-  return (typeof v === 'function') ? v(a,b,c,e) : v;
+  return (typeof v === 'function') ? v.apply(null,Array.prototype.slice.call(arguments,1)) : v;
 }
 function locale(){ return t('locale'); }
 function fmt(n){ return r0(n).toLocaleString(locale()); }
@@ -2202,7 +2310,7 @@ function defaults(){
     mode:'diet', startKg:78, targetKg:72, startPinned:false, carbPlan:'phased',
     startDate: iso(today), endDate: iso(addDays(today,84)),
     cheatKcal:800, proteinPerKg:2.0,
-    name:'', usdaKey:'', log:{started:null, entries:{}}, trainingLog:[],
+    name:'', usdaKey:'', log:{started:null, entries:{}}, trainingLog:[], workouts:[], workoutDraft:null,
     kcalOverride:null, kcalSource:'plan',
     dayType:'train', foodCycleDay:'medium', foodDate:null,
     activeMeal:'m1', planBlock:null, mealMode:'day', lastExport:null,
@@ -2357,6 +2465,86 @@ function cleanTrainingLog(rows){
   });
   return Object.keys(byDay).sort().map(function(k){ return byDay[k]; });
 }
+/* Workout journal: canonical kg, separate from legacy summary-only logs. */
+function journalDate(d){ return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && parseISO(d) && iso(parseISO(d)) === d; }
+function journalNumber(v, min, max, integer){
+  if(v === '' || v == null || typeof v === 'boolean') return null;
+  var n = Number(v); return isFinite(n) && n >= min && n <= max && (!integer || Number.isInteger(n)) ? n : null;
+}
+function cleanWorkout(w, draft){
+  if(!w || typeof w !== 'object' || !journalDate(w.date) || typeof w.id !== 'string' || !w.id) return null;
+  var exercises = (Array.isArray(w.exercises) ? w.exercises : []).map(function(e){
+    if(!e || typeof e.name !== 'string') return null;
+    var sets = (Array.isArray(e.sets) ? e.sets : []).map(function(s){
+      if(!s || typeof s !== 'object') return null;
+      var kg = journalNumber(s.weightKg,0,1500), reps = journalNumber(s.reps,0,1000,true);
+      if(!draft && (kg === null || reps === null || !s.done)) return null;
+      return {weightKg:kg, reps:reps, rir:journalNumber(s.rir,0,10), warmup:s.warmup === true, done:s.done === true};
+    }).filter(Boolean);
+    return sets.length || draft ? {name:e.name.slice(0,120), key:typeof e.key === 'string' ? e.key.slice(0,120) : '', sets:sets} : null;
+  }).filter(Boolean);
+  if(!draft && (!exercises.length || exercises.some(function(e){ return !e.name.trim(); }))) return null;
+  return {id:w.id.slice(0,200), date:w.date, name:String(w.name || '').slice(0,120), notes:String(w.notes || '').slice(0,2000), minutes:journalNumber(w.minutes,0,1440), exercises:exercises};
+}
+function cleanWorkouts(rows){
+  var byId = new Map();
+  (Array.isArray(rows) ? rows : []).forEach(function(w){ var c = cleanWorkout(w,false); if(c) byId.set(c.id,c); });
+  return Array.from(byId.values()).sort(function(a,b){ return a.date.localeCompare(b.date) || a.id.localeCompare(b.id); });
+}
+function workoutStats(w){
+  var r = {sets:0, volume:0};
+  w.exercises.forEach(function(e){ e.sets.forEach(function(s){ if(s.done && !s.warmup){ r.sets++; r.volume += (s.weightKg || 0)*(s.reps || 0); } }); });
+  return r;
+}
+function journalWeek(rows, date){
+  var end = parseISO(date), start = parseISO(date); start.setDate(start.getDate()-((start.getDay()+6)%7));
+  var first = iso(start); end = new Date(start); end.setDate(end.getDate()+6);
+  var last = iso(end), days = new Set(), sets = 0, volume = 0;
+  rows.filter(function(w){ return w.date >= first && w.date <= last; }).forEach(function(w){
+    var stats = workoutStats(w); if(stats.sets) days.add(w.date); sets += stats.sets; volume += stats.volume;
+  });
+  return {first:first,last:last,days:days.size,sets:sets,volume:volume};
+}
+/* Adapter for openGym's Settings > Export backup (JSON), not copied application code.
+   Complex/timed/cardio sets are explicitly reported as unsupported, never flattened. */
+function parseOpenGym(text){
+  var o = JSON.parse(text);
+  if(!o || !Array.isArray(o.workouts) || ['kg','lb'].indexOf(o.unit) < 0) throw new Error('format');
+  var names = new Map(), skippedSets = 0, skippedSessions = 0, unnamed = 0;
+  (Array.isArray(o.customEx) ? o.customEx : []).forEach(function(e){ if(e && e.id != null && typeof e.n === 'string') names.set(String(e.id),e.n); });
+  var rows = o.workouts.map(function(w){
+    if(!w || !journalDate(w.d) || !Array.isArray(w.entries)){ skippedSessions++; return null; }
+    var exercises = w.entries.map(function(e){
+      if(!e || !Array.isArray(e.sets)) return null;
+      var sets = e.sets.map(function(s){
+        if(!s || s.done !== true) return null;
+        var mode = s.mode || (e.target && e.target.mode);
+        if((mode && mode !== 'reps') || s.sec != null || s.min != null || s.sides || s.drops || s.clusters || (s.type && s.type !== 'normal')){ skippedSets++; return null; }
+        var kg = journalNumber(s.w,0,3307), reps = journalNumber(s.r,0,1000,true);
+        if(kg === null || reps === null){ skippedSets++; return null; }
+        kg = o.unit === 'lb' ? kg / 2.2046226218 : kg;
+        if(kg > 1500){ skippedSets++; return null; }
+        return {weightKg:kg,reps:reps,rir:journalNumber(s.rir,0,10),warmup:s.phase === 'warmup' || s.warmup === true,done:true};
+      }).filter(Boolean);
+      if(!sets.length) return null;
+      var name = e.name || e.n || names.get(String(e.id)); if(!name) unnamed++;
+      return {key:'opengym:'+String(e.id),name:name || 'openGym #'+String(e.id),sets:sets};
+    }).filter(Boolean);
+    var id = w.id != null ? String(w.id) : JSON.stringify([w.d,w.start,w.name,w.entries]);
+    // Two hashes keep IDs compact even for old backups without session IDs.
+    var a=2166136261,b=5381; for(var i=0;i<id.length;i++){ a=Math.imul(a^id.charCodeAt(i),16777619); b=Math.imul(b,33)^id.charCodeAt(i); }
+    var minutes = Number.isFinite(w.start) && Number.isFinite(w.end) && w.end >= w.start ? (w.end-w.start)/60000 : null;
+    var row = cleanWorkout({id:'og-'+(a>>>0).toString(16)+'-'+(b>>>0).toString(16),date:w.d,name:w.name,notes:w.note,minutes:minutes,exercises:exercises},false);
+    if(!row) skippedSessions++; return row;
+  }).filter(Boolean);
+  return {rows:cleanWorkouts(rows),skippedSets:skippedSets,skippedSessions:skippedSessions,unnamed:unnamed};
+}
+function mergeWorkoutImport(existing, incoming){
+  var ids = new Set(existing.map(function(w){return w.id;}));
+  var fresh = incoming.filter(function(w){ if(ids.has(w.id)) return false; ids.add(w.id); return true; });
+  return {rows:cleanWorkouts(existing.concat(fresh)),added:fresh.length,duplicates:incoming.length-fresh.length};
+}
+
 function importState(text){
   var o = JSON.parse(text);
   if(!o || typeof o !== 'object') throw new Error('not an object');
@@ -2367,6 +2555,8 @@ function importState(text){
   if(!S.log.entries) S.log.entries = {};
   if(!Array.isArray(S.custom)) S.custom = [];
   S.trainingLog = cleanTrainingLog(S.trainingLog);
+  S.workouts = cleanWorkouts(S.workouts);
+  S.workoutDraft = cleanWorkout(S.workoutDraft,true);
   if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
 }
 /* Normalise whatever came out of storage into a usable state object. */
@@ -2377,6 +2567,8 @@ function adoptState(o){
   S = d;
   if(!Array.isArray(S.custom)) S.custom = [];
   S.trainingLog = cleanTrainingLog(S.trainingLog);
+  S.workouts = cleanWorkouts(S.workouts);
+  S.workoutDraft = cleanWorkout(S.workoutDraft,true);
   if(!S.log || typeof S.log !== 'object') S.log = {started:null, entries:{}};
   if(!S.log.entries || typeof S.log.entries !== 'object') S.log.entries = {};
   if(!Array.isArray(S.meals) || S.meals.length !== 4) S.meals = defaults().meals;
@@ -2391,6 +2583,8 @@ function stateWeight(o){
     if(o.log && o.log.entries) n += Object.keys(o.log.entries).length * 10;
     if(Array.isArray(o.custom)) n += o.custom.length * 5;
     if(Array.isArray(o.trainingLog)) n += o.trainingLog.length * 10;
+    if(Array.isArray(o.workouts)) n += o.workouts.length * 10;
+    if(o.workoutDraft) n += 1;
     if(Array.isArray(o.meals)) o.meals.forEach(function(m){
       if(m && Array.isArray(m.items)) n += m.items.length;
     });
@@ -2851,6 +3045,7 @@ function render(){
   renderRecordName();
   renderInstallTip();
   renderTrainingLog();
+  renderJournal();
   renderMeals();
   save();
 }
@@ -3626,6 +3821,93 @@ $('#checkBody').addEventListener('keydown', function(e){
   if(e.key !== 'Enter' && e.key !== ' ') return;
   var tr = e.target.closest('tr[data-cp]');
   if(tr){ e.preventDefault(); pickCheckpoint(tr); }
+});
+
+function journalId(){ return 'w-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2); }
+function journalSet(){ return {weightKg:null,reps:null,rir:null,warmup:false,done:false}; }
+function journalName(e){ var lift=LIFTS.find(function(l){return l.k===e.key;}); return lift ? t(lift.key) : e.name; }
+function journalBlank(){ return {id:journalId(),date:iso(new Date()),name:'',minutes:null,notes:'',exercises:[]}; }
+function journalStart(w){
+  if(S.workoutDraft && !confirm(t('jReplace'))) return;
+  S.workoutDraft=w; render(); $('#journalEditor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function journalButton(action,label,extra){ return '<button type="button" data-j-action="'+action+'" '+(extra||'')+'>'+esc(label)+'</button>'; }
+function renderJournal(){
+  if(journalImportPending && journalImportPending.profile!==P.active){journalImportPending=null;$('#journalImportApply').hidden=true;$('#journalImportMessage').textContent='';}
+  var week=journalWeek(S.workouts,iso(new Date()));
+  $('#journalSummary').textContent=t('jWeekSummary',week.first,week.last,week.days,C.gymDays,week.sets,Math.round(wOut(week.volume)),wUnit());
+  var choices=(SPLITS[C.gymDays]||[]).filter(function(k){return SESSION[k].lifts.length;});
+  $('#journalTemplate').innerHTML='<option value="">'+esc(t('jBlank'))+'</option>'+choices.map(function(k,i){return '<option value="'+k+'">'+esc(t('dayN',i+1)+' · '+t('ses_'+k))+'</option>';}).join('');
+  var w=S.workoutDraft; $('#journalEditor').hidden=!w;
+  if(w){
+    var field=function(key,label,type,value,attrs){return '<label>'+esc(label)+'<input data-j-field="'+key+'" type="'+type+'" value="'+esc(value==null?'':value)+'" '+(attrs||'')+'></label>';};
+    var html='<div class="journal-fields">'+field('date',t('trainingDate'),'date',w.date,'required')+field('name',t('jSessionName'),'text',w.name,'maxlength="120"')+field('minutes',t('jMinutes'),'number',w.minutes,'min="0" max="1440" step="any"')+'</div>';
+    html+=w.exercises.map(function(e,ei){
+      var previous=S.workouts.slice().reverse().filter(function(x){return x.id!==w.id && x.date<=w.date;}).flatMap(function(x){return x.exercises.filter(function(p){return e.key ? p.key===e.key : p.name===e.name;}).map(function(p){return {date:x.date,e:p};});})[0];
+      var hint=previous ? previous.date+' · '+previous.e.sets.filter(function(s){return !s.warmup;}).map(function(s){return wShow(s.weightKg)+' × '+s.reps;}).join(' / ') : t('trainingEmpty');
+      return '<article class="journal-exercise" data-j-ex="'+ei+'"><div class="journal-toolbar"><label class="journal-exname">'+esc(t('trainingLift'))+'<input data-j-name="'+ei+'" value="'+esc(journalName(e))+'" maxlength="120" required></label>'+journalButton('remove-ex',t('jRemove'),'data-ex="'+ei+'"')+'</div><p class="hint">'+esc(t('jPrevious')+' '+hint)+'</p><div class="tablewrap"><table class="journal-sets"><thead><tr><th>#</th><th>'+esc(t('trainingWeight')+' ('+wUnit()+')')+'</th><th>'+esc(t('trainingReps'))+'</th><th>RIR</th><th>'+esc(t('jWarmup'))+'</th><th>'+esc(t('jDone'))+'</th><th></th></tr></thead><tbody>'+e.sets.map(function(s,si){
+        var input=function(key,value,attrs){return '<input aria-label="'+esc(journalName(e)+' · '+(si+1)+' · '+(key==='weightKg'?t('trainingWeight'):key==='reps'?t('trainingReps'):key==='warmup'?t('jWarmup'):key==='done'?t('jDone'):'RIR'))+'" data-j-set="'+key+'" data-ex="'+ei+'" data-set="'+si+'" '+attrs+' '+(key==='done'||key==='warmup' ? (value?'checked':'') : 'value="'+esc(value==null?'':value)+'"')+'>';};
+        return '<tr><td>'+(si+1)+'</td><td data-label="'+esc(t('trainingWeight')+' ('+wUnit()+')')+'">'+input('weightKg',s.weightKg==null?'':wShow(s.weightKg,2),'type="number" min="0" max="'+(imperial()?3306:1500)+'" step="any" inputmode="decimal"')+'</td><td data-label="'+esc(t('trainingReps'))+'">'+input('reps',s.reps,'type="number" min="0" max="1000" step="1" inputmode="numeric"')+'</td><td data-label="RIR">'+input('rir',s.rir,'type="number" min="0" max="10" step="0.5" inputmode="decimal"')+'</td><td data-label="'+esc(t('jWarmup'))+'">'+input('warmup',s.warmup,'type="checkbox"')+'</td><td data-label="'+esc(t('jDone'))+'">'+input('done',s.done,'type="checkbox"')+'</td><td>'+journalButton('remove-set','×','data-ex="'+ei+'" data-set="'+si+'" aria-label="'+esc(t('jRemove'))+'"')+'</td></tr>';
+      }).join('')+'</tbody></table></div>'+journalButton('add-set',t('jAddSet'),'data-ex="'+ei+'"')+'</article>';
+    }).join('');
+    html+='<div class="journal-toolbar">'+journalButton('add-ex',t('jAddExercise'))+'</div><label>'+esc(t('jNotes'))+'<textarea data-j-field="notes" maxlength="2000" rows="2">'+esc(w.notes)+'</textarea></label><p class="hint">'+esc(t('jDraftHint'))+'</p><div class="journal-toolbar">'+journalButton('finish',t('jFinish'))+journalButton('discard',t('jDiscard'))+'</div>';
+    setHTMLKeepFocus($('#journalEditor'),html);
+  }
+  $('#journalHistory').innerHTML=S.workouts.length ? S.workouts.slice().reverse().map(function(w){var stats=workoutStats(w); return '<details class="journal-history"><summary><b>'+esc(w.date+' · '+(w.name||t('jWorkout')))+'</b><span>'+esc(stats.sets+' '+t('jWorkSets')+' · '+Math.round(wOut(stats.volume))+' '+wUnit()+' × '+t('trainingReps'))+'</span></summary><div class="journal-toolbar">'+journalButton('edit',t('trainingEdit'),'data-id="'+esc(w.id)+'"')+journalButton('repeat',t('jRepeat'),'data-id="'+esc(w.id)+'"')+journalButton('food',t('jFood'),'data-id="'+esc(w.id)+'"')+journalButton('delete',t('jDelete'),'data-id="'+esc(w.id)+'"')+'</div>'+w.exercises.map(function(e){return '<p><b>'+esc(journalName(e))+'</b> · '+esc(e.sets.map(function(s){return (s.warmup?t('jWarmup')+' ':'')+wShow(s.weightKg)+' '+wUnit()+' × '+s.reps+(s.rir==null?'':' · RIR '+s.rir);}).join(' / '))+'</p>';}).join('')+'<p class="hint">'+esc((w.minutes==null?'':w.minutes+' '+t('jMinutes')+' · ')+w.notes)+'</p></details>';}).join('') : '<p class="hint">'+esc(t('trainingEmpty'))+'</p>';
+}
+on('#journalStart','click',function(){
+  var w=journalBlank(),key=$('#journalTemplate').value;
+  if(key && SESSION[key]){w.name=t('ses_'+key); w.exercises=SESSION[key].lifts.map(function(k){var l=LIFTS.find(function(x){return x.k===k;});return {key:k,name:t(l.key),sets:[journalSet(),journalSet(),journalSet()]};});}
+  journalStart(w);
+});
+on('#journalEditor','input',function(ev){
+  var el=ev.target,w=S.workoutDraft;if(!w)return;
+  if(el.dataset.jField){var k=el.dataset.jField;w[k]=k==='minutes'?(el.value===''?null:Number(el.value)):el.value;}
+  if(el.dataset.jName!=null){var ex=w.exercises[Number(el.dataset.jName)];ex.name=el.value;ex.key='';}
+  if(el.dataset.jSet){var set=w.exercises[Number(el.dataset.ex)].sets[Number(el.dataset.set)],key=el.dataset.jSet;
+    set[key]=el.type==='checkbox'?el.checked:el.value===''?null:(key==='weightKg'?wIn(Number(el.value)):Number(el.value));}
+  save();
+});
+on('#journalEditor','click',function(ev){
+  var b=ev.target.closest('[data-j-action]'),w=S.workoutDraft;if(!b||!w)return;
+  var action=b.dataset.jAction,ei=Number(b.dataset.ex),si=Number(b.dataset.set);
+  if(action==='add-ex')w.exercises.push({key:'',name:'',sets:[journalSet()]});
+  if(action==='remove-ex')w.exercises.splice(ei,1);
+  if(action==='add-set'){var sets=w.exercises[ei].sets,prior=sets[sets.length-1];sets.push(prior?Object.assign({},prior,{done:false,rir:null}):journalSet());}
+  if(action==='remove-set')w.exercises[ei].sets.splice(si,1);
+  if(action==='discard'){if(!confirm(t('jDiscardConfirm')))return;S.workoutDraft=null;}
+  if(action==='finish'){
+    var c=cleanWorkout(w,false),checked=w.exercises.reduce(function(n,e){return n+e.sets.filter(function(s){return s.done;}).length;},0);
+    var valid=c&&c.exercises.reduce(function(n,e){return n+e.sets.length;},0);
+    if(!c||checked!==valid||$('#journalEditor').querySelectorAll('input:invalid').length > 0){$('#journalMessage').textContent=t('jInvalid');return;}
+    if(w.exercises.some(function(e){return e.sets.some(function(s){return !s.done;});})&&!confirm(t('jUnchecked')))return;
+    S.workouts=cleanWorkouts(S.workouts.filter(function(x){return x.id!==c.id;}).concat([c]));S.workoutDraft=null;$('#journalMessage').textContent=t('trainingSaved');
+  }
+  render();
+});
+on('#journalHistory','click',function(ev){
+  var b=ev.target.closest('[data-j-action]');if(!b)return;
+  var w=S.workouts.find(function(x){return x.id===b.dataset.id;});if(!w)return;
+  if(b.dataset.jAction==='food'){S.foodDate=w.date;resolveAndRender();$('#mealCycleDate').scrollIntoView({behavior:'smooth',block:'center'});return;}
+  if(b.dataset.jAction==='delete'){if(!confirm(t('jDeleteConfirm')))return;S.workouts=S.workouts.filter(function(x){return x.id!==w.id;});render();return;}
+  var copy=JSON.parse(JSON.stringify(w));
+  if(b.dataset.jAction==='repeat'){copy.id=journalId();copy.date=iso(new Date());copy.minutes=null;copy.notes='';copy.exercises.forEach(function(e){e.sets.forEach(function(s){s.done=false;s.rir=null;});});}
+  journalStart(copy);
+});
+var journalImportPending=null;
+on('#journalImportFile','change',function(ev){
+  var file=ev.target.files[0],profile=P.active;ev.target.value='';journalImportPending=null;$('#journalImportApply').hidden=true;if(!file)return;
+  if(file.size>10*1024*1024){$('#journalImportMessage').textContent=t('jImportError');return;}
+  var reader=new FileReader();reader.onload=function(){if(P.active!==profile)return;try{
+    var result=parseOpenGym(reader.result),merge=mergeWorkoutImport(S.workouts,result.rows);journalImportPending={profile:profile,rows:result.rows};
+    $('#journalImportMessage').textContent=t('jImportPreview',merge.added,merge.duplicates,result.skippedSessions,result.skippedSets,result.unnamed);
+    $('#journalImportApply').hidden=!merge.added;
+  }catch(e){$('#journalImportMessage').textContent=t('jImportError');}};
+  reader.onerror=function(){if(P.active===profile)$('#journalImportMessage').textContent=t('jImportError');};reader.readAsText(file);
+});
+on('#journalImportApply','click',function(){
+  if(!journalImportPending||journalImportPending.profile!==P.active)return;
+  S.workouts=mergeWorkoutImport(S.workouts,journalImportPending.rows).rows;journalImportPending=null;this.hidden=true;$('#journalImportMessage').textContent=t('trainingSaved');render();
 });
 
 on('#trainingLift','change', syncTrainingForm);

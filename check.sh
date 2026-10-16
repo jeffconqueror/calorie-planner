@@ -11,4 +11,5 @@ node tests/storage.test.js
 node tests/sw.test.js
 node tests/meal-cycle.test.js
 node tests/training-log.test.js
+node tests/workout-journal.test.js
 echo "all checks passed"

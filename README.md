@@ -47,6 +47,18 @@ Your inputs are saved in `localStorage` on your own device and never leave it.
 
 ---
 
+## Workout journal and openGym imports
+
+The **Workout journal / 训练日志** section records sessions with multiple exercises and individual weight × rep sets, optional RIR, warm-ups, duration and notes. Start from the planner's current training split or an empty session; edit saved workouts or repeat one today. Drafts save as you type. Check completed sets before saving. Warm-ups do not contribute to work-set counts or volume; bodyweight exercises use added weight only.
+
+Weekly totals compare actual lifting days with the planned frequency. A saved session links to its date in the food planner without changing calorie targets or the selected carb-cycle day. Exercise expenditure is already budgeted by the planner.
+
+In openGym, use **Settings → Export backup (JSON)**, then choose that file under **Import openGym JSON** here. Review the counts and press **Import these sessions**. The adapter accepts ordinary completed rep sets and warm-ups, converts lb to canonical kg, and skips duplicate session IDs. Unsupported timed/cardio and complex sets are counted in the preview. Built-in exercise names missing from the export appear as `openGym #ID` and can be renamed. This is a local file import, not live synchronization. See [integration design and limitations](INTEGRATION.md).
+
+Existing planner backups restore directly. Original `trainingLog` summary records stay in their own section; `lifts` remain planning baselines. New `workouts` and `workoutDraft` data use the same per-profile localStorage, IndexedDB and full-backup system. Personal backup files should be kept outside this repository.
+
+Verification: `npm test` runs the dependency-free regression checks. `npm install` and `npm run test:browser` run browser workflows using an installed Chrome. To additionally verify a private backup without adding it to the repository, run `node tests/journal-browser.cjs /path/to/backup.json`.
+
 ## Is there a native app?
 
 No, and for this app there is little to gain from one. Getting a native build onto an
