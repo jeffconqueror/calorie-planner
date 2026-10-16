@@ -605,6 +605,10 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
   #workoutFocus [data-app-finish]{margin-left:auto;background:#203b27!important;color:#2dd363!important;border:0!important;border-radius:50%!important;font-size:22px!important;width:40px;height:40px;padding:0!important}
   .journal-sets thead{display:none}.journal-sets tbody{display:block}.journal-sets tr{display:grid}.journal-sets td{display:flex;flex-direction:column;padding:0;gap:5px;justify-content:end;border:0}.journal-sets td[data-label]::before{content:attr(data-label);font-size:10px;color:var(--ink-2)}.journal-sets td:nth-child(5){grid-column:2}.journal-sets td:nth-child(6){grid-column:3}
 }
+
+#cloudPanel input{width:100%;box-sizing:border-box;padding:11px;margin:7px 0 12px;background:var(--panel-2);color:var(--ink);border:1px solid var(--rule-2);border-radius:8px;font:inherit;font-size:16px}
+#cloudPanel label{display:block;font-size:13px;margin-top:9px}#cloudPanel button{padding:10px 14px;min-height:42px;border-radius:8px;border:1px solid var(--rule-2);background:var(--panel-2);color:var(--ink);font:inherit;margin:5px 0;cursor:pointer}#cloudPanel button:disabled{opacity:.5}#cloudPanel #cloudEnable,#cloudPanel #cloudVerify,#cloudPanel #cloudResolve{background:var(--accent-fill);color:var(--on-accent);border-color:var(--accent-fill)}
+#cloudStatus{margin:14px 0;line-height:1.6;overflow-wrap:anywhere}#cloudPanel details{margin:14px 0}#cloudPanel summary{cursor:pointer;padding:7px 0}.cloud-actions{display:flex;gap:8px;flex-wrap:wrap}.cloud-conflict{padding:14px 0;border-top:1px solid var(--rule);overflow-wrap:anywhere}.cloud-conflict-values{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cloud-conflict pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;background:var(--panel-2);padding:9px;font-size:12px}.cloud-conflict b{font-size:13px}#cloudAccount{overflow-wrap:anywhere}
 </style>
 
 <header class="app-mobile app-header wrap"><div><h1 id="appTitle">Load</h1><p id="appSubtitle"></p></div><button type="button" id="appSettings" aria-label="Settings"></button></header>
@@ -633,6 +637,25 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
   <section class="section" id="appHome"></section>
   <section class="section" id="routinePlan"></section>
   <section class="section" id="appStats"></section>
+
+
+  <section class="section app-settings-section" id="cloudPanel">
+    <div class="section__hd"><h2 data-i18n="sTitle">Private cloud sync</h2></div>
+    <div class="panel"><div class="panel__bd">
+      <p class="hint" data-i18n="sIntro"></p><p id="cloudStatus" role="status" aria-live="polite"></p>
+      <details id="cloudSetup"><summary data-i18n="sSetup">Project configuration</summary><p class="hint" data-i18n="sSetupHint"></p>
+        <label for="cloudUrl" data-i18n="sUrl">Project URL</label><input id="cloudUrl" type="url" placeholder="https://your-project.supabase.co" autocomplete="off" spellcheck="false">
+        <label for="cloudKey" data-i18n="sKey">Publishable key</label><input id="cloudKey" type="text" placeholder="sb_publishable_…" autocomplete="off" spellcheck="false">
+        <button id="cloudConfigSave" type="button" data-i18n="sSaveConfig">Save connection</button>
+      </details>
+      <div id="cloudAuth" hidden><label for="cloudEmail" data-i18n="sEmail">Email</label><input id="cloudEmail" type="email" autocomplete="email" required><button id="cloudSend" type="button" data-i18n="sSend">Send code</button>
+        <label for="cloudCode" data-i18n="sCode">Code</label><input id="cloudCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10"><button id="cloudVerify" type="button" data-i18n="sVerify">Sign in</button>
+      </div>
+      <div id="cloudConnected" hidden><p id="cloudAccount"></p><p class="hint" data-i18n="sFirstMerge"></p><div class="cloud-actions"><button id="cloudEnable" type="button" data-i18n="sEnable">Enable sync</button><button id="cloudNow" type="button" data-i18n="sNow">Sync now</button><button id="cloudPause" type="button" data-i18n="sPause">Pause</button><button id="cloudLogout" type="button" data-i18n="sLogout">Sign out</button></div></div>
+      <div id="cloudConflicts" hidden><h3 data-i18n="sConflictTitle">Conflicts</h3><div id="cloudConflictList"></div><button id="cloudResolve" type="button" data-i18n="sResolve">Apply choices</button></div>
+      <button id="cloudRecovery" type="button" data-i18n="sRecovery" hidden>Recovery copy</button><p class="hint" data-i18n="sScope"></p>
+    </div></div>
+  </section>
 
   <!-- ═══ SETUP ═══ -->
   <section class="section app-nutrition-section">
@@ -1176,6 +1199,50 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 /* ══ English ═══════════════════════════════════════════════════════════
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
+  sTitle:"Private cloud sync",
+  sIntro:"Use the same email on computer and phone. Connect the computer with your complete calorie plan first, then connect the phone. Weight dates and workout sessions merge independently.",
+  sSetup:"One-time project configuration",
+  sSetupHint:"Paste the Supabase project URL and publishable key. Never paste a secret or service-role key. The project must have the provided database migration installed.",
+  sUrl:"Project URL",
+  sKey:"Publishable key",
+  sSaveConfig:"Save connection",
+  sEmail:"Email",
+  sSend:"Send login code",
+  sCode:"Email code",
+  sVerify:"Sign in",
+  sEnable:"Enable sync & merge",
+  sNow:"Sync now",
+  sPause:"Pause sync",
+  sLogout:"Sign out on this device",
+  sRecovery:"Download pre-sync recovery copy",
+  sConflictTitle:"Both devices changed these records",
+  sResolve:"Apply these choices & sync",
+  sLocal:"This device",
+  sRemote:"Cloud",
+  sKeep:"Keep",
+  sDeleted:"Deleted",
+  sLast:"Last synced",
+  sOff:"Local only · cloud sync is off",
+  sReady:"Signed in · enable sync to merge this profile",
+  sPending:"Saved locally · waiting to sync",
+  sWorking:"Syncing…",
+  sSynced:"Cloud sync complete",
+  sOffline:"Saved locally · connection failed; will retry online",
+  sConflict:"Sync paused · choose which records to keep below",
+  sPaused:"Sync paused · changes remain on this device",
+  sRetry:"Cloud changed during sync · retry shortly",
+  sAuthError:"Session expired or invalid. Sign out and sign in again; local data stays.",
+  sSetupError:"Database setup or access check failed. Check the Supabase migration and account permissions.",
+  sConfigError:"Use an https://…supabase.co URL and a publishable/anon key, never a secret key.",
+  sStorageError:"Browser storage is unavailable. Sync is stopped to protect the recovery copy.",
+  sCodeSent:"Code sent. Check your email, then enter the code here.",
+  sCodeError:"Could not verify the code. Check it or request a new one.",
+  sRateLimit:"Too many emails requested. Please wait before trying again.",
+  sEmailError:"Could not send email. Check connectivity and Supabase email settings; default delivery is restricted to project-team emails.",
+  sOwnerError:"This profile is linked to another cloud account, or this account is already linked to a different local profile. Switch to that profile or create a new one.",
+  sScope:"Sync shares body settings, calorie plans, foods, weigh-ins, routines and completed workouts with your signed-in account. Language, units, login tokens, USDA keys and unfinished workout drafts stay on this device. Restoring a backup or resetting pauses sync until you enable it again.",
+  sFirstMerge:"First merge keeps the existing cloud plan and combines records; a recovery copy is kept locally. Open both devices online to sync (also checked every 30 seconds while the page is visible).",
+
   aHome:"Home",
   aPlan:"Plan",
   aWorkout:"Workout",
@@ -1688,6 +1755,50 @@ var EN = {
 
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
+  sTitle:"私人云端同步",
+  sIntro:"电脑和手机使用同一邮箱登录。先连接保存完整饮食计划的电脑，再连接手机。体重按日期、训练按场次合并。",
+  sSetup:"项目配置（仅首次）",
+  sSetupHint:"填写 Supabase 项目地址和 publishable 公钥；不要填写 secret 或 service_role 密钥。项目需先运行配套的数据库配置。",
+  sUrl:"项目地址",
+  sKey:"Publishable 公钥",
+  sSaveConfig:"保存连接配置",
+  sEmail:"邮箱",
+  sSend:"发送登录验证码",
+  sCode:"邮箱验证码",
+  sVerify:"验证并登录",
+  sEnable:"开启同步并合并",
+  sNow:"立即同步",
+  sPause:"暂停同步",
+  sLogout:"退出本机登录",
+  sRecovery:"下载同步前恢复副本",
+  sConflictTitle:"这些记录在两端都被修改",
+  sResolve:"按所选版本合并",
+  sLocal:"本机版本",
+  sRemote:"云端版本",
+  sKeep:"保留",
+  sDeleted:"已删除",
+  sLast:"上次同步",
+  sOff:"仅本机保存 · 云端同步未开启",
+  sReady:"已登录 · 开启同步后才会合并当前用户数据",
+  sPending:"已在本机保存 · 等待同步",
+  sWorking:"正在同步…",
+  sSynced:"云端同步完成",
+  sOffline:"已在本机保存 · 连接失败，联网后重试",
+  sConflict:"同步待处理 · 请在下方选择冲突记录的版本",
+  sPaused:"同步已暂停 · 改动仍保存在本机",
+  sRetry:"同步期间云端有更新 · 稍后重试",
+  sAuthError:"登录已过期或无效，请退出后重新登录；本机数据保留。",
+  sSetupError:"数据库配置或权限检查失败，请检查 Supabase 数据库脚本与账号权限。",
+  sConfigError:"请输入 https://…supabase.co 项目地址和 publishable/anon 公钥，不接受服务端密钥。",
+  sStorageError:"浏览器无法保存数据；为保留恢复副本，同步已停止。",
+  sCodeSent:"验证码已发送，请查收邮箱并在这里输入。",
+  sCodeError:"验证码验证失败，请检查或重新获取。",
+  sRateLimit:"验证码请求过于频繁，请稍后重试。",
+  sEmailError:"邮件发送失败。请检查网络和 Supabase 邮件设置；默认邮件服务仅向项目团队邮箱发送。",
+  sOwnerError:"当前用户已绑定其他云端账号，或此账号已绑定另一本机用户。请切换到对应用户，或新增一个用户。",
+  sScope:"同步包含身体设置、热量计划、食物、体重、训练模板和已完成训练，仅当前登录账号可访问。语言、单位、登录信息、USDA 密钥及未完成的训练草稿留在本机。恢复备份或重置后会暂停同步，需手动重新开启。",
+  sFirstMerge:"首次合并沿用已有云端规划，并合并记录；本机会保留恢复副本。两端联网打开网页即可同步，页面可见时每 30 秒也会检查更新。",
+
   aHome:"首页",
   aPlan:"计划",
   aWorkout:"训练",
@@ -2560,21 +2671,23 @@ function idbOpen(cb){
   req.onsuccess = function(){ IDB = req.result; IDB_OK = true; cb(IDB); };
   req.onerror = function(){ IDB_OK = false; cb(null); };
 }
-function idbPut(value){
+function idbPut(value, profileId){
+  var owner = profileId || P.active;
   idbOpen(function(db){
     if(!db) return;
     try{
       var tx = db.transaction('state', 'readwrite');
-      tx.objectStore('state').put(value, P.active);
+      tx.objectStore('state').put(value, owner);
       tx.onerror = function(){ IDB_OK = false; };
     }catch(e){ IDB_OK = false; }
   });
 }
 function idbGet(cb){
+  var owner = P.active;
   idbOpen(function(db){
     if(!db) return cb(null);
     try{
-      var rq = db.transaction('state', 'readonly').objectStore('state').get(P.active);
+      var rq = db.transaction('state', 'readonly').objectStore('state').get(owner);
       rq.onsuccess = function(){ cb(rq.result || null); };
       rq.onerror = function(){ cb(null); };
     }catch(e){ cb(null); }
@@ -2606,8 +2719,10 @@ function save(){
     STORAGE_OK = true; LAST_SAVED = new Date();
   }catch(e){ STORAGE_OK = false; }
   /* IndexedDB writes are async and this runs on every render, so coalesce */
+  var owner=P.active;
   if(saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(function(){ idbPut(payload); }, 400);
+  saveTimer = setTimeout(function(){ idbPut(payload, owner); }, 400);
+  cloudSaveChanged();
 }
 function exportState(){ return JSON.stringify(S, null, 2); }
 function cleanTrainingLog(rows){
@@ -2629,6 +2744,83 @@ function cleanTrainingLog(rows){
   return Object.keys(byDay).sort().map(function(k){ return byDay[k]; });
 }
 /* Workout journal: canonical kg, separate from legacy summary-only logs. */
+/* Cloud merge core: per-record three-way merges, explicit conflicts, durable deletions.
+   Pure helpers; credentials and in-progress drafts never enter the document. */
+function syncConfigKeys(){return ['sex','age','heightCm','weightKg','bf','bmrFormula','neat','gymDays','gymMin','gymStyle','exp','cardioDays','cardioMin','cardioType','mode','startKg','targetKg','startPinned','carbPlan','startDate','endDate','cheatKcal','proteinPerKg','name','kcalOverride','kcalSource','mealMode'];}
+function syncStable(v){
+  if(v===undefined)return 'undefined';if(v===null||typeof v!=='object')return JSON.stringify(v);
+  if(Array.isArray(v))return '['+v.map(syncStable).join(',')+']';
+  return '{'+Object.keys(v).sort().map(function(k){return JSON.stringify(k)+':'+syncStable(v[k]);}).join(',')+'}';
+}
+function syncEqual(a,b){return syncStable(a)===syncStable(b);}
+function syncDeleted(r){return !r||r.deleted===true;}
+function syncSameValue(a,b){return syncDeleted(a)&&syncDeleted(b)||syncEqual(a,b);}
+function syncProject(s){
+  var out=Object.create(null),put=function(k,v){if(v!==undefined)out[k]={value:JSON.parse(JSON.stringify(v))};};
+  syncConfigKeys().forEach(function(k){put('config/'+k,s[k]);});
+  put('log/started',s.log&&s.log.started);
+  Object.entries(s.log&&s.log.entries||{}).forEach(function(e){put('weight/'+e[0],e[1]);});
+  (s.workouts||[]).forEach(function(w){put('workout/'+w.id,w);});
+  (s.trainingLog||[]).forEach(function(w){put('legacy/'+w.date+'|'+w.lift,w);});
+  (s.custom||[]).forEach(function(f){put('food/'+f.id,f);});
+  (s.meals||[]).forEach(function(m){put('meal/'+m.key,m);});
+  Object.entries(s.lifts||{}).forEach(function(e){put('lift/'+e[0],e[1]);});
+  Object.entries(s.routineSets||{}).forEach(function(e){put('routine/'+e[0],e[1]);});
+  return out;
+}
+function syncValidateDocument(doc){
+  if(!doc||doc.version!==1||!doc.records||Array.isArray(doc.records)||typeof doc.records!=='object')throw new Error('sync-schema');
+  Object.keys(doc.records).forEach(function(k){var r=doc.records[k];if(k.length>240||!r||typeof r!=='object'||Array.isArray(r)||(!Object.prototype.hasOwnProperty.call(r,'value')&&r.deleted!==true))throw new Error('sync-schema');});return doc.records;
+}
+function syncMerge(base,local,remote,decisions){
+  var result=Object.create(null),conflicts=[],initial=base===null,keys=new Set(Object.keys(base||{}).concat(Object.keys(local),Object.keys(remote)));
+  keys.forEach(function(k){
+    var b=(base||{})[k],l=local[k],r=remote[k],value=r;
+    if(initial){
+      if(!r)value=l;
+      else if(!l||syncSameValue(l,r)||/^(config|meal|lift|routine|log)\//.test(k))value=r;
+      else {
+        // A remote tombstone deliberately wins on first connection: no resurrection.
+        if(r.deleted)value=r;else conflict();
+      }
+    }else{
+      var lc=!syncSameValue(l,b),rc=!syncSameValue(r,b);
+      if(!lc)value=r;else if(!rc||syncSameValue(l,r))value=l||{deleted:true};else conflict();
+    }
+    if(value)result[k]=value;
+    function conflict(){
+      var fingerprint=syncStable([l||{deleted:true},r||{deleted:true}]);
+      var decision=decisions&&decisions[k];
+      if(decision&&decision.fingerprint===fingerprint)value=decision.use==='local'?(l||{deleted:true}):(r||{deleted:true});
+      else{conflicts.push({key:k,local:l||{deleted:true},remote:r||{deleted:true},fingerprint:fingerprint});value=r||{deleted:true};}
+    }
+  });
+  return {records:result,conflicts:conflicts};
+}
+function syncApplyRecords(state,records){
+  var out=JSON.parse(JSON.stringify(state)),d=defaults();
+  out.log={started:null,entries:{}};out.workouts=[];out.trainingLog=[];out.custom=[];out.routineSets={};out.lifts=JSON.parse(JSON.stringify(d.lifts));out.meals=JSON.parse(JSON.stringify(d.meals));
+  syncConfigKeys().forEach(function(k){out[k]=d[k];});
+  Object.keys(records).forEach(function(k){var rec=records[k];if(syncDeleted(rec))return;var v=rec.value,split=k.indexOf('/'),type=k.slice(0,split),id=k.slice(split+1);
+    if(type==='config'&&syncConfigKeys().indexOf(id)>=0)out[id]=v;
+    else if(k==='log/started')out.log.started=v;
+    else if(type==='weight'&&journalDate(id)&&typeof v==='number'&&isFinite(v)&&v>=20&&v<=400)out.log.entries[id]=v;
+    else if(type==='workout'&&v&&v.id===id)out.workouts.push(v);
+    else if(type==='legacy'&&v&&v.date+'|'+v.lift===id)out.trainingLog.push(v);
+    else if(type==='food'&&v&&v.id===id)out.custom.push(v);
+    else if(type==='meal'&&['m1','m2','m3','pw'].indexOf(id)>=0&&v&&v.key===id){out.meals[out.meals.findIndex(function(m){return m.key===id;})]=v;}
+    else if(type==='lift'&&Object.prototype.hasOwnProperty.call(d.lifts,id))out.lifts[id]=v;
+    else if(type==='routine'&&/^\d+-[a-z]+$/.test(id))out.routineSets[id]=v;
+  });
+  out.workouts=cleanWorkouts(out.workouts);out.trainingLog=cleanTrainingLog(out.trainingLog);out.routineSets=cleanRoutineSets(out.routineSets);
+  return out;
+}
+function syncRebaseEdits(before,current,merged){
+  var out=Object.assign(Object.create(null),merged);
+  new Set(Object.keys(before).concat(Object.keys(current))).forEach(function(k){if(!syncSameValue(before[k],current[k]))out[k]=current[k]||{deleted:true};});return out;
+}
+/* End cloud merge core. */
+
 function journalDate(d){ return typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && parseISO(d) && iso(parseISO(d)) === d; }
 function journalNumber(v, min, max, integer){
   if(v === '' || v == null || typeof v === 'boolean') return null;
@@ -2711,6 +2903,7 @@ function mergeWorkoutImport(existing, incoming){
 function importState(text){
   var o = JSON.parse(text);
   if(!o || typeof o !== 'object') throw new Error('not an object');
+  cloudPauseReplacement();
   var d = defaults();
   for(var k in o) if(Object.prototype.hasOwnProperty.call(d, k)) d[k] = o[k];
   S = d;
@@ -2760,6 +2953,7 @@ function stateWeight(o){
 function load(){
   try{
     var raw = localStorage.getItem(activeKey());
+    cloudLocalMissing = !raw;
     if(raw) adoptState(JSON.parse(raw));
   }catch(e){}
 }
@@ -2767,11 +2961,13 @@ function load(){
    paint. If it holds more than localStorage did — because localStorage was
    cleared, or an older copy lingered — it wins and the page re-renders. */
 function loadFromIdbIfBetter(){
+  var owner=P.active;
   idbGet(function(raw){
+    if(P.active!==owner)return;
     if(!raw) return;
     var o;
     try{ o = JSON.parse(raw); }catch(e){ return; }
-    if(stateWeight(o) > stateWeight(S)){
+    if(stateWeight(o) > stateWeight(S) && !(cloudRead('meta')||{}).base){
       var lang = S.lang;
       if(adoptState(o)){
         if(!o.lang) S.lang = lang;
@@ -3196,7 +3392,11 @@ function applyStatic(){
   $$('[data-i18n-aria]').forEach(function(el){ el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
 }
 
+var renderInProgress=false, renderAgain=false;
 function render(){
+  if(renderInProgress){renderAgain=true;return;}
+  renderInProgress=true;
+  try{
   C = compute();
   applyStatic();
   renderControls();
@@ -3213,7 +3413,12 @@ function render(){
   renderJournal();
   renderMeals();
   renderApp();
+  renderCloud();
   save();
+  }finally{
+    renderInProgress=false;
+    if(renderAgain){renderAgain=false;Promise.resolve().then(render);}
+  }
 }
 
 function setVal(sel,v){ var el=$(sel); if(el && document.activeElement!==el) el.value = v; }
@@ -4201,12 +4406,188 @@ on('#profileDel','click', function(){
 });
 on('#resetAll','click', function(){
   if(!confirm(t('pConfirmReset'))) return;
+  cloudPauseReplacement();
   var keepLang = S.lang;
   S = defaults(); S.lang = keepLang; L = keepLang;
   try{ localStorage.removeItem(activeKey()); }catch(e){}
   render();
 });
 window.addEventListener('resize', function(){ if(C) renderTrajectory(); });
+
+/* Optional Supabase sync. Runtime uses fetch only; local/offline mode has no dependency. */
+var CLOUD_DEFAULT={url:'',key:''}; // Public project URL and publishable key only, configured after provisioning.
+var cloud={profile:null,config:null,session:null,meta:{},epoch:0,busy:false,timer:null,quiet:false,status:'sOff',conflicts:[],decisions:{},observed:null,lastSync:null,authBusy:false};
+var cloudLocalMissing=false;
+function cloudStorageKey(kind,id){return 'load-cloud-'+kind+':'+(id||P.active);}
+function cloudRead(kind,id){try{return JSON.parse(localStorage.getItem(cloudStorageKey(kind,id))||'null');}catch(e){return null;}}
+function cloudWrite(kind,value,id){localStorage.setItem(cloudStorageKey(kind,id),JSON.stringify(value));}
+function cloudValidConfig(c){
+  if(!c||typeof c.url!=='string'||!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(c.url)||typeof c.key!=='string')return false;
+  if(/^sb_publishable_[A-Za-z0-9_-]+$/.test(c.key))return true;
+  try{return JSON.parse(atob(c.key.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).role==='anon';}catch(e){return false;}
+}
+function cloudOwner(session,config){return config.url+'|'+session.user.id;}
+function cloudContext(){
+  if(!P||cloud.profile===P.active)return;
+  cloud.epoch++;clearTimeout(cloud.timer);cloud.profile=P.active;cloud.busy=false;cloud.authBusy=false;
+  cloud.config=cloudRead('config')||CLOUD_DEFAULT;try{var savedSession=cloudRead('auth');cloud.session=savedSession?cloudSession(savedSession):null;}catch(e){cloud.session=null;}cloud.meta=cloudRead('meta')||{};
+  if(cloudLocalMissing){cloud.meta.base=null;cloud.meta.enabled=false;}
+  cloud.conflicts=[];cloud.decisions={};cloud.observed=syncProject(S);cloud.lastSync=cloud.meta.lastSync||null;
+  cloud.status=cloud.session?(cloud.meta.enabled?'sPending':'sReady'):'sOff';
+  cloudQueue();
+}
+function cloudSetStatus(key){cloud.status=key;renderCloudStatus();}
+function renderCloudStatus(){
+  var el=$('#cloudStatus');if(!el)return;
+  el.textContent=t(cloud.status)+(cloud.lastSync?' · '+t('sLast')+' '+new Date(cloud.lastSync).toLocaleString(L==='zh'?'zh-CN':'en-US'):'');
+  $('#cloudNow').disabled=cloud.busy||cloud.authBusy;$('#cloudSend').disabled=cloud.authBusy;$('#cloudVerify').disabled=cloud.authBusy;
+  var badge=$('#cloudBadge');if(badge)badge.textContent=t(cloud.status);
+}
+function renderCloud(){
+  cloudContext();
+  var configured=cloudValidConfig(cloud.config),logged=!!cloud.session;
+  $('#cloudSetup').open=!configured;$('#cloudSetup').hidden=logged;
+  setVal('#cloudUrl',cloud.config&&cloud.config.url||'');setVal('#cloudKey',cloud.config&&cloud.config.key||'');
+  $('#cloudAuth').hidden=!configured||logged;$('#cloudConnected').hidden=!logged;
+  $('#cloudAccount').textContent=logged?cloud.session.user.email||cloud.session.user.id:'';
+  $('#cloudEnable').hidden=!logged||cloud.meta.enabled===true;$('#cloudNow').hidden=!logged||cloud.meta.enabled!==true;
+  $('#cloudPause').hidden=!logged||cloud.meta.enabled!==true;
+  $('#cloudRecovery').hidden=!cloudRead('recovery');
+  $('#cloudConflicts').hidden=!cloud.conflicts.length;
+  if(cloud.conflicts.length){
+    $('#cloudConflictList').innerHTML=cloud.conflicts.map(function(c,i){return '<div class="cloud-conflict"><b>'+esc(c.key)+'</b><div class="cloud-conflict-values"><pre>'+esc(t('sLocal')+': '+cloudValue(c.local))+'</pre><pre>'+esc(t('sRemote')+': '+cloudValue(c.remote))+'</pre></div><label>'+esc(t('sKeep'))+' <select data-cloud-conflict="'+i+'"><option value="remote">'+esc(t('sRemote'))+'</option><option value="local">'+esc(t('sLocal'))+'</option></select></label></div>';}).join('');
+  }
+  renderCloudStatus();
+}
+function cloudValue(r){if(syncDeleted(r))return t('sDeleted');return JSON.stringify(r.value,null,2);}
+function cloudSaveChanged(){
+  if(typeof cloud==='undefined'||!cloud||cloud.quiet)return;
+  cloudContext();var next=syncProject(S);
+  if(!syncEqual(next,cloud.observed)){cloud.observed=next;cloud.conflicts=[];cloud.decisions={};if(cloud.meta.enabled){cloudSetStatus('sPending');cloudQueue();}}
+}
+function cloudQueue(){
+  if(!cloud.session||!cloud.meta.enabled||!cloudValidConfig(cloud.config)||cloud.busy||cloud.conflicts.length)return;
+  clearTimeout(cloud.timer);cloud.timer=setTimeout(cloudSync,1200);
+}
+function cloudRecovery(){cloudWrite('recovery',{savedAt:new Date().toISOString(),state:JSON.parse(exportState())});}
+function cloudPauseReplacement(){
+  if(typeof cloud==='undefined'||!cloud)return;cloudContext();
+  if(cloud.session&&cloud.meta.enabled){cloudRecovery();cloud.meta.enabled=false;cloudWrite('meta',cloud.meta);cloud.epoch++;cloud.busy=false;cloud.conflicts=[];clearTimeout(cloud.timer);cloudSetStatus('sPaused');}
+}
+async function cloudRequest(config,path,body,token){
+  if(!cloudValidConfig(config))throw new Error('sync-config');
+  var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},20000);
+  try{
+    var headers={apikey:config.key,'Content-Type':'application/json'};if(token)headers.Authorization='Bearer '+token;
+    var response=await fetch(config.url+path,{method:body===undefined?'GET':'POST',headers:headers,body:body===undefined?undefined:JSON.stringify(body),signal:controller.signal,cache:'no-store',referrerPolicy:'no-referrer',credentials:'omit',redirect:'error'});
+    if(!response.ok){var error=new Error('sync-http-'+response.status);error.status=response.status;throw error;}
+    return response.status===204?null:await response.json();
+  }finally{clearTimeout(timer);}
+}
+function cloudSession(s){if(!s||!s.access_token||!s.refresh_token||!s.user||!s.user.id)throw new Error('sync-auth');return {access_token:s.access_token,refresh_token:s.refresh_token,expires_at:s.expires_at||Math.floor(Date.now()/1000)+(s.expires_in||3600),user:{id:s.user.id,email:s.user.email||''}};}
+async function cloudToken(ctx){
+  var stored=cloudRead('auth',ctx.profile);if(stored&&stored.user.id===ctx.session.user.id&&stored.expires_at>ctx.session.expires_at)ctx.session=stored;
+  if(ctx.session.expires_at*1000<Date.now()+60000){
+    var fresh=cloudSession(await cloudRequest(ctx.config,'/auth/v1/token?grant_type=refresh_token',{refresh_token:ctx.session.refresh_token}));
+    if(!ctx.current())throw new Error('sync-stale');if(fresh.user.id!==ctx.session.user.id)throw new Error('sync-auth');
+    ctx.session=fresh;cloud.session=fresh;cloudWrite('auth',fresh,ctx.profile);
+  }
+  return ctx.session.access_token;
+}
+async function cloudSync(){
+  cloudContext();if(cloud.busy||!cloud.session||!cloud.meta.enabled||cloud.conflicts.length||!cloudValidConfig(cloud.config))return;
+  if(!navigator.onLine){cloudSetStatus('sOffline');return;}
+  var epoch=cloud.epoch,profile=P.active;
+  var ctx={profile:profile,config:cloud.config,session:cloud.session,current:function(){return P.active===profile&&cloud.epoch===epoch&&cloud.meta.enabled;}};
+  cloud.busy=true;cloudSetStatus('sWorking');
+  try{
+    var run=async function(){
+      if(!ctx.current())return;
+      var token=await cloudToken(ctx);if(!ctx.current())return;
+      for(var attempt=0;attempt<4;attempt++){
+        var rows=await cloudRequest(ctx.config,'/rest/v1/load_sync_documents?select=revision,document&user_id=eq.'+encodeURIComponent(ctx.session.user.id),undefined,token);
+        if(!ctx.current())return;
+        if(!Array.isArray(rows)||rows.length>1)throw new Error('sync-schema');
+        var remote=rows[0]?syncValidateDocument(rows[0].document):Object.create(null),revision=rows[0]?rows[0].revision:0;
+        var before=syncProject(S),merge=syncMerge(cloud.meta.base||null,before,remote,cloud.decisions);
+        if(merge.conflicts.length){cloud.conflicts=merge.conflicts;cloudSetStatus('sConflict');renderCloud();return;}
+        var merged=merge.records;
+        if(!syncEqual(merged,remote)){
+          var result=await cloudRequest(ctx.config,'/rest/v1/rpc/load_sync_commit',{p_revision:revision,p_document:{version:1,records:merged}},token);
+          if(!ctx.current())return;
+          if(!result||typeof result.accepted!=='boolean')throw new Error('sync-schema');
+          if(!result.accepted)continue;
+          merged=syncValidateDocument(result.document);revision=result.revision;
+        }
+        var after=syncRebaseEdits(before,syncProject(S),merged),next=syncApplyRecords(S,after);
+        // Persist the data BEFORE its baseline. A crash may repeat a merge but cannot
+        // make an unsaved remote change look like a deliberate local deletion.
+        if(!cloud.meta.base)cloudRecovery();
+        var old=S,changed=!syncEqual(syncProject(next),syncProject(S));cloud.quiet=true;
+        try{
+          adoptState(next);var payload=exportState();localStorage.setItem(activeKey(),payload);idbPut(payload,profile);
+          var nextMeta=Object.assign({},cloud.meta,{base:merged,owner:cloudOwner(ctx.session,ctx.config),lastSync:Date.now()});cloudWrite('meta',nextMeta,profile);cloud.meta=nextMeta;cloud.lastSync=cloud.meta.lastSync;
+          cloud.observed=syncProject(S);cloud.decisions={};cloud.status='sSynced';if(changed){C=compute();render();}else renderCloud();
+        }catch(e){S=old;throw e;}finally{cloud.quiet=false;}
+        // A user may have typed while the request was in flight. Keep those edits and send them next.
+        if(!syncEqual(after,merged))cloud.status='sPending';renderCloudStatus();return;
+      }
+      cloudSetStatus('sRetry');
+    };
+    if(navigator.locks)await navigator.locks.request('load-sync:'+ctx.config.url+':'+ctx.session.user.id,run);else await run();
+  }catch(e){
+    if(ctx.current()){
+      if(e.status===401||e.status===400&&e.message.indexOf('sync-http')===0)cloudSetStatus('sAuthError');
+      else if(e.status===404||e.status===403||e.message==='sync-schema')cloudSetStatus('sSetupError');
+      else if(e.name==='QuotaExceededError'||e.name==='SecurityError'){cloud.meta.enabled=false;cloudSetStatus('sStorageError');}
+      else cloudSetStatus('sOffline');
+    }
+  }finally{if(ctx.current()){cloud.busy=false;renderCloudStatus();if(cloud.status==='sPending')cloudQueue();}}
+}
+on('#cloudConfigSave','click',function(){
+  var c={url:$('#cloudUrl').value.trim().replace(/\/$/,''),key:$('#cloudKey').value.trim()};
+  if(!cloudValidConfig(c)){cloudSetStatus('sConfigError');return;}
+  try{cloudWrite('config',c);cloud.config=c;cloudSetStatus('sOff');renderCloud();}catch(e){cloudSetStatus('sStorageError');}
+});
+on('#cloudSend','click',async function(){
+  if(cloud.authBusy||!$('#cloudEmail').checkValidity()||!$('#cloudEmail').value){$('#cloudEmail').reportValidity();return;}
+  var profile=P.active,epoch=cloud.epoch;cloud.authBusy=true;renderCloudStatus();
+  try{await cloudRequest(cloud.config,'/auth/v1/otp',{email:$('#cloudEmail').value.trim(),create_user:true});if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus('sCodeSent');}
+  catch(e){if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus(e.status===429?'sRateLimit':'sEmailError');}
+  finally{if(profile===P.active&&epoch===cloud.epoch){cloud.authBusy=false;renderCloudStatus();}}
+});
+on('#cloudVerify','click',async function(){
+  if(cloud.authBusy)return;var email=$('#cloudEmail').value.trim(),code=$('#cloudCode').value.trim();if(!/^\d{6,10}$/.test(code)||!email){cloudSetStatus('sCodeError');return;}
+  var profile=P.active,epoch=cloud.epoch;cloud.authBusy=true;renderCloudStatus();
+  try{
+    var session=cloudSession(await cloudRequest(cloud.config,'/auth/v1/verify',{email:email,token:code,type:'email'}));
+    if(profile!==P.active||epoch!==cloud.epoch)return;
+    var owner=cloudOwner(session,cloud.config);
+    if(cloud.meta.owner&&cloud.meta.owner!==owner){cloudSetStatus('sOwnerError');return;}
+    var linked=P.list.some(function(p){var m=cloudRead('meta',p.id);return p.id!==profile&&m&&m.owner===owner;});
+    if(linked){cloudSetStatus('sOwnerError');return;}
+    cloud.meta.owner=owner;cloud.meta.enabled=false;cloudWrite('meta',cloud.meta);cloudWrite('auth',session);cloud.session=session;$('#cloudCode').value='';cloudSetStatus('sReady');renderCloud();
+  }catch(e){if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus('sCodeError');}
+  finally{if(profile===P.active&&epoch===cloud.epoch){cloud.authBusy=false;renderCloudStatus();}}
+});
+on('#cloudEnable','click',function(){
+  try{cloudRecovery();cloud.meta.enabled=true;cloudWrite('meta',cloud.meta);cloudSetStatus('sPending');renderCloud();cloudSync();}catch(e){cloud.meta.enabled=false;cloudSetStatus('sStorageError');renderCloud();}
+});
+on('#cloudNow','click',cloudSync);
+on('#cloudPause','click',function(){cloud.epoch++;cloud.busy=false;clearTimeout(cloud.timer);cloud.meta.enabled=false;cloudWrite('meta',cloud.meta);cloudSetStatus('sPaused');renderCloud();});
+on('#cloudLogout','click',function(){
+  var session=cloud.session,config=cloud.config;cloud.epoch++;cloud.busy=false;cloud.authBusy=false;clearTimeout(cloud.timer);cloud.meta.enabled=false;cloudWrite('meta',cloud.meta);localStorage.removeItem(cloudStorageKey('auth'));cloud.session=null;cloud.conflicts=[];cloudSetStatus('sOff');renderCloud();
+  if(session)cloudRequest(config,'/auth/v1/logout?scope=local',{},session.access_token).catch(function(){});
+});
+on('#cloudResolve','click',function(){
+  $$('#cloudConflictList select').forEach(function(el){var c=cloud.conflicts[Number(el.dataset.cloudConflict)];cloud.decisions[c.key]={use:el.value,fingerprint:c.fingerprint};});cloud.conflicts=[];renderCloud();cloudSync();
+});
+on('#cloudRecovery','click',function(){var copy=cloudRead('recovery');if(!copy)return;var a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(copy.state,null,2)],{type:'application/json'}));a.href=url;a.download='load-before-sync-'+copy.savedAt.slice(0,10)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);});
+window.addEventListener('online',cloudQueue);
+window.addEventListener('focus',cloudQueue);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)cloudQueue();});
+setInterval(function(){if(!document.hidden)cloudSync();},30000);
+/* End cloud runtime. */
 
 /* ══ go ════════════════════════════════════════════════════════════════ */
 /* ══ home-screen install ═══════════════════════════════════════════════

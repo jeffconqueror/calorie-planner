@@ -49,6 +49,12 @@ Your inputs are saved in `localStorage` on your own device and never leave it.
 
 ## Workout journal and openGym imports
 
+### Private computer / phone sync (optional)
+
+Load supports an optional Supabase project with email-code login and owner-only database access. Configure your project using [the setup guide](supabase/SETUP.md), sign in on both devices with the same email, and enable sync. Configure the computer holding the full calorie plan first. Without project configuration and login, the application continues to store data only on the current device.
+
+Weight dates and workout sessions merge independently; concurrent edits to the same record require a choice, and deletion markers prevent stale devices restoring deleted records. Offline edits upload on reconnection. Language, units, API keys and unfinished workout drafts remain local. Credentials are excluded from exported backups. Restoring a backup or resetting pauses sync until re-enabled. No third-party scripts or runtime dependencies are needed.
+
 On phones (up to 760 px), Load opens as a dark app with Home, Plan, Workout, Stats and Nutrition tabs. Home shows the selected day's routine, recorded weight trend and calorie budget. The workout tab focuses on one exercise at a time, with weight/rep steppers, completion progress, previous-session values and a 90/120-second rest timer. The gear opens profile controls, weigh-ins, backup/restore and legacy summaries. Desktop retains the full planner.
 
 The weekly preset is Monday rest; Tuesday quads (11 sets); Wednesday heavy chest (30); Thursday heavy back (19); Friday hamstrings (16); Saturday upper-body deload (18); Sunday shoulders, arms and abs (24). Saturday's flat/incline presses and two back movements each have 3 sets; Sunday has 3 sets per delt head. Set counts are editable and saved per profile as `routineSets`, including in backups. Starting a template leaves weights/reps blank unless actual history exists. Reusing recorded weights is a convenience, not an automatic deload prescription. The planner's exercise frequency changes only when the user chooses the six-day frequency button.
