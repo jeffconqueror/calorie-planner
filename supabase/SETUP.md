@@ -1,12 +1,12 @@
 # 启用电脑 / 手机同步
 
-网页端已经具备同步代码，但必须先配置你自己的 Supabase 项目。未配置时不会发起云端请求，仍只在本机保存。
+本站已经预置站点所有者的 Supabase 项目地址与公开客户端密钥。使用本站时无需手动填写项目配置；在电脑和手机使用同一邮箱登录，再分别开启同步。登录前不会上传记录。Fork 本仓库时请替换 `CLOUD_DEFAULT` 为自己的项目，按以下步骤配置。
 
 ## 一次性配置
 
 1. 在 [Supabase Dashboard](https://supabase.com/dashboard) 注册／登录，并创建项目。项目归你所有；数据库密码留在 Supabase，不填写到网页、不提交到仓库。
 2. 在项目 **SQL Editor** 运行同目录的 [schema.sql](schema.sql)。它建立账号隔离的私有表和有版本检查的写入函数；不能省略权限部分。
-3. 在 **Authentication → Email Templates → Magic Link** 中，把邮件正文设为：
+3. 在 **Authentication → Email Templates** 中，分别为 **Confirm sign up** 和 **Magic Link** 两个模板设置以下正文（覆盖首次注册与后续登录）：
 
    ```html
    <h2>Load 登录验证码</h2>
@@ -35,6 +35,8 @@
 - 修改后约 1.2 秒尝试同步；回到页面、重新联网时也尝试，页面可见时每 30 秒检查。不是后台推送服务，关闭网页时不会持续联网。
 
 ## 检查与边界
+
+数据库安全检查会提示已登录用户可调用 `SECURITY DEFINER` 函数 `load_sync_commit`。这是有意设计的唯一写入入口，用于原子版本检查；函数只使用 `auth.uid()` 确定所有者，固定空 `search_path`，拒绝无登录请求，且撤销了 PUBLIC/anon 的执行权限。已登录用户没有表的直接写入权限。参见 [Supabase 检查说明](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)。
 
 `npm test` 验证纯合并和现有应用回归；`npm run test:cloud-db` 用本地 Postgres 引擎验证权限与原子版本检查；`npm run test:cloud` 用两份隔离浏览器状态模拟 Supabase REST，验证完整前端流程。
 

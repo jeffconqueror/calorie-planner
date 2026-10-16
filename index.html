@@ -4415,7 +4415,7 @@ on('#resetAll','click', function(){
 window.addEventListener('resize', function(){ if(C) renderTrajectory(); });
 
 /* Optional Supabase sync. Runtime uses fetch only; local/offline mode has no dependency. */
-var CLOUD_DEFAULT={url:'',key:''}; // Public project URL and publishable key only, configured after provisioning.
+var CLOUD_DEFAULT={url:'https://pnieypidmtwjjojpbkvx.supabase.co',key:'sb_publishable_QBkWjy-LJ0JQudCLXJqgXg_WeaNXs3E'}; // Public client key; private records require sign-in and owner-scoped database permissions.
 var cloud={profile:null,config:null,session:null,meta:{},epoch:0,busy:false,timer:null,quiet:false,status:'sOff',conflicts:[],decisions:{},observed:null,lastSync:null,authBusy:false};
 var cloudLocalMissing=false;
 function cloudStorageKey(kind,id){return 'load-cloud-'+kind+':'+(id||P.active);}
