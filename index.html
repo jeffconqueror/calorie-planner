@@ -649,9 +649,11 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
         <button id="cloudConfigSave" type="button" data-i18n="sSaveConfig">Save connection</button>
       </details>
       <div id="cloudAuth" hidden><label for="cloudEmail" data-i18n="sEmail">Email</label><input id="cloudEmail" type="email" autocomplete="email" required><button id="cloudSend" type="button" data-i18n="sSend">Send code</button>
+        <label for="cloudPassword" data-i18n="sPassword">Sync password</label><input id="cloudPassword" type="password" autocomplete="current-password"><button id="cloudPasswordLogin" type="button" data-i18n="sPasswordLogin">Sign in with password</button><p class="hint" data-i18n="sPasswordHint"></p>
         <label for="cloudCode" data-i18n="sCode">Code</label><input id="cloudCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10"><button id="cloudVerify" type="button" data-i18n="sVerify">Sign in</button>
       </div>
       <div id="cloudConnected" hidden><p id="cloudAccount"></p><p class="hint" data-i18n="sFirstMerge"></p><div class="cloud-actions"><button id="cloudEnable" type="button" data-i18n="sEnable">Enable sync</button><button id="cloudNow" type="button" data-i18n="sNow">Sync now</button><button id="cloudPause" type="button" data-i18n="sPause">Pause</button><button id="cloudLogout" type="button" data-i18n="sLogout">Sign out</button></div></div>
+      <details id="cloudPasswordSetup" hidden><summary data-i18n="sPasswordSetup">Set a sync password</summary><p class="hint" data-i18n="sPasswordSetupHint"></p><label for="cloudNewPassword" data-i18n="sNewPassword">New password</label><input id="cloudNewPassword" type="password" autocomplete="new-password" minlength="12"><label for="cloudRepeatPassword" data-i18n="sRepeatPassword">Repeat password</label><input id="cloudRepeatPassword" type="password" autocomplete="new-password" minlength="12"><button id="cloudPasswordSave" type="button" data-i18n="sPasswordSave">Save password</button><p id="cloudPasswordStatus" role="status" aria-live="polite"></p></details>
       <div id="cloudConflicts" hidden><h3 data-i18n="sConflictTitle">Conflicts</h3><div id="cloudConflictList"></div><button id="cloudResolve" type="button" data-i18n="sResolve">Apply choices</button></div>
       <button id="cloudRecovery" type="button" data-i18n="sRecovery" hidden>Recovery copy</button><p class="hint" data-i18n="sScope"></p>
     </div></div>
@@ -1208,6 +1210,18 @@ var EN = {
   sSaveConfig:"Save connection",
   sEmail:"Email",
   sSend:"Send login email",
+  sPassword:"Sync password",
+  sPasswordLogin:"Sign in with password",
+  sPasswordHint:"Set a sync password on your signed-in computer first. This is separate from your GitHub or Supabase dashboard password. Password login does not send email.",
+  sPasswordSetup:"Set / change sync password",
+  sPasswordSetupHint:"Set a password for the account shown above, then use the same email and password on your phone. At least 12 characters. The app does not store this password in backups or browser storage.",
+  sNewPassword:"New sync password",
+  sRepeatPassword:"Repeat password",
+  sPasswordSave:"Save sync password",
+  sPasswordSaved:"Password saved. Your phone can now sign in with the same email and this password.",
+  sPasswordInvalid:"Use at least 12 characters and enter the same password twice.",
+  sPasswordError:"Could not set the password. Supabase may require a fresh email login or a stronger password. Your local records are unchanged.",
+  sPasswordLoginError:"Could not sign in. Check the email and sync password; set the password on your signed-in computer first.",
   sCode:"Code (only if your email contains one)",
   sVerify:"Sign in",
   sEnable:"Enable sync & merge",
@@ -1765,6 +1779,18 @@ var ZH = {
   sSaveConfig:"保存连接配置",
   sEmail:"邮箱",
   sSend:"发送登录邮件",
+  sPassword:"同步密码",
+  sPasswordLogin:"使用密码登录",
+  sPasswordHint:"先在已登录的电脑设置同步密码。这不是 GitHub 或 Supabase 后台的密码；密码登录不发送邮件。",
+  sPasswordSetup:"设置／修改同步密码",
+  sPasswordSetupHint:"为上方显示的账号设置密码，手机即可用同一邮箱和密码登录。至少 12 个字符。网页不会将此密码存入备份或浏览器存储。",
+  sNewPassword:"新的同步密码",
+  sRepeatPassword:"再次输入密码",
+  sPasswordSave:"保存同步密码",
+  sPasswordSaved:"密码已保存。手机现在可以使用同一邮箱和此密码登录。",
+  sPasswordInvalid:"密码至少 12 个字符，且两次输入必须一致。",
+  sPasswordError:"未能设置密码。Supabase 可能要求重新通过邮件登录或使用更强的密码。本地记录不受影响。",
+  sPasswordLoginError:"登录失败，请检查邮箱和同步密码；需先在已登录的电脑设置密码。",
   sCode:"验证码（仅在邮件包含数字验证码时填写）",
   sVerify:"验证并登录",
   sEnable:"开启同步并合并",
@@ -4432,6 +4458,7 @@ function cloudOwner(session,config){return config.url+'|'+session.user.id;}
 function cloudContext(){
   if(!P||cloud.profile===P.active)return;
   cloud.epoch++;clearTimeout(cloud.timer);cloud.profile=P.active;cloud.busy=false;cloud.authBusy=false;
+  ['#cloudPassword','#cloudNewPassword','#cloudRepeatPassword'].forEach(function(id){$(id).value='';});$('#cloudPasswordStatus').textContent='';
   cloud.config=cloudRead('config')||CLOUD_DEFAULT;try{var savedSession=cloudRead('auth');cloud.session=savedSession?cloudSession(savedSession):null;}catch(e){cloud.session=null;}cloud.meta=cloudRead('meta')||{};
   if(cloudLocalMissing){cloud.meta.base=null;cloud.meta.enabled=false;}
   cloud.conflicts=[];cloud.decisions={};cloud.observed=syncProject(S);cloud.lastSync=cloud.meta.lastSync||null;
@@ -4443,6 +4470,7 @@ function renderCloudStatus(){
   var el=$('#cloudStatus');if(!el)return;
   el.textContent=t(cloud.status)+(cloud.lastSync?' · '+t('sLast')+' '+new Date(cloud.lastSync).toLocaleString(L==='zh'?'zh-CN':'en-US'):'');
   $('#cloudNow').disabled=cloud.busy||cloud.authBusy;$('#cloudSend').disabled=cloud.authBusy;$('#cloudVerify').disabled=cloud.authBusy;
+  $('#cloudPasswordLogin').disabled=cloud.authBusy;$('#cloudPasswordSave').disabled=cloud.authBusy||cloud.busy;
   var badge=$('#cloudBadge');if(badge)badge.textContent=t(cloud.status);
 }
 function renderCloud(){
@@ -4451,6 +4479,7 @@ function renderCloud(){
   $('#cloudSetup').open=!configured;$('#cloudSetup').hidden=logged;
   setVal('#cloudUrl',cloud.config&&cloud.config.url||'');setVal('#cloudKey',cloud.config&&cloud.config.key||'');
   $('#cloudAuth').hidden=!configured||logged;$('#cloudConnected').hidden=!logged;
+  $('#cloudPasswordSetup').hidden=!logged;
   $('#cloudAccount').textContent=logged?cloud.session.user.email||cloud.session.user.id:'';
   $('#cloudEnable').hidden=!logged||cloud.meta.enabled===true;$('#cloudNow').hidden=!logged||cloud.meta.enabled!==true;
   $('#cloudPause').hidden=!logged||cloud.meta.enabled!==true;
@@ -4476,12 +4505,12 @@ function cloudPauseReplacement(){
   if(typeof cloud==='undefined'||!cloud)return;cloudContext();
   if(cloud.session&&cloud.meta.enabled){cloudRecovery();cloud.meta.enabled=false;cloudWrite('meta',cloud.meta);cloud.epoch++;cloud.busy=false;cloud.conflicts=[];clearTimeout(cloud.timer);cloudSetStatus('sPaused');}
 }
-async function cloudRequest(config,path,body,token){
+async function cloudRequest(config,path,body,token,method){
   if(!cloudValidConfig(config))throw new Error('sync-config');
   var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},20000);
   try{
     var headers={apikey:config.key,'Content-Type':'application/json'};if(token)headers.Authorization='Bearer '+token;
-    var response=await fetch(config.url+path,{method:body===undefined?'GET':'POST',headers:headers,body:body===undefined?undefined:JSON.stringify(body),signal:controller.signal,cache:'no-store',referrerPolicy:'no-referrer',credentials:'omit',redirect:'error'});
+    var response=await fetch(config.url+path,{method:method||(body===undefined?'GET':'POST'),headers:headers,body:body===undefined?undefined:JSON.stringify(body),signal:controller.signal,cache:'no-store',referrerPolicy:'no-referrer',credentials:'omit',redirect:'error'});
     if(!response.ok){var error=new Error('sync-http-'+response.status);error.status=response.status;throw error;}
     return response.status===204?null:await response.json();
   }finally{clearTimeout(timer);}
@@ -4594,6 +4623,36 @@ on('#cloudVerify','click',async function(){
     cloudAcceptSession(session);
   }catch(e){if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus('sCodeError');}
   finally{if(profile===P.active&&epoch===cloud.epoch){cloud.authBusy=false;renderCloudStatus();}}
+});
+on('#cloudPasswordLogin','click',async function(){
+  if(cloud.authBusy)return;
+  if(!$('#cloudEmail').value||!$('#cloudEmail').checkValidity()){$('#cloudEmail').reportValidity();return;}
+  var password=$('#cloudPassword').value,email=$('#cloudEmail').value.trim();
+  if(!password){cloudSetStatus('sPasswordLoginError');return;}
+  var profile=P.active,epoch=cloud.epoch;cloud.authBusy=true;$('#cloudPassword').value='';renderCloudStatus();
+  try{
+    var session=cloudSession(await cloudRequest(cloud.config,'/auth/v1/token?grant_type=password',{email:email,password:password}));
+    if(profile===P.active&&epoch===cloud.epoch)cloudAcceptSession(session);
+  }catch(e){if(profile===P.active&&epoch===cloud.epoch)cloudSetStatus(e.status===429?'sRateLimit':'sPasswordLoginError');}
+  finally{password='';if(profile===P.active&&epoch===cloud.epoch){cloud.authBusy=false;renderCloudStatus();}}
+});
+on('#cloudPasswordSave','click',async function(){
+  if(cloud.authBusy||cloud.busy||!cloud.session)return;
+  var password=$('#cloudNewPassword').value;
+  if(password.length<12||password!==$('#cloudRepeatPassword').value){$('#cloudPasswordStatus').textContent=t('sPasswordInvalid');return;}
+  var profile=P.active,epoch=cloud.epoch,session=cloud.session;
+  var ctx={profile:profile,config:cloud.config,session:session,current:function(){return P.active===profile&&cloud.epoch===epoch&&cloud.session&&cloud.session.user.id===session.user.id;}};
+  cloud.authBusy=true;$('#cloudNewPassword').value='';$('#cloudRepeatPassword').value='';$('#cloudPasswordStatus').textContent='';renderCloudStatus();
+  try{
+    var run=async function(){
+      if(!ctx.current())return;var token=await cloudToken(ctx);if(!ctx.current())return;
+      var user=await cloudRequest(ctx.config,'/auth/v1/user',{password:password},token,'PUT');
+      if(!ctx.current())return;if(!user||user.id!==session.user.id)throw new Error('sync-auth');
+      $('#cloudPasswordStatus').textContent=t('sPasswordSaved');
+    };
+    if(navigator.locks)await navigator.locks.request('load-sync:'+ctx.config.url+':'+session.user.id,run);else await run();
+  }catch(e){if(ctx.current())$('#cloudPasswordStatus').textContent=t('sPasswordError');}
+  finally{password='';if(ctx.current()){cloud.authBusy=false;renderCloudStatus();cloudQueue();}}
 });
 on('#cloudEnable','click',function(){
   try{cloudRecovery();cloud.meta.enabled=true;cloudWrite('meta',cloud.meta);cloudSetStatus('sPending');renderCloud();cloudSync();}catch(e){cloud.meta.enabled=false;cloudSetStatus('sStorageError');renderCloud();}

@@ -7,6 +7,7 @@ const fs=require('fs'),http=require('http'),assert=require('assert');
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;
  const browser=await chromium.launch({channel:'chrome',headless:true}),errors=[];
  const documents=new Map();let requests=0,rejectOnce=false,holdRead=null,readReached=null;
+ let passwordValue=null,emails=0;
  const uid='11111111-1111-4111-8111-111111111111';
  async function context(mobile){
   const c=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:900}});
@@ -14,7 +15,9 @@ const fs=require('fs'),http=require('http'),assert=require('assert');
    if(new URL(route.request().url()).hostname!=='sync-test.supabase.co')throw new Error('Unexpected live cloud request in mock test');
    requests++;const req=route.request(),url=new URL(req.url()),data=req.postDataJSON(),token=req.headers().authorization;
    const send=(body,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
-   if(url.pathname==='/auth/v1/otp')return send({});
+   if(url.pathname==='/auth/v1/otp'){emails++;return send({});}
+   if(url.pathname==='/auth/v1/user'&&req.method()==='PUT'){assert.ok(token==='Bearer link-token'||token==='Bearer test-user-token');passwordValue=data.password;return send({id:uid,email:'test@example.com'});}
+   if(url.pathname==='/auth/v1/token'&&url.searchParams.get('grant_type')==='password'&&(data.password!==passwordValue||data.email!=='test@example.com'))return send({error:'invalid_credentials'},400);
    if(url.pathname==='/auth/v1/verify'||url.pathname==='/auth/v1/token')return send({access_token:'test-user-token',refresh_token:'test-refresh-token',expires_in:3600,user:{id:uid,email:'test@example.com'}});
    if(url.pathname==='/auth/v1/user'&&token==='Bearer wrong-email')return send({id:uid,email:'another@example.com',email_confirmed_at:new Date().toISOString()});
    if(url.pathname==='/auth/v1/user')return token==='Bearer link-token'?send({id:uid,email:'test@example.com',email_confirmed_at:new Date().toISOString()}):send({error:'invalid-token'},401);
@@ -54,7 +57,13 @@ const fs=require('fs'),http=require('http'),assert=require('assert');
  await backup(phone,{lang:'en',workouts:[{id:'phone-workout',date,name:'Phone workout',exercises:[{key:'',name:'Bench',sets:[{weightKg:60,reps:8,done:true,warmup:false,rir:2}]}]}]});
  assert.equal(requests,0,'app does not contact cloud before login even with preset configuration');
  await login(pc,true);assert.equal(documents.size,0,'login alone does not upload health records');await sync(pc,true);
- await login(phone);await sync(phone,true);let ps=await exportState(phone);assert.equal(ps.log.entries[date],77.2);assert.equal(ps.workouts.length,1);assert.equal(ps.kcalOverride,1950);
+ await pc.p.locator('#cloudPasswordSetup summary').click();
+ await pc.p.locator('#cloudNewPassword').fill('test-sync-password-123');await pc.p.locator('#cloudRepeatPassword').fill('mismatch');await pc.p.locator('#cloudPasswordSave').click();await expect(pc.p.locator('#cloudPasswordStatus')).toContainText('same password twice');assert.equal(passwordValue,null);
+ await pc.p.locator('#cloudRepeatPassword').fill('test-sync-password-123');await pc.p.locator('#cloudPasswordSave').click();await expect(pc.p.locator('#cloudPasswordStatus')).toContainText('Password saved');assert.equal(await pc.p.locator('#cloudNewPassword').inputValue(),'');
+ assert.ok(!JSON.stringify(await pc.p.evaluate(()=>Object.assign({},localStorage))).includes('test-sync-password-123'),'password not in browser storage');assert.ok(!JSON.stringify(await exportState(pc)).includes('test-sync-password-123'),'password not in backup');
+ if(await phone.p.locator('#cloudUrl').isHidden())await phone.p.locator('#cloudSetup summary').click();await phone.p.locator('#cloudUrl').fill('https://sync-test.supabase.co');await phone.p.locator('#cloudKey').fill('sb_publishable_test');await phone.p.locator('#cloudConfigSave').click();await phone.p.locator('#cloudEmail').fill('test@example.com');
+ const beforeEmails=emails;await phone.p.locator('#cloudPassword').fill('incorrect-password');await phone.p.locator('#cloudPasswordLogin').click();await expect(phone.p.locator('#cloudStatus')).toContainText('Could not sign in');
+ await phone.p.locator('#cloudPassword').fill('test-sync-password-123');await phone.p.locator('#cloudPasswordLogin').click();await expect(phone.p.locator('#cloudStatus')).toContainText('Signed in');assert.equal(emails,beforeEmails,'password sign-in sends no email');assert.equal(await phone.p.locator('#cloudPassword').inputValue(),'');await sync(phone,true);let ps=await exportState(phone);assert.equal(ps.log.entries[date],77.2);assert.equal(ps.workouts.length,1);assert.equal(ps.kcalOverride,1950);
  await sync(pc);let cs=await exportState(pc);assert.equal(cs.workouts.length,1);assert.equal(cs.usdaKey,'local-private-key');assert.ok(!JSON.stringify(documents.get(uid)).includes('local-private-key'));
  // Offline, independent edits: a new weigh-in and an edited workout merge.
  await pc.c.setOffline(true);await phone.c.setOffline(true);
