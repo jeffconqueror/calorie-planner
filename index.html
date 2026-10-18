@@ -659,6 +659,23 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     </div></div>
   </section>
 
+  <section class="section app-nutrition-section" id="healthExport"><div class="panel"><div class="panel__bd">
+    <h3>Apple Health · 营养与体重</h3>
+    <p class="hint">电脑和手机均可保存实际摄入；在 iPhone 上运行快捷指令写入健康。只传热量、蛋白质、碳水、脂肪和所选日期的体重，不含体脂率。</p>
+    <label>记录日期 <input id="healthDate" type="date"></label>
+    <button id="healthPrepare" type="button">读取当天已保存记录</button>
+    <button id="healthFromMeals" type="button">从当前食物清单填入</button>
+    <div class="journal-fields">
+      <label>摄入热量 kcal <input id="healthKcal" type="number" min="0" max="30000" step="any"></label>
+      <label>蛋白质 g <input id="healthProtein" type="number" min="0" max="3000" step="any"></label>
+      <label>碳水 g <input id="healthCarbs" type="number" min="0" max="5000" step="any"></label>
+      <label>脂肪 g <input id="healthFat" type="number" min="0" max="3000" step="any"></label>
+    </div>
+    <p id="healthWeight" class="hint"></p>
+    <label><input id="healthActual" type="checkbox"> 我确认以上是该日实际摄入，不是目标或计划</label>
+    <div class="journal-toolbar"><button id="healthSave" type="button">保存实际摄入并同步</button><button id="healthRun" type="button">在 iPhone 写入健康</button><button id="healthCopy" type="button">复制快捷指令数据</button></div>
+    <p id="healthStatus" role="status"></p><a href="apple-health-setup.html" target="_blank" rel="noopener">首次设置：iPhone 快捷指令步骤</a>
+  </div></div></section>
   <!-- ═══ SETUP ═══ -->
   <section class="section app-nutrition-section">
     <div class="section__hd">
@@ -2617,7 +2634,7 @@ function defaults(){
     cheatKcal:800, proteinPerKg:2.0,
     name:'', usdaKey:'', log:{started:null, entries:{}}, trainingLog:[], workouts:[], workoutDraft:null, trainingUnit:null, routineSets:{},
     kcalOverride:null, kcalSource:'plan',
-    dayType:'train', foodCycleDay:'medium', foodDate:null,
+    dayType:'train', foodCycleDay:'medium', foodDate:null, nutritionLog:{},
     activeMeal:'m1', planBlock:null, mealMode:'day', lastExport:null,
     meals:[
       {key:'m1', share:30, items:[]},
@@ -2792,6 +2809,7 @@ function syncProject(s){
   put('log/started',s.log&&s.log.started);
   Object.entries(s.log&&s.log.entries||{}).forEach(function(e){put('weight/'+e[0],e[1]);});
   (s.workouts||[]).forEach(function(w){put('workout/'+w.id,w);});
+  Object.entries(s.nutritionLog||{}).forEach(function(e){if(healthValid(e[1]))put('nutrition/'+e[0],e[1]);});
   (s.trainingLog||[]).forEach(function(w){put('legacy/'+w.date+'|'+w.lift,w);});
   (s.custom||[]).forEach(function(f){put('food/'+f.id,f);});
   (s.meals||[]).forEach(function(m){put('meal/'+m.key,m);});
@@ -2799,6 +2817,7 @@ function syncProject(s){
   Object.entries(s.routineSets||{}).forEach(function(e){put('routine/'+e[0],e[1]);});
   return out;
 }
+function healthValid(v){return !!v&&['kcal','protein','carbs','fat'].every(function(k,i){return typeof v[k]==='number'&&isFinite(v[k])&&v[k]>=0&&v[k]<=[30000,3000,5000,3000][i];});}
 function syncValidateDocument(doc){
   if(!doc||doc.version!==1||!doc.records||Array.isArray(doc.records)||typeof doc.records!=='object')throw new Error('sync-schema');
   Object.keys(doc.records).forEach(function(k){var r=doc.records[k];if(k.length>240||!r||typeof r!=='object'||Array.isArray(r)||(!Object.prototype.hasOwnProperty.call(r,'value')&&r.deleted!==true))throw new Error('sync-schema');});return doc.records;
@@ -2830,6 +2849,7 @@ function syncMerge(base,local,remote,decisions){
 }
 function syncApplyRecords(state,records){
   var out=JSON.parse(JSON.stringify(state)),d=defaults();
+  out.nutritionLog={};
   out.log={started:null,entries:{}};out.workouts=[];out.trainingLog=[];out.custom=[];out.routineSets={};out.lifts=JSON.parse(JSON.stringify(d.lifts));out.meals=JSON.parse(JSON.stringify(d.meals));
   syncConfigKeys().forEach(function(k){out[k]=d[k];});
   Object.keys(records).forEach(function(k){var rec=records[k];if(syncDeleted(rec))return;var v=rec.value,split=k.indexOf('/'),type=k.slice(0,split),id=k.slice(split+1);
@@ -2837,6 +2857,7 @@ function syncApplyRecords(state,records){
     else if(k==='log/started')out.log.started=v;
     else if(type==='weight'&&journalDate(id)&&typeof v==='number'&&isFinite(v)&&v>=20&&v<=400)out.log.entries[id]=v;
     else if(type==='workout'&&v&&v.id===id)out.workouts.push(v);
+    else if(type==='nutrition'&&journalDate(id)&&healthValid(v))out.nutritionLog[id]=v;
     else if(type==='legacy'&&v&&v.date+'|'+v.lift===id)out.trainingLog.push(v);
     else if(type==='food'&&v&&v.id===id)out.custom.push(v);
     else if(type==='meal'&&['m1','m2','m3','pw'].indexOf(id)>=0&&v&&v.key===id){out.meals[out.meals.findIndex(function(m){return m.key===id;})]=v;}
@@ -4466,7 +4487,7 @@ function cloudValidConfig(c){
 function cloudOwner(session,config){return config.url+'|'+session.user.id;}
 function cloudContext(){
   if(!P||cloud.profile===P.active)return;
-  cloud.epoch++;clearTimeout(cloud.timer);cloud.profile=P.active;cloud.busy=false;cloud.authBusy=false;
+  cloud.epoch++;clearTimeout(cloud.timer);cloud.profile=P.active;cloud.busy=false;cloud.authBusy=false;$('#healthDate').value=iso(new Date());healthLoad(false);
   ['#cloudPassword','#cloudNewPassword','#cloudRepeatPassword'].forEach(function(id){$(id).value='';});$('#cloudPasswordStatus').textContent='';
   cloud.config=cloudRead('config')||CLOUD_DEFAULT;try{var savedSession=cloudRead('auth');cloud.session=savedSession?cloudSession(savedSession):null;}catch(e){cloud.session=null;}cloud.meta=cloudRead('meta')||{};
   if(cloudLocalMissing){cloud.meta.base=null;cloud.meta.enabled=false;}
@@ -4890,7 +4911,42 @@ function dayTotals(){
 }
 
 /* ══ meal planner render ═══════════════════════════════════════════════ */
+function healthLoad(fromMeals){
+  var date=$('#healthDate').value||iso(new Date());$('#healthDate').value=date;
+  var v=fromMeals?dayTotals():(S.nutritionLog||{})[date];
+  ['Kcal','Protein','Carbs','Fat'].forEach(function(k,i){var n=v&&(fromMeals?v[['kcal','p','c','f'][i]]:v[k.toLowerCase()]);$('#health'+k).value=n==null?'':Math.round(n*100)/100;});
+  $('#healthActual').checked=false;
+  var kg=S.log&&S.log.entries&&S.log.entries[date];
+  $('#healthWeight').textContent=typeof kg==='number'?'当日体重：'+kg+' kg（来自体重记录）':'当日没有体重记录，将只传营养。可先在体重记录中添加。';
+  $('#healthStatus').textContent=fromMeals?'请核对实际吃下的数量后保存。':'';
+}
+function healthSaveActual(){
+  var date=$('#healthDate').value,v={};
+  ['Kcal','Protein','Carbs','Fat'].forEach(function(k){v[k.toLowerCase()]=$('#health'+k).value===''?null:Number($('#health'+k).value);});
+  if(!journalDate(date)||date>iso(new Date())||!healthValid(v)||!$('#healthActual').checked){$('#healthStatus').textContent='请填写有效日期和四项实际摄入，并勾选确认；不能记录未来摄入。';return null;}
+  if(!S.nutritionLog||typeof S.nutritionLog!=='object')S.nutritionLog={};S.nutritionLog[date]=v;save();
+  $('#healthStatus').textContent='已保存实际摄入；已开启云端同步的设备会自动同步。尚未写入 Apple Health。';return date;
+}
+function healthPayload(){
+  var date=healthSaveActual();if(!date)return null;
+  var v=S.nutritionLog[date],payload={version:1,date:date,kcal:v.kcal,protein:v.protein,carbs:v.carbs,fat:v.fat};
+  var kg=S.log&&S.log.entries&&S.log.entries[date];if(typeof kg==='number'&&isFinite(kg)&&kg>=20&&kg<=400)payload.weightKg=kg;
+  return payload;
+}
+on('#healthPrepare','click',function(){healthLoad(false);});
+on('#healthDate','change',function(){healthLoad(false);});
+on('#healthFromMeals','click',function(){healthLoad(true);});
+on('#healthSave','click',healthSaveActual);
+on('#healthCopy','click',async function(){var p=healthPayload();if(!p)return;try{await navigator.clipboard.writeText(JSON.stringify(p));$('#healthStatus').textContent='数据已复制；这不代表健康写入成功。';}catch(e){$('#healthStatus').textContent='无法访问剪贴板，请在 iPhone 浏览器中使用写入按钮。';}});
+on('#healthRun','click',function(){
+  var p=healthPayload();if(!p)return;
+  if(!/iPhone|iPad|iPod/.test(navigator.userAgent)){ $('#healthStatus').textContent='电脑已保存。请在 iPhone 同步后读取该日记录，再运行快捷指令。';return;}
+  if(!confirm('将该日实际摄入和体重交给 iPhone 快捷指令。若该日已经写入，请先检查健康中的记录，避免重复。继续？'))return;
+  location.href='shortcuts://run-shortcut?name='+encodeURIComponent('Load Health')+'&input=text&text='+encodeURIComponent(JSON.stringify(p));
+  $('#healthStatus').textContent='已请求运行快捷指令，请在健康 App 核对结果。网页不能确认写入是否成功。';
+});
 function renderMeals(){
+  if(!$('#healthDate').value)healthLoad(false);
   renderFoodGrid();
 
   $('#modeDay').setAttribute('aria-pressed', String(dayMode()));

@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Load · Apple Health 设置</title><style>body{max-width:740px;margin:32px auto;padding:0 20px;background:#111;color:#eee;font:17px/1.7 system-ui}a{color:#42d879}code{background:#333;padding:2px 5px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #555;padding:8px;text-align:left}</style>
+<h1>将实际摄入与体重写入 Apple Health</h1>
+<p>网页准备并同步数据，iPhone 的快捷指令负责写入健康。无需 SMTP 或额外服务器。此页面是手动搭建指南，不是已经安装好的快捷指令。首次需你在 iPhone 完成设置及健康权限授权。</p>
+<h2>日常使用</h2><ol><li>在电脑或手机的营养页找到「Apple Health · 营养与体重」。选日期，读取已保存记录，或从当前食物清单填入。</li><li>核对是该日实际吃下的量，勾选确认并保存。当天体重来自体重记录；没有记录就不传体重。完全不传体脂率。</li><li>手机先完成云端同步，再读取该日期，核对后点「在 iPhone 写入健康」。</li><li>到健康 App 检查结果。打开快捷指令不等于写入成功。修改已导出的某日时，先在健康中删除该次旧数据再重传，避免累加。</li></ol>
+<h2>一次性创建快捷指令</h2>
+<p>打开 iPhone「快捷指令」→ 新建，名称必须为 <b>Load Health</b>。以下动作名称可能随 iOS 语言略有不同。不要在快捷指令中填写云端密钥或登录密码。</p>
+<ol>
+<li>添加「从输入获取词典」（Get Dictionary from Input），输入选「快捷指令输入」。将结果设为变量 <code>data</code>。如果输入为空，用「停止此快捷指令」退出。</li>
+<li>从词典读取 <code>date</code>，用「日期」或「从输入获取日期」把该日期加上本地时间 <code>12:00</code> 转为日期变量。后续每条健康样本都使用此日期，不使用运行时的今天。</li>
+<li>添加「显示提醒」，显示日期与四项营养数字，并询问是否写入；取消应停止。所有数字来自词典，不能填成固定常数。</li>
+<li><b>防重复保护：</b>在「快捷指令」的 iCloud Drive 文件夹创建 <code>LoadHealth</code> 文件夹。写入前用「获取文件夹内容」和「筛选文件」检查是否存在名称为 <code>日期.txt</code> 的文件。存在就提示「该日可能已写入，请先检查健康」，然后停止。首次运行先把文本 <code>pending</code> 保存到该文件，再继续健康写入；关闭“询问存储位置”。这样中途失败再运行也会停下，不会把已写入的项目再加一次。</li>
+<li>按下表依次「获取词典值」→「记录健康样本」（Log Health Sample），数值选刚取得的词典值，日期使用上面创建的日期变量。</li>
+</ol>
+<table><tr><th>词典键</th><th>健康类型</th><th>单位</th></tr><tr><td>kcal</td><td>膳食能量 / Dietary Energy</td><td>kcal</td></tr><tr><td>protein</td><td>蛋白质 / Protein</td><td>g</td></tr><tr><td>carbs</td><td>碳水化合物 / Carbohydrates</td><td>g</td></tr><tr><td>fat</td><td>总脂肪 / Total Fat</td><td>g</td></tr><tr><td>weightKg</td><td>体重 / Weight</td><td>kg</td></tr></table>
+<p>体重动作放在「如果 weightKg 有值」条件中；没有该日称重就跳过。不要添加体脂率动作。</p>
+<ol start="6"><li>全部写入动作完成后，将该日标记文件内容覆盖为 <code>completed</code>，然后显示「已执行，请在健康中核对」。首次运行按系统提示允许这些类型的健康写入。</li><li>若失败或要修改同一天：在健康 App 中逐项核对并删除这次已写入的旧样本，然后删除该日标记文件，再重新运行。不要删除其他应用的记录。标记只能防止这个快捷指令重复执行，无法识别其他营养 App 已写入的同一餐。</li></ol>
+<p>快捷指令数据示例（仅示例，勿直接作为实际摄入写入）：</p><pre>{"version":1,"date":"2026-10-18",
+ "kcal":1950,"protein":154,"carbs":190,"fat":63,
+ "weightKg":77.2}</pre>
+<p>本功能的网页计算与同步可自动测试；健康权限、动作类型及实际写入必须在你的 iPhone 验证。若设备没有对应的「记录健康样本」类型，请停止并提供动作列表截图，不要选近似类型。</p>
+<p><a href="https://support.apple.com/guide/shortcuts/apd624386f42/ios">Apple：通过 URL 运行快捷指令</a> · <a href="https://support.apple.com/en-au/guide/shortcuts/apd081d9d61f/ios">Apple：健康样本动作</a></p><a href="./">返回 Load</a></html>
