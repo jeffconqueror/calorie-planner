@@ -1030,6 +1030,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
       <div class="journal-toolbar journal-picker"><label for="journalTemplate" data-i18n="pnArrange">Training plan</label><select id="journalTemplate"></select><button type="button" id="journalStart" data-i18n="jStart">Start session</button></div>
       <p id="journalMessage" class="hint" aria-live="polite"></p>
       <div id="workoutFocus" class="app-mobile" hidden></div>
+      <label for="journalUnit" data-i18n="jWeightUnit">Training weight unit</label><select id="journalUnit"><option value="kg">kg</option><option value="lb">lb</option></select>
       <div id="journalEditor" hidden></div>
     </div></div>
     <div id="journalHistoryPanel" class="panel" style="margin-top:var(--gap)"><div class="panel__hd"><h3 data-i18n="trainingHistory">Session history</h3></div><div class="panel__bd" id="journalHistory"></div></div>
@@ -1202,6 +1203,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
    Values are plain strings, or functions when a number gets interpolated. */
 var EN = {
   sTitle:"Private cloud sync",
+  jWeightUnit:"Training weight unit (independent of body weight)",
   sIntro:"Use the same email on computer and phone. Connect the computer with your complete calorie plan first, then connect the phone. Weight dates and workout sessions merge independently.",
   sSetup:"One-time project configuration",
   sSetupHint:"Paste the Supabase project URL and publishable key. Never paste a secret or service-role key. The project must have the provided database migration installed.",
@@ -1771,6 +1773,7 @@ var EN = {
 /* ══ 简体中文 ══════════════════════════════════════════════════════════ */
 var ZH = {
   sTitle:"私人云端同步",
+  jWeightUnit:"训练重量单位（不影响体重单位）",
   sIntro:"电脑和手机使用同一邮箱登录。先连接保存完整饮食计划的电脑，再连接手机。体重按日期、训练按场次合并。",
   sSetup:"项目配置（仅首次）",
   sSetupHint:"填写 Supabase 项目地址和 publishable 公钥；不要填写 secret 或 service_role 密钥。项目需先运行配套的数据库配置。",
@@ -2612,7 +2615,7 @@ function defaults(){
     mode:'diet', startKg:78, targetKg:72, startPinned:false, carbPlan:'phased',
     startDate: iso(today), endDate: iso(addDays(today,84)),
     cheatKcal:800, proteinPerKg:2.0,
-    name:'', usdaKey:'', log:{started:null, entries:{}}, trainingLog:[], workouts:[], workoutDraft:null, routineSets:{},
+    name:'', usdaKey:'', log:{started:null, entries:{}}, trainingLog:[], workouts:[], workoutDraft:null, trainingUnit:null, routineSets:{},
     kcalOverride:null, kcalSource:'plan',
     dayType:'train', foodCycleDay:'medium', foodDate:null,
     activeMeal:'m1', planBlock:null, mealMode:'day', lastExport:null,
@@ -2867,7 +2870,7 @@ function cleanWorkout(w, draft){
     return sets.length || draft ? {name:e.name.slice(0,120), key:typeof e.key === 'string' ? e.key.slice(0,120) : '', sets:sets} : null;
   }).filter(Boolean);
   if(!draft && (!exercises.length || exercises.some(function(e){ return !e.name.trim(); }))) return null;
-  return {id:w.id.slice(0,200), date:w.date, name:String(w.name || '').slice(0,120), notes:String(w.notes || '').slice(0,2000), minutes:journalNumber(w.minutes,0,1440), exercises:exercises};
+  return Object.assign(w.weightUnit==='kg'||w.weightUnit==='lb'?{weightUnit:w.weightUnit}:{},{id:w.id.slice(0,200), date:w.date, name:String(w.name || '').slice(0,120), notes:String(w.notes || '').slice(0,2000), minutes:journalNumber(w.minutes,0,1440), exercises:exercises});
 }
 function cleanWorkouts(rows){
   var byId = new Map();
@@ -4257,7 +4260,7 @@ function renderApp(){
   $('#routinePlan').innerHTML='<div class="section__hd"><h2>'+esc(t('aYourWeek'))+'</h2></div><p class="app-muted">'+esc(t('aRoutineHint'))+'</p><div class="app-plan-tools">'+(C.gymDays!==6?'<button type="button" id="appUseFrequency">'+esc(t('aUseFrequency'))+'</button>':'')+'</div><div class="routine-grid"><div class="app-card routine-rest"><span class="app-kicker">'+esc(t('aMon'))+'</span><h3>'+esc(t('aRest'))+'</h3><p class="app-muted">'+esc(t('aRestHint'))+'</p></div>'+weeklyRoutine().map(function(r){return '<details class="app-card routine-day"'+(r.day===new Date().getDay()?' open':'')+'><summary><span class="app-kicker">'+esc(t(days[r.day]))+'</span><h3>'+esc(routineTitle(r))+'</h3><span class="app-muted">'+r.ex.reduce(function(n,e){return n+routineCount(r,e);},0)+' '+esc(t('jWorkSets'))+' · '+r.ex.length+' '+esc(t('aExercises'))+'</span></summary><div class="routine-list">'+r.ex.map(function(e){return '<label><span>'+esc(routineExerciseName(e))+'</span><input type="number" min="1" max="30" step="1" value="'+routineCount(r,e)+'" data-routine-count="'+r.day+'-'+e[0]+'" aria-label="'+esc(t(days[r.day])+' '+routineExerciseName(e)+' '+t('trainingSets'))+'"><small>'+esc(t('trainingSets'))+'</small></label>';}).join('')+'</div><button type="button" class="app-primary" data-routine-start="'+r.day+'">'+esc(t('aStartToday'))+'</button></details>';}).join('')+'</div>';
   var thisMonth=S.workouts.filter(function(w){return w.date.slice(0,7)===now.slice(0,7)&&w.date<=now;}).length;
   var cells=Array.from({length:84},function(_,i){var d=iso(addDays(new Date(),i-83)),n=S.workouts.filter(function(w){return w.date===d;}).reduce(function(a,w){return a+workoutStats(w).sets;},0);return '<span style="--heat:'+(!n?'#292929':n<10?'#176a34':n<20?'#219c48':'#2dd363')+'" title="'+d+' · '+n+' '+esc(t('jWorkSets'))+'" aria-label="'+d+' · '+n+' '+esc(t('jWorkSets'))+'"></span>';}).join('');
-  $('#appStats').innerHTML='<div class="app-stat-grid">'+[[t('aSessionsTotal'),S.workouts.filter(function(w){return w.date<=now;}).length],[t('aThisMonth'),thisMonth],[t('aThisWeek'),week.days+'/6'],[t('jWorkSets'),week.sets]].map(function(p){return '<div class="app-card"><small>'+esc(p[0])+'</small><strong>'+p[1]+'</strong></div>';}).join('')+'</div><div class="app-card"><h3>'+esc(t('aActivity'))+'</h3><p class="app-muted">'+esc(t('aActivityHint'))+'</p><div class="app-heat">'+cells+'</div><div class="app-between app-muted"><span>'+esc(iso(addDays(new Date(),-83)))+'</span><span>'+esc(now)+'</span></div></div><div class="app-card"><h3>'+esc(t('aWeekVolume'))+'</h3><div class="app-number">'+Math.round(wOut(week.volume))+' <small>'+wUnit()+' × '+esc(t('trainingReps'))+'</small></div><p class="app-muted">'+esc(t('aVolumeHint'))+'</p></div>';
+  $('#appStats').innerHTML='<div class="app-stat-grid">'+[[t('aSessionsTotal'),S.workouts.filter(function(w){return w.date<=now;}).length],[t('aThisMonth'),thisMonth],[t('aThisWeek'),week.days+'/6'],[t('jWorkSets'),week.sets]].map(function(p){return '<div class="app-card"><small>'+esc(p[0])+'</small><strong>'+p[1]+'</strong></div>';}).join('')+'</div><div class="app-card"><h3>'+esc(t('aActivity'))+'</h3><p class="app-muted">'+esc(t('aActivityHint'))+'</p><div class="app-heat">'+cells+'</div><div class="app-between app-muted"><span>'+esc(iso(addDays(new Date(),-83)))+'</span><span>'+esc(now)+'</span></div></div><div class="app-card"><h3>'+esc(t('aWeekVolume'))+'</h3><div class="app-number">'+Math.round(journalOut(week.volume))+' <small>'+wUnit()+' × '+esc(t('trainingReps'))+'</small></div><p class="app-muted">'+esc(t('aVolumeHint'))+'</p></div>';
   renderWorkoutFocus();
 }
 function renderWorkoutFocus(){
@@ -4280,7 +4283,7 @@ document.addEventListener('click',function(ev){
   if(b.dataset.appWeek){appDay=iso(addDays(parseISO(appDay),Number(b.dataset.appWeek)*7));renderApp();return;}
   if(b.dataset.routineStart!=null){var w=routineWorkout(Number(b.dataset.routineStart),b.dataset.date);if(w){appExercise=0;journalStart(w);}return;}
   if(b.dataset.appEx){appExercise+=Number(b.dataset.appEx);renderWorkoutFocus();return;}
-  if(b.dataset.step){var input=$('#journalEditor').querySelector('[data-j-set="'+b.dataset.field+'"][data-ex="'+b.dataset.ex+'"][data-set="'+b.dataset.set+'"]');if(input){var step=b.dataset.field==='weightKg'?(imperial()?5:2.5):1;input.value=Math.max(0,Math.min(Number(input.max),Number(input.value)+Number(b.dataset.step)*step));input.dispatchEvent(new Event('input',{bubbles:true}));}return;}
+  if(b.dataset.step){var input=$('#journalEditor').querySelector('[data-j-set="'+b.dataset.field+'"][data-ex="'+b.dataset.ex+'"][data-set="'+b.dataset.set+'"]');if(input){var step=b.dataset.field==='weightKg'?(journalUnit()==='lb'?5:2.5):1;input.value=Math.max(0,Math.min(Number(input.max),Number(input.value)+Number(b.dataset.step)*step));input.dispatchEvent(new Event('input',{bubbles:true}));}return;}
   if(b.dataset.rest!=null){restUntil=Number(b.dataset.rest)?Date.now()+Number(b.dataset.rest)*1000:0;updateRestClock();return;}
   if(b.id==='appUseFrequency'){S.gymDays=6;render();}
 });
@@ -4288,19 +4291,25 @@ document.addEventListener('change',function(ev){var el=ev.target;if(el.dataset.r
 setInterval(updateRestClock,1000);
 
 document.body.dataset.screen='home';
+function journalUnit(){return S.trainingUnit==='kg'||S.trainingUnit==='lb'?S.trainingUnit:(S.workoutDraft&&S.workoutDraft.weightUnit)||(S.workouts.length&&S.workouts[S.workouts.length-1].weightUnit)||wUnit();}
+function journalOut(kg){return journalUnit()==='lb'?kg/0.45359237:kg;}
+function journalIn(value){return journalUnit()==='lb'?value*0.45359237:value;}
+function journalShow(kg,d){return Number(journalOut(kg).toFixed(d==null?1:d));}
+on('#journalUnit','change',function(){S.trainingUnit=this.value;if(S.workoutDraft)S.workoutDraft.weightUnit=this.value;render();});
 function journalId(){ return 'w-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2); }
 function journalSet(){ return {weightKg:null,reps:null,rir:null,warmup:false,done:false}; }
 function journalName(e){ if(e.key.indexOf('routine:')===0){var item=routineExercise(e.key);if(item)return routineExerciseName(item);} var lift=LIFTS.find(function(l){return l.k===e.key;}); return lift ? t(lift.key) : e.name; }
 function journalBlank(){ return {id:journalId(),date:iso(new Date()),name:'',minutes:null,notes:'',exercises:[]}; }
 function journalStart(w){
   if(S.workoutDraft && !confirm(t('jReplace'))) return;
-  S.workoutDraft=w; appScreen='workout'; document.body.dataset.screen='workout'; render(); $('#workoutJournal').scrollIntoView({behavior:'smooth',block:'start'});
+  w.weightUnit=w.weightUnit||journalUnit();S.trainingUnit=w.weightUnit;S.workoutDraft=w; appScreen='workout'; document.body.dataset.screen='workout'; render(); $('#workoutJournal').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function journalButton(action,label,extra){ return '<button type="button" data-j-action="'+action+'" '+(extra||'')+'>'+esc(label)+'</button>'; }
 function renderJournal(){
   if(journalImportPending && journalImportPending.profile!==P.active){journalImportPending=null;$('#journalImportApply').hidden=true;$('#journalImportMessage').textContent='';}
+  setVal('#journalUnit',journalUnit());
   var week=journalWeek(S.workouts,iso(new Date()));
-  $('#journalSummary').textContent=t('jWeekSummary',week.first,week.last,week.days,C.gymDays,week.sets,Math.round(wOut(week.volume)),wUnit());
+  $('#journalSummary').textContent=t('jWeekSummary',week.first,week.last,week.days,C.gymDays,week.sets,Math.round(journalOut(week.volume)),journalUnit());
   var choices=(SPLITS[C.gymDays]||[]).filter(function(k){return SESSION[k].lifts.length;});
   $('#journalTemplate').innerHTML='<option value="">'+esc(t('jBlank'))+'</option>'+weeklyRoutine().map(function(r){return '<option value="routine:'+r.day+'">'+esc(t(['aSun','aMon','aTue','aWed','aThu','aFri','aSat'][r.day])+' · '+routineTitle(r))+'</option>';}).join('')+choices.map(function(k,i){return '<option value="'+k+'">'+esc(t('dayN',i+1)+' · '+t('ses_'+k))+'</option>';}).join('');
   var w=S.workoutDraft; $('#journalEditor').hidden=!w;
@@ -4309,16 +4318,16 @@ function renderJournal(){
     var html='<details class="journal-meta" '+(matchMedia('(max-width:760px)').matches?'':'open')+'><summary>'+esc(w.date+' · '+t('jNotes'))+'</summary><div class="journal-fields">'+field('date',t('trainingDate'),'date',w.date,'required')+field('name',t('jSessionName'),'text',w.name,'maxlength="120"')+field('minutes',t('jMinutes'),'number',w.minutes,'min="0" max="1440" step="any"')+'</div></details>';
     html+=w.exercises.map(function(e,ei){
       var previous=S.workouts.slice().reverse().filter(function(x){return x.id!==w.id && x.date<=w.date;}).flatMap(function(x){return x.exercises.filter(function(p){return e.key ? p.key===e.key : p.name===e.name;}).map(function(p){return {date:x.date,e:p};});})[0];
-      var hint=previous ? previous.date+' · '+previous.e.sets.filter(function(s){return !s.warmup;}).map(function(s){return wShow(s.weightKg)+' × '+s.reps;}).join(' / ') : t('trainingEmpty');
-      return '<article class="journal-exercise" data-j-ex="'+ei+'"><details class="journal-ex-settings" '+(!e.name||!matchMedia('(max-width:760px)').matches?'open':'')+'><summary>'+esc(t('trainingEdit')+' · '+journalName(e))+'</summary><div class="journal-toolbar"><label class="journal-exname">'+esc(t('trainingLift'))+'<input data-j-name="'+ei+'" value="'+esc(journalName(e))+'" maxlength="120" required></label>'+journalButton('remove-ex',t('jRemove'),'data-ex="'+ei+'"')+'</div></details><p class="hint">'+esc(t('jPrevious')+' '+hint)+'</p><div class="tablewrap"><table class="journal-sets"><thead><tr><th>#</th><th>'+esc(t('trainingWeight')+' ('+wUnit()+')')+'</th><th>'+esc(t('trainingReps'))+'</th><th>RIR</th><th>'+esc(t('jWarmup'))+'</th><th>'+esc(t('jDone'))+'</th><th></th></tr></thead><tbody>'+e.sets.map(function(s,si){
+      var hint=previous ? previous.date+' · '+previous.e.sets.filter(function(s){return !s.warmup;}).map(function(s){return journalShow(s.weightKg)+' × '+s.reps;}).join(' / ') : t('trainingEmpty');
+      return '<article class="journal-exercise" data-j-ex="'+ei+'"><details class="journal-ex-settings" '+(!e.name||!matchMedia('(max-width:760px)').matches?'open':'')+'><summary>'+esc(t('trainingEdit')+' · '+journalName(e))+'</summary><div class="journal-toolbar"><label class="journal-exname">'+esc(t('trainingLift'))+'<input data-j-name="'+ei+'" value="'+esc(journalName(e))+'" maxlength="120" required></label>'+journalButton('remove-ex',t('jRemove'),'data-ex="'+ei+'"')+'</div></details><p class="hint">'+esc(t('jPrevious')+' '+hint)+'</p><div class="tablewrap"><table class="journal-sets"><thead><tr><th>#</th><th>'+esc(t('trainingWeight')+' ('+journalUnit()+')')+'</th><th>'+esc(t('trainingReps'))+'</th><th>RIR</th><th>'+esc(t('jWarmup'))+'</th><th>'+esc(t('jDone'))+'</th><th></th></tr></thead><tbody>'+e.sets.map(function(s,si){
         var input=function(key,value,attrs){var html='<input aria-label="'+esc(journalName(e)+' · '+(si+1)+' · '+(key==='weightKg'?t('trainingWeight'):key==='reps'?t('trainingReps'):key==='warmup'?t('jWarmup'):key==='done'?t('jDone'):'RIR'))+'" data-j-set="'+key+'" data-ex="'+ei+'" data-set="'+si+'" '+attrs+' '+(key==='done'||key==='warmup' ? (value?'checked':'') : 'value="'+esc(value==null?'':value)+'"')+'>'; if(key==='weightKg'||key==='reps'){html='<div class="app-step"><button type="button" data-step="-1" data-ex="'+ei+'" data-set="'+si+'" data-field="'+key+'" aria-label="−">−</button>'+html+'<button type="button" data-step="1" data-ex="'+ei+'" data-set="'+si+'" data-field="'+key+'" aria-label="+">+</button></div>';}return html;};
-        return '<tr><td>'+(si+1)+'</td><td data-label="'+esc(t('trainingWeight')+' ('+wUnit()+')')+'">'+input('weightKg',s.weightKg==null?'':wShow(s.weightKg,2),'type="number" min="0" max="'+(imperial()?3306:1500)+'" step="any" inputmode="decimal"')+'</td><td data-label="'+esc(t('trainingReps'))+'">'+input('reps',s.reps,'type="number" min="0" max="1000" step="1" inputmode="numeric"')+'</td><td data-label="RIR">'+input('rir',s.rir,'type="number" min="0" max="10" step="0.5" inputmode="decimal"')+'</td><td data-label="'+esc(t('jWarmup'))+'">'+input('warmup',s.warmup,'type="checkbox"')+'</td><td data-label="'+esc(t('jDone'))+'">'+input('done',s.done,'type="checkbox"')+'</td><td>'+journalButton('remove-set','×','data-ex="'+ei+'" data-set="'+si+'" aria-label="'+esc(t('jRemove'))+'"')+'</td></tr>';
+        return '<tr><td>'+(si+1)+'</td><td data-label="'+esc(t('trainingWeight')+' ('+journalUnit()+')')+'">'+input('weightKg',s.weightKg==null?'':journalShow(s.weightKg,2),'type="number" min="0" max="'+(journalUnit()==='lb'?3306:1500)+'" step="any" inputmode="decimal"')+'</td><td data-label="'+esc(t('trainingReps'))+'">'+input('reps',s.reps,'type="number" min="0" max="1000" step="1" inputmode="numeric"')+'</td><td data-label="RIR">'+input('rir',s.rir,'type="number" min="0" max="10" step="0.5" inputmode="decimal"')+'</td><td data-label="'+esc(t('jWarmup'))+'">'+input('warmup',s.warmup,'type="checkbox"')+'</td><td data-label="'+esc(t('jDone'))+'">'+input('done',s.done,'type="checkbox"')+'</td><td>'+journalButton('remove-set','×','data-ex="'+ei+'" data-set="'+si+'" aria-label="'+esc(t('jRemove'))+'"')+'</td></tr>';
       }).join('')+'</tbody></table></div>'+journalButton('add-set',t('jAddSet'),'data-ex="'+ei+'"')+'</article>';
     }).join('');
     html+='<div class="journal-toolbar">'+journalButton('add-ex',t('jAddExercise'))+'</div><label>'+esc(t('jNotes'))+'<textarea data-j-field="notes" maxlength="2000" rows="2">'+esc(w.notes)+'</textarea></label><p class="hint">'+esc(t('jDraftHint'))+'</p><div class="journal-toolbar">'+journalButton('finish',t('jFinish'))+journalButton('discard',t('jDiscard'))+'</div>';
     setHTMLKeepFocus($('#journalEditor'),html);
   }
-  $('#journalHistory').innerHTML=S.workouts.length ? S.workouts.slice().reverse().map(function(w){var stats=workoutStats(w); return '<details class="journal-history"><summary><b>'+esc(w.date+' · '+(w.name||t('jWorkout')))+'</b><span>'+esc(stats.sets+' '+t('jWorkSets')+' · '+Math.round(wOut(stats.volume))+' '+wUnit()+' × '+t('trainingReps'))+'</span></summary><div class="journal-toolbar">'+journalButton('edit',t('trainingEdit'),'data-id="'+esc(w.id)+'"')+journalButton('repeat',t('jRepeat'),'data-id="'+esc(w.id)+'"')+journalButton('food',t('jFood'),'data-id="'+esc(w.id)+'"')+journalButton('delete',t('jDelete'),'data-id="'+esc(w.id)+'"')+'</div>'+w.exercises.map(function(e){return '<p><b>'+esc(journalName(e))+'</b> · '+esc(e.sets.map(function(s){return (s.warmup?t('jWarmup')+' ':'')+wShow(s.weightKg)+' '+wUnit()+' × '+s.reps+(s.rir==null?'':' · RIR '+s.rir);}).join(' / '))+'</p>';}).join('')+'<p class="hint">'+esc((w.minutes==null?'':w.minutes+' '+t('jMinutes')+' · ')+w.notes)+'</p></details>';}).join('') : '<p class="hint">'+esc(t('trainingEmpty'))+'</p>';
+  $('#journalHistory').innerHTML=S.workouts.length ? S.workouts.slice().reverse().map(function(w){var stats=workoutStats(w); return '<details class="journal-history"><summary><b>'+esc(w.date+' · '+(w.name||t('jWorkout')))+'</b><span>'+esc(stats.sets+' '+t('jWorkSets')+' · '+Math.round(journalOut(stats.volume))+' '+journalUnit()+' × '+t('trainingReps'))+'</span></summary><div class="journal-toolbar">'+journalButton('edit',t('trainingEdit'),'data-id="'+esc(w.id)+'"')+journalButton('repeat',t('jRepeat'),'data-id="'+esc(w.id)+'"')+journalButton('food',t('jFood'),'data-id="'+esc(w.id)+'"')+journalButton('delete',t('jDelete'),'data-id="'+esc(w.id)+'"')+'</div>'+w.exercises.map(function(e){return '<p><b>'+esc(journalName(e))+'</b> · '+esc(e.sets.map(function(s){return (s.warmup?t('jWarmup')+' ':'')+journalShow(s.weightKg)+' '+journalUnit()+' × '+s.reps+(s.rir==null?'':' · RIR '+s.rir);}).join(' / '))+'</p>';}).join('')+'<p class="hint">'+esc((w.minutes==null?'':w.minutes+' '+t('jMinutes')+' · ')+w.notes)+'</p></details>';}).join('') : '<p class="hint">'+esc(t('trainingEmpty'))+'</p>';
 }
 on('#journalStart','click',function(){
   var w=journalBlank(),key=$('#journalTemplate').value;
@@ -4331,7 +4340,7 @@ on('#journalEditor','input',function(ev){
   if(el.dataset.jField){var k=el.dataset.jField;w[k]=k==='minutes'?(el.value===''?null:Number(el.value)):el.value;}
   if(el.dataset.jName!=null){var ex=w.exercises[Number(el.dataset.jName)];ex.name=el.value;ex.key='';}
   if(el.dataset.jSet){var set=w.exercises[Number(el.dataset.ex)].sets[Number(el.dataset.set)],key=el.dataset.jSet;
-    set[key]=el.type==='checkbox'?el.checked:el.value===''?null:(key==='weightKg'?wIn(Number(el.value)):Number(el.value));}
+    set[key]=el.type==='checkbox'?el.checked:el.value===''?null:(key==='weightKg'?journalIn(Number(el.value)):Number(el.value));}
   save();
   if(el.dataset.jSet==='done'||el.dataset.jName!=null)renderWorkoutFocus();
 });

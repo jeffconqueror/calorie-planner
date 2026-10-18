@@ -2,7 +2,7 @@
    The whole app is one self-contained index.html, so caching it plus the
    icons is the entire job. Cache name carries a build stamp, so a deploy
    retires the previous cache instead of stranding an old version. */
-var CACHE = 'load-8e700b8333ff';
+var CACHE = 'load-9fe8d570a1bc';
 var ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './icon-180.png', './icon-192.png', './icon-512.png'
