@@ -2853,6 +2853,8 @@ function syncApplyRecords(state,records){
   out.log={started:null,entries:{}};out.workouts=[];out.trainingLog=[];out.custom=[];out.routineSets={};out.lifts=JSON.parse(JSON.stringify(d.lifts));out.meals=JSON.parse(JSON.stringify(d.meals));
   syncConfigKeys().forEach(function(k){out[k]=d[k];});
   Object.keys(records).forEach(function(k){var rec=records[k];if(syncDeleted(rec))return;var v=rec.value,split=k.indexOf('/'),type=k.slice(0,split),id=k.slice(split+1);
+    // Editable state must never share objects with the immutable sync baseline.
+    if(v!==undefined)v=JSON.parse(JSON.stringify(v));
     if(type==='config'&&syncConfigKeys().indexOf(id)>=0)out[id]=v;
     else if(k==='log/started')out.log.started=v;
     else if(type==='weight'&&journalDate(id)&&typeof v==='number'&&isFinite(v)&&v>=20&&v<=400)out.log.entries[id]=v;
@@ -3487,12 +3489,14 @@ function focusSig(a){
   if(a.dataset.weigh) return 'input[data-weigh="'+a.dataset.weigh+'"]';
   return null;
 }
+var replacingInputRows=false;
 function setHTMLKeepFocus(el, html){
   var a = document.activeElement;
   var sel = (a && el.contains(a)) ? focusSig(a) : null;
   var raw = sel ? a.value : null, ss = null, se = null;
   if(sel){ try{ ss = a.selectionStart; se = a.selectionEnd; }catch(e){} }
-  el.innerHTML = html;
+  replacingInputRows=true;
+  try{el.innerHTML = html;}finally{replacingInputRows=false;}
   if(sel){
     var n = el.querySelector(sel);
     if(n){ n.value = raw; n.focus(); if(ss!=null){ try{ n.setSelectionRange(ss,se); }catch(e){} } }
@@ -4764,7 +4768,7 @@ cloudHandleLink();
    the local database holds a fuller copy than localStorage did. */
 requestPersistence();
 loadFromIdbIfBetter();
-setTimeout(function(){ if(C) renderRecord(); }, 900);   /* refresh the status once the answers land */
+setTimeout(function(){ if(C && !(document.activeElement && document.activeElement.matches('[data-weigh]'))) renderRecord(); }, 900);   /* refresh the status once the answers land */
 
 /* ══ meal solver ═══════════════════════════════════════════════════════
    Given the foods you picked and the macros a meal has to hit, work out how
@@ -5148,9 +5152,10 @@ $('#meals').addEventListener('click', function(e){
     resolveAndRender(); return;
   }
   var card = e.target.closest('[data-meal]');
-  if(card && !card.classList.contains('meal--off')){
+  if(card && !card.classList.contains('meal--off') && S.activeMeal!==card.dataset.meal){
     S.activeMeal = card.dataset.meal;
-    renderMeals();
+    $$('#meals [data-meal]').forEach(function(el){el.classList.toggle('meal--on',el===card);});
+    save();
   }
 });
 
@@ -5159,6 +5164,7 @@ $('#meals').addEventListener('click', function(e){
    day is re-solved once on change (blur or Enter), so the other rows do not
    churn under the caret mid-number. */
 function applyMealAmount(el, resolve){
+  if(replacingInputRows||!el.isConnected)return;
   var a = el.dataset.mi.split(':');
   var m = mealByKey(a[0]); if(!m) return;
   var it = m.items[+a[1]]; if(!it) return;
@@ -5166,7 +5172,7 @@ function applyMealAmount(el, resolve){
   var v = num(el.value, 0);
   it.g = clamp((el.dataset.each && f) ? v*f.each : v, 0, 3000);
   it.lock = true;
-  if(resolve){ resolveAndRender(); return; }
+  if(resolve){ refreshMealAmounts(); return; }
   /* still typing: update this row's own line and the totals, nothing else */
   var row = el.closest('.mitem');
   if(row && f){
@@ -5183,11 +5189,24 @@ function applyMealAmount(el, resolve){
   save();
 }
 function applyShare(el, resolve){
+  if(replacingInputRows||!el.isConnected)return;
   var m = mealByKey(el.dataset.share); if(!m) return;
   m.share = clamp(num(el.value, 0), 0, 100);
-  if(resolve){ resolveAndRender(); return; }
+  if(resolve){ refreshMealAmounts(); return; }
   renderMealTotals();
   save();
+}
+function refreshMealAmounts(){
+  solveDay();
+  $$('#meals [data-mi]').forEach(function(el){
+    var parts=el.dataset.mi.split(':'),m=mealByKey(parts[0]),it=m&&m.items[Number(parts[1])],f=it&&foodById(it.id);if(!f)return;
+    if(document.activeElement!==el)el.value=f.each?Math.round(it.g/f.each*2)/2:r0(it.g);
+    var row=el.closest('.mitem'),k=it.g/100;
+    row.classList.toggle('locked',it.lock);row.classList.toggle('mitem--zero',it.g<=0);
+    row.querySelector('.mitem__n em').textContent=it.g<=0?t('mealNotNeeded'):r0(f.kcal*k)+' '+t('uKcal')+' · '+t('abbrP')+r1(f.p*k)+' '+t('abbrC')+r1(f.c*k)+' '+t('abbrF')+r1(f.f*k);
+    var lock=row.querySelector('.lockbtn');lock.setAttribute('aria-pressed',String(it.lock));lock.textContent=it.lock?'●':'○';lock.title=t(it.lock?'tipUnlock':'tipLock');
+  });
+  renderMealTotals();save();
 }
 $('#meals').addEventListener('input', function(e){
   var amt = e.target.closest('[data-mi]');
