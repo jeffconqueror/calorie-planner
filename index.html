@@ -4756,6 +4756,7 @@ if('serviceWorker' in navigator && !inFrame() &&
 }
 
 /* ══ go ════════════════════════════════════════════════════════════════ */
+var OBJ_W = [3, 1, 1.5, 2];
 loadProfiles();
 load();
 L = (S.lang === 'zh') ? 'zh' : 'en';
@@ -4802,7 +4803,7 @@ function foodCap(f, mealKcal){
    through the macros, because a food's label calories are not exactly
    4/4/9 — fibre is the gap — so hitting the macros alone leaves the total
    a few percent light on a vegetable-heavy day. */
-var OBJ_W = [3, 1, 1.5, 2];
+/* OBJ_W is initialized before startup, including restored unlocked meals. */
 function macroRow(f){ return [f.p/100, f.c/100, f.f/100, f.kcal/100]; }
 
 function solveAmounts(rows, target, caps, init, iters){

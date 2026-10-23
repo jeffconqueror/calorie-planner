@@ -15,6 +15,10 @@ const fs=require('fs'),http=require('http'),assert=require('assert');
  await b.fill('245');await b.press('Tab');await page.waitForTimeout(1600);
  assert.equal(await a.inputValue(),'137');assert.equal(await b.inputValue(),'245');
  await page.locator('[data-mstep="+"][data-mi2="m1:0"]').click();assert.equal(await a.inputValue(),'147');
+  await page.locator('[data-lock="m1:0"]').click();
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.reload();await page.waitForTimeout(1000);
+  assert.deepEqual(errors,[],'saved unlocked foods must not crash startup');
+  assert.ok(await page.locator('#profileSel option').count()>0,'profile must initialize');
  await page.close();
  }console.log('Meal edits: input identity, field switching, pinned grams and step controls passed on mobile/desktop');}
  finally{await browser.close();await new Promise(r=>server.close(r));}
