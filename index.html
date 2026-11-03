@@ -954,7 +954,15 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
   </section>
 
   <!-- ═══ TRAJECTORY ═══ -->
-  <section class="section app-stats-section">
+  <section class="section app-stats-section" id="strengthHistorySection">
+    <div class="section__hd"><h2 id="strengthHistoryTitle">Strength trends</h2><span class="section__rule"></span></div>
+    <div class="panel"><div class="panel__bd">
+      <p class="hint" id="strengthHistoryHint"></p>
+      <div class="journal-toolbar"><label id="strengthExerciseLabel" for="strengthExercise">Exercise</label><select id="strengthExercise"></select><label id="strengthMetricLabel" for="strengthMetric">Metric</label><select id="strengthMetric"></select></div>
+      <div id="strengthHistoryChart"></div>
+    </div></div>
+  </section>
+  <section hidden id="legacyStrengthArchive">
     <div class="section__hd">
       <h2 data-i18n="secLands">Where this lands you</h2>
       <span class="section__rule"></span>
@@ -4088,6 +4096,7 @@ function trainingChart(rows, lift){
     '<p class="trainingchart__meta">'+esc(latest)+'</p>'+chart+'</div>';
 }
 function renderTrainingLog(){
+  renderStrengthHistory();
   $('#trainingUnit').textContent = wUnit();
   if(!$('#trainingDate').value) $('#trainingDate').value = iso(today);
   syncTrainingForm();
@@ -4103,6 +4112,48 @@ function renderTrainingLog(){
       '<td><button type="button" data-training-date="'+esc(e.date)+'" data-training-lift="'+e.lift+'">'+esc(t('trainingEdit'))+'</button></td></tr>';
   }).join('') : '<tr><td colspan="7">'+esc(t('trainingEmpty'))+'</td></tr>';
 }
+
+// Derived only from saved, completed work sets. Keep renamed/equipment variants separate.
+function strengthHistory(workouts){
+  var groups=new Map();
+  (workouts||[]).forEach(function(w){(w.exercises||[]).forEach(function(e){
+    (e.sets||[]).filter(function(s){return s.done&&!s.warmup&&Number.isFinite(s.weightKg)&&s.weightKg>=0&&Number.isFinite(s.reps)&&s.reps>0;}).forEach(function(s){
+      var body=s.weightKg===0, id=JSON.stringify([e.key||'',e.name.trim().toLowerCase(),body]);
+      if(!groups.has(id))groups.set(id,{id:id,name:e.name,body:body,days:new Map()});
+      var g=groups.get(id);
+      if(!g.days.has(w.date))g.days.set(w.date,{date:w.date,sets:[],load:0,reps:0,estimate:null});
+      var d=g.days.get(w.date);d.sets.push({weightKg:s.weightKg,reps:s.reps});d.load=Math.max(d.load,s.weightKg);d.reps=Math.max(d.reps,s.reps);
+      if(!body&&s.reps<=12){var estimate=s.reps===1?s.weightKg:s.weightKg*(1+s.reps/30);d.estimate=Math.max(d.estimate||0,estimate);}
+    });
+  });});
+  return Array.from(groups.values()).map(function(g){g.days=Array.from(g.days.values()).sort(function(a,b){return a.date.localeCompare(b.date);});return g;}).sort(function(a,b){return a.name.localeCompare(b.name)||Number(a.body)-Number(b.body);});
+}
+function renderStrengthHistory(){
+  var zh=L==='zh',pick=$('#strengthExercise'),metric=$('#strengthMetric'),groups=strengthHistory(S.workouts),selected=pick.value,mode=metric.value||'estimate';
+  $('#strengthHistoryTitle').textContent=zh?'训练历史 · 力量变化':'Training history · strength trends';
+  $('#strengthExerciseLabel').textContent=zh?'动作':'Exercise';$('#strengthMetricLabel').textContent=zh?'指标':'Metric';
+  $('#strengthHistoryHint').textContent=zh?'自动读取已保存训练中的已完成正式组，不含热身和未完成组。相同动作名称与标识才合并；自重和负重分开。估算 1RM 仅使用 1–12 次的组，不代表实测极限或肌肉量；请保持器械、动作幅度和用力程度一致。':'Uses completed work sets from saved sessions, excluding warm-ups and unfinished sets. Exercise names and identifiers must match; zero-load and loaded sets are separate. Estimated 1RM uses sets of 1–12 reps, not a measured max or muscle mass. Compare the same equipment, range of motion and effort.';
+  pick.innerHTML=groups.map(function(g){return '<option value="'+esc(g.id)+'">'+esc(g.name+(g.body?(zh?' · 自重/无外加重量':' · zero external load'):''))+'</option>';}).join('');
+  if(groups.some(function(g){return g.id===selected;}))pick.value=selected;
+  var g=groups.find(function(g){return g.id===pick.value;});pick.disabled=!g;metric.disabled=!g;
+  var modes=g&&g.body?[['reps',zh?'单组最多次数':'Best set reps']]:[['estimate',zh?'估算 1RM':'Estimated 1RM'],['load',zh?'最大工作重量':'Heaviest working load'],['reps',zh?'单组最多次数':'Best set reps']];
+  metric.innerHTML=modes.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>';}).join('');if(modes.some(function(m){return m[0]===mode;}))metric.value=mode;mode=metric.value;
+  var host=$('#strengthHistoryChart');
+  if(!g){host.innerHTML='<p class="hint">'+(zh?'保存一次训练并勾选已完成组后，这里会自动显示趋势。':'Save a session with completed sets to see trends here.')+'</p>';return;}
+  var rows=g.days.filter(function(d){return d[mode]!==null;}),unit=mode==='reps'?(zh?'次':'reps'):journalUnit(),value=function(d){return mode==='reps'?d[mode]:journalOut(d[mode]);},fmt=function(n){return String(Math.round(n*10)/10);};
+  var html='<p class="hint">'+(zh?'每日取最佳值；下表保留全部正式组，便于结合重量和次数判断。':'Daily best values; all work sets are shown below to compare load and reps together.')+'</p>';
+  if(!rows.length)html+='<p>'+(zh?'没有 1–12 次的负重组，暂无估算值。可切换指标查看。':'No loaded sets of 1–12 reps. Choose another metric.')+'</p>';
+  else{
+    var first=value(rows[0]),last=value(rows[rows.length-1]),delta=last-first;
+    html+='<p><strong>'+fmt(last)+' '+esc(unit)+'</strong> · '+esc(rows[rows.length-1].date)+'<br><span class="hint">'+(rows.length<2?(zh?'需要至少两个训练日期才能比较变化。':'At least two training dates are needed to compare.'): (zh?'相对首条记录：':'Since first record: ')+(delta>0?'+':'')+fmt(delta)+' '+esc(unit)+(first?' ('+(delta>0?'+':'')+fmt(delta/first*100)+'%)':''))+'</span></p>';
+    var vals=rows.map(value),lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals),pad=Math.max((hi-lo)*.15,1),min=lo-pad,max=hi+pad;
+    var start=Date.parse(rows[0].date),end=Date.parse(rows[rows.length-1].date),pts=rows.map(function(d){return [48+(end===start?210:(Date.parse(d.date)-start)/(end-start)*420),155-(value(d)-min)/(max-min)*125];});
+    html+='<svg style="width:100%;max-height:240px" viewBox="0 0 500 195" role="img" aria-label="'+esc(g.name+' '+metric.options[metric.selectedIndex].text)+'"><text x="4" y="30" fill="currentColor" font-size="12">'+fmt(max)+'</text><text x="4" y="155" fill="currentColor" font-size="12">'+fmt(min)+'</text><path d="'+pts.map(function(p,i){return (i?'L':'M')+p.join(',');}).join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="3"/>'+pts.map(function(p,i){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="var(--accent)"><title>'+esc(rows[i].date+' · '+fmt(value(rows[i]))+' '+unit)+'</title></circle>';}).join('')+'<text x="48" y="185" fill="currentColor" font-size="12">'+esc(rows[0].date)+'</text><text x="468" y="185" text-anchor="end" fill="currentColor" font-size="12">'+esc(rows[rows.length-1].date)+'</text></svg>';
+  }
+  html+='<div class="tablewrap"><table><thead><tr><th>'+t('trainingDate')+'</th><th>'+(zh?'已完成正式组':'Completed work sets')+'</th><th>'+esc(metric.options[metric.selectedIndex].text+' ('+unit+')')+'</th></tr></thead><tbody>'+g.days.slice().reverse().map(function(d){return '<tr><td>'+esc(d.date)+'</td><td>'+esc(d.sets.map(function(s){return (g.body?'':journalShow(s.weightKg)+' '+journalUnit()+' × ')+s.reps;}).join(' / '))+'</td><td>'+(d[mode]===null?'—':fmt(value(d)))+'</td></tr>';}).join('')+'</tbody></table></div>';host.innerHTML=html;
+}
+on('#strengthExercise','change',renderStrengthHistory);
+on('#strengthMetric','change',renderStrengthHistory);
 
 function renderFoodGrid(){
   var q = ($('#foodSearch').value || '').trim().toLowerCase();
