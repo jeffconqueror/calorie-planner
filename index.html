@@ -609,6 +609,18 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
 #cloudPanel input{width:100%;box-sizing:border-box;padding:11px;margin:7px 0 12px;background:var(--panel-2);color:var(--ink);border:1px solid var(--rule-2);border-radius:8px;font:inherit;font-size:16px}
 #cloudPanel label{display:block;font-size:13px;margin-top:9px}#cloudPanel button{padding:10px 14px;min-height:42px;border-radius:8px;border:1px solid var(--rule-2);background:var(--panel-2);color:var(--ink);font:inherit;margin:5px 0;cursor:pointer}#cloudPanel button:disabled{opacity:.5}#cloudPanel #cloudEnable,#cloudPanel #cloudVerify,#cloudPanel #cloudResolve{background:var(--accent-fill);color:var(--on-accent);border-color:var(--accent-fill)}
 #cloudStatus{margin:14px 0;line-height:1.6;overflow-wrap:anywhere}#cloudPanel details{margin:14px 0}#cloudPanel summary{cursor:pointer;padding:7px 0}.cloud-actions{display:flex;gap:8px;flex-wrap:wrap}.cloud-conflict{padding:14px 0;border-top:1px solid var(--rule);overflow-wrap:anywhere}.cloud-conflict-values{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cloud-conflict pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;background:var(--panel-2);padding:9px;font-size:12px}.cloud-conflict b{font-size:13px}#cloudAccount{overflow-wrap:anywhere}
+.journal-order{border:1px solid var(--rule);border-radius:16px;padding:14px;margin:14px 0 20px;background:var(--panel)}
+.journal-order summary{font-weight:650;cursor:pointer;padding:5px 0}.journal-order-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--rule)}.journal-order-row:first-of-type{margin-top:12px}.order-number{font-size:12px;color:var(--accent);background:var(--accent-soft);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none}.order-name{flex:1;font-size:14px;min-width:0;overflow-wrap:anywhere}.order-name small{display:block;color:var(--ink-2);font-size:11px;margin-top:3px}.journal-order-row button{min-width:40px;min-height:40px}.journal-order-row button:disabled{opacity:.25}
+.strength-hero{padding:24px 0 12px}.strength-eyebrow{text-transform:uppercase;letter-spacing:1.4px;font-size:11px;color:var(--ink-2)}.strength-value{font-size:44px;font-weight:750;letter-spacing:-1.5px;line-height:1.3;margin:8px 0}.strength-value small{font-size:13px;font-weight:500;letter-spacing:0;color:var(--ink-2)}.strength-change{color:var(--accent);font-size:14px;font-weight:600;margin-bottom:5px}.strength-plot{width:100%;max-height:270px;color:var(--ink-2);margin:8px 0 22px}.strength-sessions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:20px}.strength-session{border:1px solid var(--rule);border-radius:14px;padding:16px;background:var(--panel-2);min-width:0}.strength-session-head{display:flex;justify-content:space-between;gap:8px;font-size:13px}.strength-session-head>span{color:var(--accent);font-size:11px}.strength-set-pills{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}.strength-set-pills span{padding:5px 8px;border-radius:6px;background:var(--panel);font-size:12px;color:var(--ink-2)}.strength-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0 9px}.strength-pair span{font-size:11px;color:var(--ink-2)}.strength-pair b{display:block;font-size:22px;color:var(--ink);margin-top:4px}.strength-empty{text-align:center;padding:35px 12px;color:var(--ink-2)}.strength-empty>span{font-size:44px;color:var(--accent)}#strengthHistorySection .journal-toolbar{display:grid;grid-template-columns:80px 1fr;gap:10px}#strengthHistorySection select{width:100%;min-width:0}
+@media(max-width:760px){
+  :root{--ground:#090d0c;--panel:#151c19;--panel-2:#1c2520;--rule:#2a352e;--accent:#a6f279;--accent-fill:#a6f279;--accent-ink:#a6f279;--accent-soft:rgba(166,242,121,.09);--ink-2:#a2b0a7}
+  html,body{background:#090d0c}.wrap{padding-inline:20px}.app-header{padding-top:calc(30px + env(safe-area-inset-top));padding-bottom:26px}.app-header h1{font-size:34px;letter-spacing:-1.4px}.app-header p{color:#91a298}.app-header button{background:#1c2820;color:#b9d0c0;border:1px solid #2c3c31;width:44px;height:44px}
+  .app-card,.panel{background:linear-gradient(145deg,#1a241e,#121a16);border:1px solid #29372d;border-radius:22px;box-shadow:0 8px 22px #0002}.app-card{padding:21px;margin-bottom:16px}.app-today{background:#243329;border:1px solid #354c3b;border-radius:16px;padding:15px 12px}.app-today h3{font-size:16px}.app-badge{background:#a6f279;color:#173016}.app-start{background:#a6f279;color:#172b12;font-weight:700;padding:12px;border-radius:10px}.app-number{font-size:43px;letter-spacing:-1.5px;margin:14px 0}.app-target{color:#bacd88}.app-macros{border-color:#334237}.app-macros b{font-size:20px;color:#edf6ee}.app-week button[aria-pressed=true] b{background:#a6f279;color:#172b12;box-shadow:0 0 20px #a6f27922}.app-week i.is-done{background:#a6f279}
+  #appNav{left:12px;right:12px;bottom:calc(8px + env(safe-area-inset-bottom));height:70px;padding:0 5px;border:1px solid #354239;border-radius:24px;background:rgba(23,33,27,.94);box-shadow:0 12px 45px #0008}#appNav button[aria-current=page]{color:#a6f279}#appNav .app-nav-workout svg{background:#a6f279;color:#142512;box-shadow:0 0 0 6px #111a14;width:49px;height:49px}#appNav span{font-size:10px}body{padding-bottom:calc(105px + env(safe-area-inset-bottom))}
+  .app-stat-grid{gap:12px}.app-stat-grid .app-card{padding:19px;border-radius:19px}.app-stat-grid strong{font-size:34px;color:#eaf5ea}.app-stat-grid small{color:#98ad9f}.app-heat{gap:5px}.app-heat span{border-radius:4px}.routine-day summary h3{font-size:20px;margin:10px 0}.routine-day .app-primary{margin-top:16px;width:100%;border-radius:12px;font-weight:650}.routine-list label{border-color:#2b392f}
+  .journal-order{background:#111a15;border-color:#2a3c2f;border-radius:18px}.journal-order summary{color:#d8ebdc;font-size:14px}.journal-order .hint{font-size:11px;line-height:1.7}.journal-order-row button{background:#223229!important;border-color:#314738!important;color:#bceaa9!important;border-radius:10px!important}.journal-exercise{background:#17211b;border:1px solid #2b3d30;border-radius:20px;padding:17px}.journal-sets tr{padding:12px 0!important;border-bottom:1px solid #2b3d30;gap:9px}#journalEditor input:not([type=checkbox]),#journalEditor textarea{background:#233127;border-color:#3a4a3e;border-radius:10px;color:#f3fff2}.journal-sets input[type=checkbox]{accent-color:#a6f279;width:22px;height:22px}.app-step input{font-size:16px!important;min-height:42px}.app-ex-hero{background:radial-gradient(ellipse at 100% 0%,#35572c,#16231a 75%);border-color:#3a5137;border-radius:24px;padding:23px 18px}.app-ex-hero>div{color:#b6f08b}.app-ex-hero small{color:#b0cd9d}.app-ex-hero h2{font-size:27px}.app-rest{padding:11px;background:#152219;border-radius:12px}.app-rest button{background:#263a2b!important;border:0!important}#workoutFocus progress::-webkit-progress-value{background:#a6f279}
+  #strengthHistorySection .panel__bd{padding:20px}#strengthHistorySection .section__hd h2{font-size:24px}#strengthHistoryHint{font-size:11px;line-height:1.8;margin-bottom:20px}#strengthHistorySection select{background:#26372b;border:1px solid #3a503e;border-radius:12px;padding:12px;color:#edf7ec;font-size:14px}#strengthHistorySection label{font-size:12px;color:#a2b0a7}.strength-hero{padding-top:28px}.strength-value{font-size:42px}.strength-session{background:#142018;border-color:#2d4032}.strength-session-head>span{border-radius:20px;background:#a6f27912;padding:3px 7px}.strength-sessions{grid-template-columns:1fr}.strength-set-pills span{background:#223429}.journal-history{border-color:#304034!important;border-radius:14px;padding:14px!important;margin-bottom:10px!important;background:#17211b}.journal-history summary{gap:8px}.panel__hd{border-color:#2d3c31}
+}
 </style>
 
 <header class="app-mobile app-header wrap"><div><h1 id="appTitle">Load</h1><p id="appSubtitle"></p></div><button type="button" id="appSettings" aria-label="Settings"></button></header>
@@ -962,7 +974,7 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
       <div id="strengthHistoryChart"></div>
     </div></div>
   </section>
-  <section hidden id="legacyStrengthArchive">
+  <section class="section app-stats-section">
     <div class="section__hd">
       <h2 data-i18n="secLands">Where this lands you</h2>
       <span class="section__rule"></span>
@@ -1060,40 +1072,6 @@ details.notes .nb{padding:0 14px 16px;border-top:1px solid var(--rule);padding-t
     </div></div>
     <div id="journalHistoryPanel" class="panel" style="margin-top:var(--gap)"><div class="panel__hd"><h3 data-i18n="trainingHistory">Session history</h3></div><div class="panel__bd" id="journalHistory"></div></div>
     <details id="journalImportPanel" class="panel" style="margin-top:var(--gap)"><summary class="panel__hd" data-i18n="jImport">Import openGym JSON</summary><div class="panel__bd"><p class="hint" data-i18n="jImportHelp"></p><input id="journalImportFile" type="file" accept=".json,application/json" data-i18n-aria="jImport"><p id="journalImportMessage" class="hint" aria-live="polite"></p><button type="button" id="journalImportApply" data-i18n="jImportApply" hidden>Import these sessions</button></div></details>
-  </section>
-
-  <!-- ═══ TRAINING LOG ═══ -->
-  <section class="section app-stats-section">
-    <div class="section__hd">
-      <h2 data-i18n="jLegacy">Quick strength summaries (existing records)</h2>
-      <span class="section__rule"></span>
-      <span class="section__spec" data-i18n="trainingLogSpec"></span>
-    </div>
-    <div class="panel">
-      <div class="panel__hd"><h3 data-i18n="trainingLogAdd">Log a session</h3><span class="panel__tag" data-i18n="trainingLogTag"></span></div>
-      <div class="panel__bd">
-        <p class="hint" style="margin-bottom:14px" data-i18n="trainingLogHint"></p>
-        <form id="trainingForm" class="trainingform">
-          <div class="field"><label for="trainingDate" data-i18n="trainingDate">Date</label><input type="date" id="trainingDate" required /></div>
-          <div class="field"><label for="trainingLift" data-i18n="trainingLift">Lift</label><select id="trainingLift"><option value="bench" data-i18n="trainingBench">Barbell bench press</option><option value="squat" data-i18n="trainingSquat">Barbell squat</option><option value="pull" data-i18n="trainingPull">Pull-up</option></select></div>
-          <div class="field" id="trainingPullModeField" hidden><label for="trainingPullMode" data-i18n="trainingPullModeLabel">Pull-up type</label><select id="trainingPullMode"><option value="bodyweight" data-i18n="trainingBodyweight">Bodyweight</option><option value="weighted" data-i18n="trainingWeighted">Weighted</option></select></div>
-          <div class="field"><label for="trainingWeight" id="trainingWeightLabel" data-i18n="trainingWeight">Weight</label><input type="number" id="trainingWeight" min="0" max="1500" step="any" inputmode="decimal" required /></div>
-          <div class="field"><label for="trainingSets" data-i18n="trainingSets">Sets</label><input type="number" id="trainingSets" min="1" max="50" step="1" inputmode="numeric" required /></div>
-          <div class="field"><label for="trainingReps" data-i18n="trainingReps">Reps</label><input type="number" id="trainingReps" min="1" max="50" step="1" inputmode="numeric" required /></div>
-          <div class="field"><label for="trainingFailedReps" data-i18n="trainingFailedReps">Failed reps</label><input type="number" id="trainingFailedReps" min="0" max="50" step="1" inputmode="numeric" value="0" required /></div>
-          <button type="submit" class="trainingform__save" data-i18n="trainingSave">Save session</button>
-        </form>
-        <p class="hint" id="trainingFormHint" aria-live="polite"></p>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:var(--gap)">
-      <div class="panel__hd"><h3 data-i18n="trainingTrend">Strength trend</h3><span class="panel__tag" id="trainingUnit">kg</span></div>
-      <div class="panel__bd"><p class="hint" style="margin-bottom:14px" data-i18n="trainingCompare"></p><div class="trainingcharts" id="trainingCharts"></div></div>
-    </div>
-    <div class="panel" style="margin-top:var(--gap)">
-      <div class="panel__hd"><h3 data-i18n="trainingHistory">Session history</h3></div>
-      <div class="panel__bd"><div class="tablewrap"><table><thead><tr><th scope="col" data-i18n="trainingDate">Date</th><th scope="col" data-i18n="trainingLift">Lift</th><th scope="col" data-i18n="trainingWeight">Weight</th><th scope="col" data-i18n="trainingSets">Sets</th><th scope="col" data-i18n="trainingReps">Reps</th><th scope="col" data-i18n="trainingFailedReps">Failed reps</th><th scope="col" data-i18n="trainingEdit">Edit</th></tr></thead><tbody id="trainingHistoryBody"></tbody></table></div></div>
-    </div>
   </section>
 
   <!-- ═══ FOOD ═══ -->
@@ -3471,7 +3449,7 @@ function render(){
   renderRecord();
   renderRecordName();
   renderInstallTip();
-  renderTrainingLog();
+  renderStrengthHistory();
   renderJournal();
   renderMeals();
   renderApp();
@@ -4053,104 +4031,47 @@ function renderCheat(){
   }).join('');
 }
 
-/* Actual working weights and sets, kept separately from the old projected 1RM inputs. */
-var TRAINING_LIFTS = [{key:'bench', label:'trainingBench'}, {key:'squat', label:'trainingSquat'}, {key:'pull', label:'trainingPull'}];
-function trainingLoad(e){
-  if(e.lift === 'pull') return e.mode === 'weighted' ? t('trainingPullAdded', wShow(e.weightKg))+' '+wUnit() : t('trainingPullBody');
-  return wShow(e.weightKg)+' '+wUnit();
+function strengthLift(e){
+  var key=(e.key||'').replace(/^routine:/,''),name=(e.name||'').trim().toLowerCase();
+  if(['bench','squat','pull'].includes(key))return key;
+  var aliases={bench:['bench','barbell bench press','flat bench press','杠铃平板卧推','杠铃卧推','平板卧推'],squat:['squat','barbell squat','back squat','深蹲','杠铃深蹲'],pull:['pull-up','pull up','pull-ups','pullup','引体向上','负重引体向上']};
+  return Object.keys(aliases).find(function(k){return aliases[k].includes(name);})||null;
 }
-function syncTrainingForm(){
-  var pull = $('#trainingLift').value === 'pull';
-  var weighted = pull && $('#trainingPullMode').value === 'weighted';
-  $('#trainingPullModeField').hidden = !pull;
-  $('#trainingWeight').disabled = pull && !weighted;
-  $('#trainingWeight').required = !pull || weighted;
-  $('#trainingWeightLabel').textContent = t(weighted ? 'trainingAddedWeight' : 'trainingWeight')+' ('+wUnit()+')';
-  if(pull && !weighted) $('#trainingWeight').value = '0';
-}
-function trainingChart(rows, lift){
-  var name = t(lift.label), last = rows[rows.length-1];
-  var latest = last ? t('trainingLatest', last.date, trainingLoad(last), last.sets)+' · '+
-    t('trainingRepSummary', last.reps == null ? t('trainingUnknown') : last.reps,
-      last.failedReps == null ? t('trainingUnknown') : last.failedReps) : t('trainingEmpty');
-  var chart = rows.length === 1 ? '<p class="trainingchart__meta">'+esc(t('trainingOne'))+'</p>' : '';
-  if(rows.length >= 2){
-    var values = rows.map(function(e){ return e.weightKg; });
-    var lo = Math.min.apply(null,values), hi = Math.max.apply(null,values);
-    var pad = Math.max((hi-lo)*0.2, lift.key === 'pull' ? 2.5 : 5);
-    lo -= pad; hi += pad;
-    var firstTime = parseISO(rows[0].date).getTime(), lastTime = parseISO(last.date).getTime();
-    var pts = rows.map(function(e){
-      var x = 10 + 220*(parseISO(e.date).getTime()-firstTime)/Math.max(lastTime-firstTime,1);
-      var y = 77 - 65*(e.weightKg-lo)/(hi-lo);
-      return [Math.round(x*10)/10, Math.round(y*10)/10];
-    });
-    var path = pts.map(function(p,i){ return (i?'L':'M')+p[0]+' '+p[1]; }).join(' ');
-    var circles = pts.map(function(p){ return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--accent)" />'; }).join('');
-    chart = '<svg viewBox="0 0 240 90" role="img" aria-label="'+esc(name+' · '+rows.length+' '+t('trainingHistory'))+'">'+
-      '<line x1="10" y1="77" x2="230" y2="77" stroke="var(--rule-2)" />'+
-      '<path d="'+path+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" />'+circles+'</svg>'+
-      '<div class="trainingchart__dates"><span>'+esc(rows[0].date)+'</span><span>'+esc(last.date)+'</span></div>';
-  }
-  return '<div class="trainingchart"><div class="trainingchart__head"><span>'+esc(name)+'</span><span>'+esc(last ? trainingLoad(last) : '—')+'</span></div>'+
-    '<p class="trainingchart__meta">'+esc(latest)+'</p>'+chart+'</div>';
-}
-function renderTrainingLog(){
-  renderStrengthHistory();
-  $('#trainingUnit').textContent = wUnit();
-  if(!$('#trainingDate').value) $('#trainingDate').value = iso(today);
-  syncTrainingForm();
-  var rows = S.trainingLog || [];
-  $('#trainingCharts').innerHTML = TRAINING_LIFTS.map(function(lift){
-    return trainingChart(rows.filter(function(e){ return e.lift === lift.key; }), lift);
-  }).join('');
-  $('#trainingHistoryBody').innerHTML = rows.length ? rows.slice().reverse().map(function(e){
-    var lift = TRAINING_LIFTS.filter(function(x){ return x.key === e.lift; })[0];
-    return '<tr><td>'+esc(e.date)+'</td><td>'+esc(t(lift.label))+'</td><td>'+esc(trainingLoad(e))+'</td><td>'+e.sets+'</td>'+
-      '<td>'+(e.reps == null ? esc(t('trainingUnknown')) : e.reps)+'</td><td>'+
-      (e.failedReps == null ? esc(t('trainingUnknown')) : e.failedReps)+'</td>'+
-      '<td><button type="button" data-training-date="'+esc(e.date)+'" data-training-lift="'+e.lift+'">'+esc(t('trainingEdit'))+'</button></td></tr>';
-  }).join('') : '<tr><td colspan="7">'+esc(t('trainingEmpty'))+'</td></tr>';
-}
-
-// Derived only from saved, completed work sets. Keep renamed/equipment variants separate.
-function strengthHistory(workouts){
-  var groups=new Map();
-  (workouts||[]).forEach(function(w){(w.exercises||[]).forEach(function(e){
-    (e.sets||[]).filter(function(s){return s.done&&!s.warmup&&Number.isFinite(s.weightKg)&&s.weightKg>=0&&Number.isFinite(s.reps)&&s.reps>0;}).forEach(function(s){
-      var body=s.weightKg===0, id=JSON.stringify([e.key||'',e.name.trim().toLowerCase(),body]);
-      if(!groups.has(id))groups.set(id,{id:id,name:e.name,body:body,days:new Map()});
-      var g=groups.get(id);
-      if(!g.days.has(w.date))g.days.set(w.date,{date:w.date,sets:[],load:0,reps:0,estimate:null});
-      var d=g.days.get(w.date);d.sets.push({weightKg:s.weightKg,reps:s.reps});d.load=Math.max(d.load,s.weightKg);d.reps=Math.max(d.reps,s.reps);
-      if(!body&&s.reps<=12){var estimate=s.reps===1?s.weightKg:s.weightKg*(1+s.reps/30);d.estimate=Math.max(d.estimate||0,estimate);}
-    });
+function strengthHistory(workouts,weights){
+  var groups=['bench','squat','pull'].map(function(id){return {id:id,days:[]};}),dates=Object.keys(weights||{}).sort();
+  (workouts||[]).forEach(function(w){(w.exercises||[]).forEach(function(e,index){
+    var id=strengthLift(e);if(!id)return;
+    var sets=(e.sets||[]).filter(function(s){return s.done&&!s.warmup&&Number.isFinite(s.weightKg)&&s.weightKg>=0&&Number.isFinite(s.reps)&&s.reps>0;});if(!sets.length)return;
+    var wd=dates.filter(function(d){return d<=w.date&&Number.isFinite(weights[d])&&weights[d]>0;}).pop(),bw=wd?weights[wd]:null;
+    var factor=Math.pow(.8,index),volume=id==='pull'&&bw===null?null:sets.reduce(function(n,s){return n+(s.weightKg+(id==='pull'?bw:0))*s.reps;},0);
+    var estimates=sets.filter(function(s){return id!=='pull'&&s.weightKg>0&&s.reps<=12;}).map(function(s){return s.reps===1?s.weightKg:s.weightKg*(1+s.reps/30);});
+    groups.find(function(g){return g.id===id;}).days.push({date:w.date,workoutId:w.id,position:index+1,factor:factor,sets:sets,volume:volume,weighted:volume===null?null:volume*factor,load:Math.max.apply(null,sets.map(function(s){return s.weightKg;})),reps:Math.max.apply(null,sets.map(function(s){return s.reps;})),totalReps:sets.reduce(function(n,s){return n+s.reps;},0),estimate:estimates.length?Math.max.apply(null,estimates):null,bodyWeight:id==='pull'?bw:null,weightDate:id==='pull'?wd:null});
   });});
-  return Array.from(groups.values()).map(function(g){g.days=Array.from(g.days.values()).sort(function(a,b){return a.date.localeCompare(b.date);});return g;}).sort(function(a,b){return a.name.localeCompare(b.name)||Number(a.body)-Number(b.body);});
+  groups.forEach(function(g){g.days.sort(function(a,b){return a.date.localeCompare(b.date)||String(a.workoutId).localeCompare(String(b.workoutId))||a.position-b.position;});});return groups;
 }
 function renderStrengthHistory(){
-  var zh=L==='zh',pick=$('#strengthExercise'),metric=$('#strengthMetric'),groups=strengthHistory(S.workouts),selected=pick.value,mode=metric.value||'estimate';
-  $('#strengthHistoryTitle').textContent=zh?'训练历史 · 力量变化':'Training history · strength trends';
+  var zh=L==='zh',pick=$('#strengthExercise'),metric=$('#strengthMetric'),selected=pick.value||'bench',mode=metric.value||'weighted',groups=strengthHistory(S.workouts,S.log.entries);
+  var names=zh?{bench:'杠铃平板卧推',squat:'深蹲',pull:'引体向上'}:{bench:'Barbell bench press',squat:'Squat',pull:'Pull-up'};
+  $('#strengthHistoryTitle').textContent=zh?'三项力量趋势':'Your three lifts';
   $('#strengthExerciseLabel').textContent=zh?'动作':'Exercise';$('#strengthMetricLabel').textContent=zh?'指标':'Metric';
-  $('#strengthHistoryHint').textContent=zh?'自动读取已保存训练中的已完成正式组，不含热身和未完成组。相同动作名称与标识才合并；自重和负重分开。估算 1RM 仅使用 1–12 次的组，不代表实测极限或肌肉量；请保持器械、动作幅度和用力程度一致。':'Uses completed work sets from saved sessions, excluding warm-ups and unfinished sets. Exercise names and identifiers must match; zero-load and loaded sets are separate. Estimated 1RM uses sets of 1–12 reps, not a measured max or muscle mass. Compare the same equipment, range of motion and effort.';
-  pick.innerHTML=groups.map(function(g){return '<option value="'+esc(g.id)+'">'+esc(g.name+(g.body?(zh?' · 自重/无外加重量':' · zero external load'):''))+'</option>';}).join('');
-  if(groups.some(function(g){return g.id===selected;}))pick.value=selected;
-  var g=groups.find(function(g){return g.id===pick.value;});pick.disabled=!g;metric.disabled=!g;
-  var modes=g&&g.body?[['reps',zh?'单组最多次数':'Best set reps']]:[['estimate',zh?'估算 1RM':'Estimated 1RM'],['load',zh?'最大工作重量':'Heaviest working load'],['reps',zh?'单组最多次数':'Best set reps']];
-  metric.innerHTML=modes.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>';}).join('');if(modes.some(function(m){return m[0]===mode;}))metric.value=mode;mode=metric.value;
-  var host=$('#strengthHistoryChart');
-  if(!g){host.innerHTML='<p class="hint">'+(zh?'保存一次训练并勾选已完成组后，这里会自动显示趋势。':'Save a session with completed sets to see trends here.')+'</p>';return;}
-  var rows=g.days.filter(function(d){return d[mode]!==null;}),unit=mode==='reps'?(zh?'次':'reps'):journalUnit(),value=function(d){return mode==='reps'?d[mode]:journalOut(d[mode]);},fmt=function(n){return String(Math.round(n*10)/10);};
-  var html='<p class="hint">'+(zh?'每日取最佳值；下表保留全部正式组，便于结合重量和次数判断。':'Daily best values; all work sets are shown below to compare load and reps together.')+'</p>';
-  if(!rows.length)html+='<p>'+(zh?'没有 1–12 次的负重组，暂无估算值。可切换指标查看。':'No loaded sets of 1–12 reps. Choose another metric.')+'</p>';
-  else{
+  $('#strengthHistoryHint').textContent=zh?'仅统计已完成正式组。顺序加权容量 = 原始容量 × 0.8^(动作序号−1)。这是你的自定义指标，不是疲劳校正后的真实力量；同顺序、同器械的训练更适合比较。':'Completed work sets only. Order-weighted volume = raw volume × 0.8^(exercise position−1). This is your custom metric, not fatigue-corrected strength. Compare the same order and equipment.';
+  pick.innerHTML=groups.map(function(g){return '<option value="'+g.id+'">'+names[g.id]+'</option>';}).join('');pick.value=selected;pick.disabled=false;
+  var g=groups.find(function(g){return g.id===pick.value;})||groups[0];
+  var modes=[['weighted',zh?'顺序加权容量':'Order-weighted volume'],['volume',zh?'原始容量':'Raw volume'],['reps',zh?'单组最多次数':'Best set reps'],['totalReps',zh?'总次数':'Total reps']];
+  if(g.id!=='pull')modes.push(['estimate',zh?'估算 1RM':'Estimated 1RM'],['load',zh?'最大工作重量':'Heaviest working load']);
+  metric.innerHTML=modes.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>';}).join('');if(modes.some(function(m){return m[0]===mode;}))metric.value=mode;metric.disabled=false;mode=metric.value;
+  var isReps=['reps','totalReps'].includes(mode),isVolume=['volume','weighted'].includes(mode),unit=isReps?(zh?'次':'reps'):journalUnit()+(isVolume?'·reps':''),fmt=function(n){return n===null?'—':String(Math.round(n*10)/10);},value=function(d){return d[mode]===null?null:isReps?d[mode]:journalOut(d[mode]);};
+  var host=$('#strengthHistoryChart'),rows=g.days.filter(function(d){return d[mode]!==null;}),html='';
+  if(!g.days.length){host.innerHTML='<div class="strength-empty"><span>↗</span><h3>'+names[g.id]+'</h3><p>'+(zh?'完成并保存这个动作后，趋势会自动出现。':'Complete and save this lift to start your trend.')+'</p></div>';return;}
+  if(rows.length){
     var first=value(rows[0]),last=value(rows[rows.length-1]),delta=last-first;
-    html+='<p><strong>'+fmt(last)+' '+esc(unit)+'</strong> · '+esc(rows[rows.length-1].date)+'<br><span class="hint">'+(rows.length<2?(zh?'需要至少两个训练日期才能比较变化。':'At least two training dates are needed to compare.'): (zh?'相对首条记录：':'Since first record: ')+(delta>0?'+':'')+fmt(delta)+' '+esc(unit)+(first?' ('+(delta>0?'+':'')+fmt(delta/first*100)+'%)':''))+'</span></p>';
-    var vals=rows.map(value),lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals),pad=Math.max((hi-lo)*.15,1),min=lo-pad,max=hi+pad;
-    var start=Date.parse(rows[0].date),end=Date.parse(rows[rows.length-1].date),pts=rows.map(function(d){return [48+(end===start?210:(Date.parse(d.date)-start)/(end-start)*420),155-(value(d)-min)/(max-min)*125];});
-    html+='<svg style="width:100%;max-height:240px" viewBox="0 0 500 195" role="img" aria-label="'+esc(g.name+' '+metric.options[metric.selectedIndex].text)+'"><text x="4" y="30" fill="currentColor" font-size="12">'+fmt(max)+'</text><text x="4" y="155" fill="currentColor" font-size="12">'+fmt(min)+'</text><path d="'+pts.map(function(p,i){return (i?'L':'M')+p.join(',');}).join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="3"/>'+pts.map(function(p,i){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="var(--accent)"><title>'+esc(rows[i].date+' · '+fmt(value(rows[i]))+' '+unit)+'</title></circle>';}).join('')+'<text x="48" y="185" fill="currentColor" font-size="12">'+esc(rows[0].date)+'</text><text x="468" y="185" text-anchor="end" fill="currentColor" font-size="12">'+esc(rows[rows.length-1].date)+'</text></svg>';
-  }
-  html+='<div class="tablewrap"><table><thead><tr><th>'+t('trainingDate')+'</th><th>'+(zh?'已完成正式组':'Completed work sets')+'</th><th>'+esc(metric.options[metric.selectedIndex].text+' ('+unit+')')+'</th></tr></thead><tbody>'+g.days.slice().reverse().map(function(d){return '<tr><td>'+esc(d.date)+'</td><td>'+esc(d.sets.map(function(s){return (g.body?'':journalShow(s.weightKg)+' '+journalUnit()+' × ')+s.reps;}).join(' / '))+'</td><td>'+(d[mode]===null?'—':fmt(value(d)))+'</td></tr>';}).join('')+'</tbody></table></div>';host.innerHTML=html;
+    html='<div class="strength-hero"><div class="strength-eyebrow">'+esc(metric.options[metric.selectedIndex].text)+'</div><div class="strength-value">'+fmt(last)+' <small>'+unit+'</small></div><div class="strength-change">'+(rows.length>1?(delta>0?'+':'')+fmt(delta)+' '+unit+(first?' · '+(delta>0?'+':'')+fmt(delta/first*100)+'%':''):(zh?'第一条记录':'First entry'))+'</div><span class="hint">'+(zh?'对比首条记录 · ':'Since first entry · ')+esc(rows[rows.length-1].date)+'</span></div>';
+    var vals=rows.map(value),lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals),pad=Math.max((hi-lo)*.18,1),min=Math.max(0,lo-pad),max=hi+pad,start=Date.parse(rows[0].date),end=Date.parse(rows[rows.length-1].date);
+    var pts=rows.map(function(d){return [52+(end===start?200:(Date.parse(d.date)-start)/(end-start)*412),160-(value(d)-min)/(max-min)*128];}),path=pts.map(function(p,i){return (i?'L':'M')+p.join(',');}).join(' ');
+    html+='<svg class="strength-plot" viewBox="0 0 500 200" role="img" aria-label="'+esc(names[g.id]+' '+metric.options[metric.selectedIndex].text)+'"><defs><linearGradient id="strengthFill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="var(--accent)" stop-opacity=".25"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>'+[0,.5,1].map(function(f){var y=32+128*f;return '<line x1="52" x2="464" y1="'+y+'" y2="'+y+'" stroke="var(--rule)" stroke-dasharray="3 5"/><text x="2" y="'+(y+4)+'" fill="currentColor" font-size="11">'+fmt(max-(max-min)*f)+'</text>';}).join('')+'<path d="'+path+' L'+pts[pts.length-1][0]+',165 L'+pts[0][0]+',165 Z" fill="url(#strengthFill)"/><path d="'+path+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round"/>'+pts.map(function(p,i){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="var(--accent)"><title>'+esc(rows[i].date+' · '+fmt(value(rows[i]))+' '+unit)+'</title></circle>';}).join('')+'<text x="52" y="193" fill="currentColor" font-size="11">'+rows[0].date+'</text><text x="464" y="193" text-anchor="end" fill="currentColor" font-size="11">'+rows[rows.length-1].date+'</text></svg>';
+  }else html+='<p class="hint">'+(zh?'此指标暂无可用数据。引体容量需要当日或此前的体重记录；估算 1RM 仅使用 1–12 次的负重组。':'No data for this metric. Pull-up volume needs a weigh-in on or before the session; estimated 1RM needs loaded sets of 1–12 reps.')+'</p>';
+  html+='<p class="hint">'+(g.id==='pull'?(zh?'引体容量 =（最近历史体重 + 额外负重）× 次数；下方显示采用的体重日期。':'Pull-up volume = (latest prior body weight + added load) × reps; the weight date is shown below.'):(zh?'原始容量 = 各正式组的重量 × 次数之和。顺序权重只作用于容量，不改变重量、次数或估算 1RM。':'Raw volume sums load × reps. Order weighting affects volume only, not load, reps or estimated 1RM.'))+'</p><div class="strength-sessions">';
+  html+=g.days.slice().reverse().map(function(d){return '<article class="strength-session"><div class="strength-session-head"><b>'+esc(d.date)+'</b><span>#'+d.position+' · ×'+fmt(d.factor*100)+'%</span></div><div class="strength-set-pills">'+d.sets.map(function(s){return '<span>'+journalShow(s.weightKg)+' '+journalUnit()+' × '+s.reps+'</span>';}).join('')+'</div><div class="strength-pair"><span>'+(zh?'原始容量':'Raw volume')+'<b>'+fmt(d.volume===null?null:journalOut(d.volume))+'</b></span><span>'+(zh?'顺序加权容量':'Weighted volume')+'<b>'+fmt(d.weighted===null?null:journalOut(d.weighted))+'</b></span></div><small class="hint">'+journalUnit()+'·reps'+(g.id==='pull'?' · '+(d.bodyWeight===null?(zh?'缺少历史体重':'Missing prior weight'):(zh?'体重 ':'Body weight ')+journalShow(d.bodyWeight)+' '+journalUnit()+' ('+d.weightDate+')'):'')+'</small></article>';}).join('')+'</div>';host.innerHTML=html;
 }
 on('#strengthExercise','change',renderStrengthHistory);
 on('#strengthMetric','change',renderStrengthHistory);
@@ -4188,10 +4109,7 @@ on('#langEn','click', function(){ L = S.lang = 'en'; render(); });
 on('#langZh','click', function(){ L = S.lang = 'zh'; render(); });
 function setUnits(units){
   if(S.units === units) return;
-  var input = $('#trainingWeight'), value = input.value;
-  var kg = value !== '' ? wIn(Number(value)) : null;
   S.units = units;
-  if(kg !== null && isFinite(kg)) input.value = wShow(kg);
   render();
 }
 on('#uMetric','click', function(){ setUnits('metric'); });
@@ -4392,6 +4310,7 @@ function renderJournal(){
   if(w){
     var field=function(key,label,type,value,attrs){return '<label>'+esc(label)+'<input data-j-field="'+key+'" type="'+type+'" value="'+esc(value==null?'':value)+'" '+(attrs||'')+'></label>';};
     var html='<details class="journal-meta" '+(matchMedia('(max-width:760px)').matches?'':'open')+'><summary>'+esc(w.date+' · '+t('jNotes'))+'</summary><div class="journal-fields">'+field('date',t('trainingDate'),'date',w.date,'required')+field('name',t('jSessionName'),'text',w.name,'maxlength="120"')+field('minutes',t('jMinutes'),'number',w.minutes,'min="0" max="1440" step="any"')+'</div></details>';
+    html+='<details class="journal-order"><summary>'+(L==='zh'?'动作顺序 · 可调整':'Exercise order · editable')+'</summary><p class="hint">'+(L==='zh'?'按实际训练顺序排列；第 1 / 2 / 3 个动作权重为 1 / 0.8 / 0.64。':'Arrange your actual session order. Positions 1 / 2 / 3 use 1 / 0.8 / 0.64.')+'</p>'+w.exercises.map(function(e,i){return '<div class="journal-order-row"><span class="order-number">'+(i+1)+'</span><span class="order-name">'+esc(journalName(e))+'<small>× '+Math.pow(.8,i).toFixed(3).replace(/0+$/,'').replace(/\.$/,'')+'</small></span>'+journalButton('move-up','↑','data-ex="'+i+'" '+(i===0?'disabled':'')+' aria-label="'+esc((L==='zh'?'上移 ':'Move up ')+journalName(e))+'"')+journalButton('move-down','↓','data-ex="'+i+'" '+(i===w.exercises.length-1?'disabled':'')+' aria-label="'+esc((L==='zh'?'下移 ':'Move down ')+journalName(e))+'"')+'</div>';}).join('')+'</details>';
     html+=w.exercises.map(function(e,ei){
       var previous=S.workouts.slice().reverse().filter(function(x){return x.id!==w.id && x.date<=w.date;}).flatMap(function(x){return x.exercises.filter(function(p){return e.key ? p.key===e.key : p.name===e.name;}).map(function(p){return {date:x.date,e:p};});})[0];
       var hint=previous ? previous.date+' · '+previous.e.sets.filter(function(s){return !s.warmup;}).map(function(s){return journalShow(s.weightKg)+' × '+s.reps;}).join(' / ') : t('trainingEmpty');
@@ -4423,6 +4342,10 @@ on('#journalEditor','input',function(ev){
 on('#journalEditor','click',function(ev){
   var b=ev.target.closest('[data-j-action]'),w=S.workoutDraft;if(!b||!w)return;
   var action=b.dataset.jAction,ei=Number(b.dataset.ex),si=Number(b.dataset.set);
+  if(action==='move-up'||action==='move-down'){
+    var target=ei+(action==='move-up'?-1:1);if(target<0||target>=w.exercises.length)return;
+    var focused=w.exercises[appExercise],moved=w.exercises.splice(ei,1)[0];w.exercises.splice(target,0,moved);appExercise=w.exercises.indexOf(focused);
+  }
   if(action==='add-ex'){w.exercises.push({key:'',name:'',sets:[journalSet()]});appExercise=w.exercises.length-1;}
   if(action==='remove-ex')w.exercises.splice(ei,1);
   if(action==='add-set'){var sets=w.exercises[ei].sets,prior=sets[sets.length-1];sets.push(prior?Object.assign({},prior,{done:false,rir:null}):journalSet());}
@@ -4460,41 +4383,6 @@ on('#journalImportFile','change',function(ev){
 on('#journalImportApply','click',function(){
   if(!journalImportPending||journalImportPending.profile!==P.active)return;
   S.workouts=mergeWorkoutImport(S.workouts,journalImportPending.rows).rows;journalImportPending=null;this.hidden=true;$('#journalImportMessage').textContent=t('trainingSaved');render();
-});
-
-on('#trainingLift','change', syncTrainingForm);
-on('#trainingPullMode','change', syncTrainingForm);
-on('#trainingForm','submit', function(e){
-  e.preventDefault();
-  var date = $('#trainingDate').value, lift = $('#trainingLift').value;
-  var kg = wIn(Number($('#trainingWeight').value)), sets = Number($('#trainingSets').value);
-  var reps = Number($('#trainingReps').value), failedReps = Number($('#trainingFailedReps').value);
-  var hint = $('#trainingFormHint');
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !parseISO(date) || iso(parseISO(date)) !== date){ hint.textContent = t('trainingBadDate'); return; }
-  if(!isFinite(kg) || kg < 0 || kg > 600 || lift !== 'pull' && kg === 0 || lift === 'pull' && $('#trainingPullMode').value === 'weighted' && kg === 0){ hint.textContent = t('trainingBadWeight'); return; }
-  if(!Number.isInteger(sets) || sets < 1 || sets > 50){ hint.textContent = t('trainingBadSets'); return; }
-  if($('#trainingReps').value === '' || !Number.isInteger(reps) || reps < 1 || reps > 50){ hint.textContent = t('trainingBadReps'); return; }
-  if($('#trainingFailedReps').value === '' || !Number.isInteger(failedReps) || failedReps < 0 || failedReps > 50){ hint.textContent = t('trainingBadFailedReps'); return; }
-  var mode = lift === 'pull' && $('#trainingPullMode').value === 'weighted' ? 'weighted' : 'bodyweight';
-  S.trainingLog = cleanTrainingLog(S.trainingLog.concat([{date:date, lift:lift, weightKg:mode === 'bodyweight' && lift === 'pull' ? 0 : kg, sets:sets, reps:reps, failedReps:failedReps, mode:mode}]));
-  hint.textContent = t('trainingSaved');
-  render();
-});
-on('#trainingHistoryBody','click', function(e){
-  var btn = e.target.closest('button[data-training-date]'); if(!btn) return;
-  var row = S.trainingLog.filter(function(x){ return x.date === btn.dataset.trainingDate && x.lift === btn.dataset.trainingLift; })[0];
-  if(!row) return;
-  $('#trainingDate').value = row.date;
-  $('#trainingLift').value = row.lift;
-  $('#trainingPullMode').value = row.mode;
-  syncTrainingForm();
-  $('#trainingWeight').value = wShow(row.weightKg);
-  $('#trainingSets').value = row.sets;
-  $('#trainingReps').value = row.reps == null ? '' : row.reps;
-  $('#trainingFailedReps').value = row.failedReps == null ? '0' : row.failedReps;
-  $('#trainingFormHint').textContent = '';
-  $('#trainingForm').scrollIntoView({behavior:'smooth',block:'center'});
-  $('#trainingWeight').focus();
 });
 
 on('#foodSearch','input', renderFoodGrid);

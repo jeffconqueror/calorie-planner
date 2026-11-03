@@ -14,7 +14,7 @@ const assert=require('assert'),fs=require('fs'),http=require('http'),path=requir
  await page.locator('[data-j-name="0"]').fill('卧推 <script>');
  await page.locator('[data-j-set="weightKg"]').fill('60');await page.locator('[data-j-set="reps"]').fill('8');await page.locator('[data-j-set="rir"]').fill('0');await page.locator('[data-j-set="done"]').check();
  await page.reload();await page.waitForTimeout(600);assert.equal(Number(await page.locator('[data-j-set="weightKg"]').inputValue()),60);
- await page.locator('#uImperial').click();assert.ok(Math.abs(Number(await page.locator('[data-j-set="weightKg"]').inputValue())-132.28)<.02);await page.locator('#uMetric').click();
+ await page.locator('#uImperial').click();assert.equal(Number(await page.locator('[data-j-set="weightKg"]').inputValue()),60,'body units do not change workout units');await page.locator('#journalUnit').selectOption('lb');assert.ok(Math.abs(Number(await page.locator('[data-j-set="weightKg"]').inputValue())-132.28)<.02);await page.locator('#journalUnit').selectOption('kg');await page.locator('#uMetric').click();
  await page.locator('[data-j-action="finish"]').click();assert.equal(await page.locator('#journalHistory details').count(),1);
  assert.equal(await page.locator('#journalHistory script').count(),0);
  await page.locator('#journalHistory summary').click();await page.locator('[data-j-action="repeat"]').click();assert.equal(Number(await page.locator('[data-j-set="weightKg"]').inputValue()),60);assert.equal(await page.locator('[data-j-set="done"]').isChecked(),false);
