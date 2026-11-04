@@ -686,6 +686,7 @@ button,select,a,summary{transition:background-color .18s ease,border-color .18s 
     --ground:#070b09;--panel:#121915;--panel-2:#1a231e;--panel-3:#223029;
     --ink:#eef5ef;--ink-2:#a0afa5;--ink-3:#738479;--rule:#233029;--rule-2:#33443a;
     --accent:#a6f279;--accent-fill:#a6f279;--accent-ink:#b9f594;--accent-soft:rgba(166,242,121,.12);--on-accent:#122410;
+    --good:#4fd17a;--good-ink:#6ee69a;--warn-ink:#f5c451;--crit:#f06b6b;--crit-ink:#ff8a8a;
     --card:linear-gradient(160deg,#18221c 0%,#111814 100%);--card-line:#25332a;
     --ease:cubic-bezier(.2,.8,.2,1);
   }
@@ -786,6 +787,94 @@ button,select,a,summary{transition:background-color .18s ease,border-color .18s 
 @media (max-width:760px) and (prefers-reduced-motion:reduce){
   main>.section{animation:none}
   button:active:not(:disabled){transform:none}
+}
+
+/* ── Phone, iOS layer: grouped-list forms and sentence-case type ─────────
+   The planner was laid out for a wide desktop page: tracked capitals,
+   square tiles and two fields to a row. On a phone each field becomes a
+   full-width row, label on the left and value on the right. ───────────── */
+@media (max-width:760px){
+  /* Type: SF-style sentence case instead of tracked capitals. */
+  .field label,.lbl,.unit,.seg button,.bigbtn,.linkbtn,.panel__hd h3,.panel__tag,.mode__name,
+  .macro__name,.meal__name,.prog__k,.gauge__lab,.hero__unit,.comp__when,th,.notes summary,
+  #cycHeadingLbl,#cycWeekly,#mealCycleTitle,#liftBurn,#cardioBurn,.flag__icon,
+  #strengthHistoryTitle,.section__hd h2{text-transform:none;letter-spacing:normal}
+  .section__hd{margin:10px 2px 12px}
+  .section__hd h2,#strengthHistorySection .section__hd h2{font-size:22px;font-weight:750;letter-spacing:-.02em;color:var(--ink)}
+  .panel__hd{padding:16px 18px 12px;align-items:center;border-bottom:0}
+  .panel__hd h3{font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+  .panel__tag{font-size:12px;color:var(--ink-3)}
+  .panel__bd{padding:4px 18px 18px}
+  .subhd{font-size:12px;letter-spacing:.06em;color:var(--ink-3);border:0;margin:18px 0 0;padding:0 0 6px}
+  .subhd b{letter-spacing:normal;color:var(--accent-ink);font-weight:600}
+  .block+.block{margin-top:6px}
+
+  /* Grouped rows */
+  .fields{grid-template-columns:1fr;gap:0}
+  .fields>.field:empty{display:none}
+  .field{gap:8px;padding:13px 0;border-bottom:1px solid var(--card-line)}
+  .fields>.field:last-child{border-bottom:0}
+  .field label,.field .lbl{font-size:15px;font-weight:500;color:var(--ink)}
+  .field:has(>:nth-child(2):is(.inputwrap,select,input)){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:center;column-gap:14px;row-gap:6px}
+  .field:has(>:nth-child(2):is(.inputwrap,select,input))>*{grid-column:1/-1}
+  .field:has(>:nth-child(2):is(.inputwrap,select,input))>:first-child{grid-column:1}
+  .field:has(>:nth-child(2):is(.inputwrap,select,input))>:nth-child(2){grid-column:2}
+  .field .linkbtn{justify-self:end;padding:2px 0!important;font-size:13px}
+  .field .hint{font-size:12px;line-height:1.5}
+  .inputwrap{min-height:44px;border-radius:12px;overflow:hidden}
+  .inputwrap input{font-family:inherit;font-size:16px;font-weight:600;text-align:right;padding:10px 4px 10px 12px;font-variant-numeric:tabular-nums}
+  .inputwrap input[type=text]{text-align:left;font-weight:400}
+  .unit{border:0;padding:0 12px 0 2px;font-size:14px;color:var(--ink-3)}
+  main select{font-size:15px;padding:10px 32px 10px 12px;text-overflow:ellipsis}
+  input[type="date"]{font-family:inherit;font-size:16px;font-weight:600;text-align:right;padding:10px 12px}
+  input[type="date"]::-webkit-date-and-time-value{text-align:right}
+
+  /* Choice controls */
+  .seg button{font-family:inherit;font-size:14px;font-weight:600;padding:10px 8px}
+  .daybtns{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;padding:3px;border-radius:12px;background:var(--panel-2)}
+  .daybtns button{width:auto;height:40px;border:0;border-radius:9px;background:transparent;font-family:inherit;font-size:15px;font-weight:600}
+  .daybtns button[aria-pressed="true"]{box-shadow:0 2px 8px rgba(0,0,0,.3)}
+  .modes{gap:8px}
+  .mode{border-radius:14px;padding:12px;border-color:var(--rule-2);gap:4px}
+  .mode__name{font-family:inherit;font-size:15px;font-weight:700}
+  .bigbtn{font-family:inherit;font-size:16px;font-weight:700}
+  .linkbtn{font-family:inherit;font-size:14px;font-weight:600;text-decoration:none;color:var(--accent-ink)}
+  #resetAll{font-size:14px}
+
+  /* Readouts */
+  .hero__unit{font-size:13px}
+  .gauge__lab{font-size:11px}
+  .macro__name{font-family:inherit;font-weight:600;font-size:14px}
+  .ratiobar{height:8px;gap:3px}.ratiobar i{border-radius:4px}
+  .comp__seg{border-radius:4px}
+  th{font-size:12px;font-weight:600;color:var(--ink-3)}
+  .tablewrap{margin-inline:-18px;padding-inline:18px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tablewrap::-webkit-scrollbar{display:none}
+
+  /* Callouts, tiles and meal cards: rounded, tinted, no hard rules. */
+  .flag{border-radius:14px;border:0;border-left:3px solid;padding:12px 14px;background:rgba(255,255,255,.035)}
+  .flag--good{border-left-color:var(--good)}.flag--warn{border-left-color:var(--warn)}.flag--crit{border-left-color:var(--crit)}.flag--info{border-left-color:var(--accent)}
+  .flag__icon{font-family:inherit;font-size:12px;font-weight:700}
+  .chips{gap:8px}
+  .chip{border-radius:12px;border-color:transparent;background:var(--panel-2);padding:10px 12px}
+  .chip__n{font-size:13px;font-weight:600}
+  .chip__m{font-family:inherit;letter-spacing:normal;font-size:11.5px}
+  .chip.added{border-color:var(--accent);background:var(--accent-soft)}
+  .chip:active{transform:scale(.96)}
+  .meal{border-radius:16px;border-left-width:1px;padding:12px 14px 6px}
+  .meal--on{box-shadow:0 0 0 1px var(--accent) inset}
+  .meal__name{font-family:inherit;font-size:14px}
+  .meal-cycle{border-radius:16px;border-color:var(--card-line);background:rgba(255,255,255,.025)}
+  .meal-cycle__choices button{border-radius:12px}
+  .notes{border-radius:12px;overflow:hidden}
+  .app-heat span{border-radius:4px}
+  thead th,details.notes summary,.profsel{text-transform:none;letter-spacing:normal;font-family:inherit}
+  thead th{font-size:12px;font-weight:600}
+  details.notes summary{font-size:14px;font-weight:600;padding:13px 16px}
+  .profsel{font-size:16px;font-weight:600}
+  .inputwrap input[type=search]{text-align:left;font-weight:400}
+  .flag{flex-direction:column;gap:4px}
+  .flag__icon{font-size:11px;letter-spacing:.06em;padding:0}
 }
 </style>
 
@@ -4421,7 +4510,7 @@ $('#checkBody').addEventListener('keydown', function(e){
 
 var appScreen='home',appDay=iso(new Date()),appExercise=0,appProfile=null,restUntil=0;
 function appIcon(name){
-  var paths={home:'M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9',plan:'M5 5h14v16H5zM8 3v4m8-4v4M5 11h14',workout:'M7 7v10m10-10v10M3 9v6m18-6v6M7 12h10',stats:'M5 21V11m7 10V3m7 18V7',nutrition:'M5 3v7m3-7v7M3 7h7M6 10v11M18 3v18m0-18c-5 4-5 10 0 10',settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2'};
+  var paths={home:'M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9',plan:'M5 5h14v16H5zM8 3v4m8-4v4M5 11h14',workout:'M7 7v10m10-10v10M3 9v6m18-6v6M7 12h10',stats:'M5 21V11m7 10V3m7 18V7',nutrition:'M5 3v7m3-7v7M3 7h7M6 10v11M18 3v18m0-18c-5 4-5 10 0 10',settings:'M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'};
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+paths[name]+'"/></svg>';
 }
 function appGo(screen){
